@@ -1,0 +1,4 @@
+config/database.ini
+
+files/*
+!files/index.html
