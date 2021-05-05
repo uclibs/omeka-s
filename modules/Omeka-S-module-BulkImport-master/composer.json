@@ -1,0 +1,14 @@
+{
+    "require": {
+        "box/spout": "^3.1",
+        "mikehaertl/php-pdftk": "^0.9"
+    },
+    "require-dev": {
+        "biblibre/omeka-s-test-helper": "dev-master"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BulkImportTest\\": "test/BulkImportTest/"
+        }
+    }
+}
