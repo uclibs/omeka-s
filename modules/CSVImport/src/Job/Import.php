@@ -8,7 +8,7 @@ use finfo;
 use Omeka\Api\Manager;
 use Omeka\Job\AbstractJob;
 use Omeka\Stdlib\Message;
-use Zend\Log\Logger;
+use Laminas\Log\Logger;
 
 class Import extends AbstractJob
 {
@@ -193,7 +193,7 @@ class Import extends AbstractJob
             $data = $this->mapRows($rows);
             $this->processBatchData($data);
             $offset += $this->rowsByBatch;
-        };
+        }
 
         if ($this->emptyLines) {
             $this->logger->info(new Message('%d empty lines were skipped.', // @translate
@@ -583,8 +583,8 @@ class Import extends AbstractJob
         // WHERE item_id IN (SELECT item_id FROM `media` WHERE id IN (%s) GROUP BY item_id ORDER BY item_id ASC)
         $conn->exec('SET @item_id = 0; SET @rank = 1;');
         $query = <<<'SQL'
-SELECT id, rank FROM (
-    SELECT id, @rank := IF(@item_id = item_id, @rank + 1, 1) AS rank, @item_id := item_id AS item
+SELECT id, `rank` FROM (
+    SELECT id, @rank := IF(@item_id = item_id, @rank + 1, 1) AS `rank`, @item_id := item_id AS item
     FROM media
     WHERE item_id IN (%s)
     ORDER BY item_id ASC, -position DESC, id ASC
@@ -994,7 +994,7 @@ SQL;
                     // Normalize values.
                     array_map(function ($v) use ($base) {
                         return array_replace($base[$v['type']], array_intersect_key($v, $base[$v['type']]));
-            }, $value)))));
+                    }, $value)))));
         }
         return $values;
     }

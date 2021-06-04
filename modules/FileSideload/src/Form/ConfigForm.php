@@ -1,8 +1,8 @@
 <?php
 namespace FileSideload\Form;
 
-use Zend\Form\Form;
-use Zend\Validator\Callback;
+use Laminas\Form\Form;
+use Laminas\Validator\Callback;
 
 class ConfigForm extends Form
 {
@@ -49,7 +49,7 @@ class ConfigForm extends Form
                         'messages' => [
                             Callback::INVALID_VALUE => 'The provided sideload directory is not a directory or does not have sufficient permissions.', // @translate
                         ],
-                        'callback' => [$this, 'directoryIsValid']
+                        'callback' => [$this, 'directoryIsValid'],
                     ],
                 ],
             ],
