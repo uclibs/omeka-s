@@ -2,14 +2,20 @@
 
 namespace CSSEditor\Controller\Admin;
 
-use Zend\View\Model\ViewModel;
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\Form\Form;
+use Omeka\Mvc\Exception;
+use Laminas\View\Model\ViewModel;
+use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Form\Form;
 
 class IndexController extends AbstractActionController
 {
     public function indexAction()
     {
+        if (!$this->currentSite()->userIsAllowed('css-editor-modify')) {
+            throw new Exception\PermissionDeniedException(
+                'User does not have permission to edit CSS' // @translate
+            );
+        }
         $siteSettings = $this->siteSettings();
         $view = new ViewModel();
         $form = $this->getForm(Form::class);

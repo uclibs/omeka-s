@@ -1,8 +1,8 @@
 <?php
 namespace CSSEditor\Controller\Admin;
 
-use Zend\View\Model\ViewModel;
-use Zend\Mvc\Controller\AbstractActionController;
+use Laminas\View\Model\ViewModel;
+use Laminas\Mvc\Controller\AbstractActionController;
 
 class FormController extends AbstractActionController
 {
@@ -10,7 +10,7 @@ class FormController extends AbstractActionController
     {
         $site = $this->currentSite();
         $this->getRequest()->getQuery()->set('site_id', $site->id());
-        
+
         $view = new ViewModel;
         $view->setVariable('site', $site);
         return $view;
