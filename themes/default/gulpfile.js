@@ -3,7 +3,7 @@
 var gulp = require('gulp');
 
 gulp.task('css', function () {
-    var sass = require('gulp-sass');
+    var sass = require('gulp-sass')(require('sass'));
     var postcss = require('gulp-postcss');
     var autoprefixer = require('autoprefixer');
 
@@ -19,5 +19,5 @@ gulp.task('css', function () {
 });
 
 gulp.task('css:watch', function () {
-    gulp.watch('./asset/sass/*.scss', gulp.parallel('css'));
+    gulp.watch('./asset/sass/*.scss', gulp.series('css'));
 });
