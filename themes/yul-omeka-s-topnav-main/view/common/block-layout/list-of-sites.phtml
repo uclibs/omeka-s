@@ -1,0 +1,116 @@
+<?php
+// UTILITY FUNCTION
+
+function getExhibitThumb( $site_representation, $my_context )
+{
+	// Default to null
+	$thumbUrl = null;
+
+	// FIRST PRIORITY: Try to get a thumbnail from the theme settings
+	$themeSettings = $my_context->siteSetting('theme_settings_' . $site_representation->theme(), null, $site_representation->id());
+	try {
+		if (!is_null($themeSettings) AND key_exists('thumb', $themeSettings)):
+			$response = $my_context->api()->read('assets', $themeSettings['thumb']);
+			$thumbUrl = $response->getContent()->assetUrl();
+		endif;
+	} catch (Omeka\Api\Exception\NotFoundException $e) {
+		// Do nothing because we will have a fallback
+	}
+
+	if (is_null($thumbUrl)):
+		// SECOND and THIRD PRIORITIES: Get a thumbnail an associated Item Set
+		// get Item Sets (Item Set Representations) associated with this Site
+		$itemSets = $site_representation->siteItemSets();
+		// iterate through Item Set Representations
+		// may be 0, 1, or N
+		//
+		// Test for 0
+		if (count($itemSets) > 0):
+			foreach ($itemSets as $siteItemSetRepresentation):
+				// Make the Item Set object into a variable
+				$theItemSet = $siteItemSetRepresentation->itemSet();
+		
+				// :: When Item Set is not public but Site is. This breaks the instance.
+				// Proposed fix: Simple break and if there's no public Item Set, Site list
+				//     will fall back to default image. This does not account for a
+				//     situation in which multiple Item Sets are associated with a Site
+				//     and at least one Item Set is public.
+				// Need try/catch here because the call to isPublic() has no special
+				//     permissions and will therefore throw a
+				//     Doctrine/ORM/EntityNotFoundException if the Item Set is not public,
+				//     because it can't access the Item Set in order to check
+				//     its properties.
+				try {
+					if (!$theItemSet->isPublic()):
+						// If the Item Set is not public, execution shouldn't even reach 
+						// this point. But let's put the appropriate thing here just in case.
+						// Do nothing because we already have a fallback
+						break;
+					endif;
+				} catch (Doctrine\ORM\EntityNotFoundException $e) {
+					// Do nothing because we already have a fallback
+					break;
+				}
+
+				//
+				// Try to get declared thumbnail for each Item Set
+				$thumb = $theItemSet->thumbnail($theItemSet);
+				if ($thumb):
+					// Set the future thumbnail URI to be the asset's stored URI
+					$thumbUrl = $thumb->assetUrl();
+					// if there is a thumbnail ==> exit foreach, pursued by a bear
+					// functionally equivalent to testing for multiple?
+					break;
+				endif;
+
+				// Get primary media Representation for each Item Set Representation
+				// This is the primary media for the first Item (first Item added) 
+				// in the Item Set
+				// https://omeka.org/s/docs/developer/key_concepts/representations/#primary-media
+				// NB: "If there is no primary media for the resource, it returns `null`."
+				//
+				$myMedia = $theItemSet->primaryMedia();
+				if ($myMedia):
+					// Set the future thumbnail URI to be the Item Set's Item's Media's asset's stored URI
+					$thumbUrl = $myMedia->thumbnailUrl('square');
+					// if there is a primary media thumbnail ==> exit foreach, pursued by a bear
+					break;
+				endif;
+			endforeach;
+		endif;
+
+		// If there's *still* no thumbnail URL by this time . . .
+		if (is_null($thumbUrl)):
+			// FOURTH PRIORITY: Set fallback image markup
+			//	 Modulo the site ID to figure out which fallback thumbnail
+			//	 TODO: Work out how to make this work so there's low chance of accidental
+			//   streaks of the same image
+			$modInteger = (int)$site_representation->id() % 7;
+			$thumbUrl = $my_context->assetUrl('img/fallback-thumb-0'.$modInteger.'.jpg');
+		endif;
+	endif;
+	
+	return $thumbUrl;
+}
+?>
+<div class="list-of-sites">
+    <?php
+    // show pagination at top also if there are more than 2 sites per page
+    // CSS will handle suppressing top unless the screen is pretty small
+    if ($pagination and (count($sites) > 2)):
+        echo $this->pagination();
+    endif;
+    ?>
+    <div class="site-list">
+        <?php
+		foreach ($sites as $site):
+			echo $this->partial('common/site-list-entry', ['site' => $site, 'showSummary' => $summaries]);
+		endforeach;
+        ?>
+    </div>
+    <?php
+    if ($pagination):
+        echo $this->pagination();
+    endif;
+    ?>
+</div>

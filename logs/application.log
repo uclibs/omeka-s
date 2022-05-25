@@ -293,3 +293,29 @@ Stack trace:
 #14 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
 #15 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
 #16 {main}
+2022-05-24T17:38:15+00:00 ERR (3): Omeka\Mvc\Exception\PermissionDeniedException in /var/www/omekas/application/src/Controller/Admin/ModuleController.php:192
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\Admin\ModuleController->activateAction()
+#1 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#2 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#3 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#4 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#5 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#6 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#7 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#9 {main}
+2022-05-25T21:44:27+00:00 ERR (3): Error: Class 'Omeka-S-module-AdminPlus-main\Module' not found in /var/www/omekas/application/src/Module/Manager.php:368
+Stack trace:
+#0 /var/www/omekas/application/src/Module/Manager.php(239): Omeka\Module\Manager->getModuleObject(Object(Omeka\Module\Module))
+#1 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#2 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\Admin\ModuleController->installAction()
+#3 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#4 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#11 {main} {"userId":4}

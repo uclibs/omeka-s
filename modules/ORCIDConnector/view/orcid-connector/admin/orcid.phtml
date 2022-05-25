@@ -1,0 +1,42 @@
+<?php
+$orcid = "https://orcid.org/oauth/authorize?client_id=";
+$orcidConnectLink = $orcid .
+$orcid_client_id .
+'&response_type=code&scope=/authenticate&show_login=false&redirect_uri=' .
+$orcid_redirect_uri;
+?>
+
+<fieldset id='orcid_data' class='section'>
+
+<?php if (isset($orcid_researcher)): ?>
+    
+    <div class="show">
+        <div>
+        <?php
+        $researcherItem = $orcid_researcher->item();
+        echo $researcherItem->displayValues();
+        ?>
+        </div>
+        <?php echo $orcidRdfHtml; ?>
+    </div>
+    <?php if ($user->id() === $orcid_researcher->id()) : ?>
+
+    <?php else: ?>
+    <p><?php echo $this->translate('Only the ORCID iD owner may update data.'); ?></p>
+    <?php endif; ?>
+<?php else: ?>
+    <?php if ($user->id() === $identity->getId()) :?>
+    <a id="connect-orcid-link" href="<?php echo $orcidConnectLink; ?>">
+        <img id="orcid-id-logo" src="https://orcid.org/sites/default/files/images/orcid_16x16.png" width='16' height='16' alt="ORCID logo"/>
+        <?php echo $this->translate('Create or Connect your ORCID iD'); ?>
+    </a>
+    <?php else: ?>
+    <p><?php echo $this->translate('Only the owner of an Omeka S account can connect to their ORCID iD.')?></p>
+    <?php endif; ?>
+    
+    
+    
+    
+    <?php //echo $orcidConnectLink; ?>
+<?php endif; ?>
+</fieldset>
