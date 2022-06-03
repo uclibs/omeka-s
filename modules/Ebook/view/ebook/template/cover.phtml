@@ -1,0 +1,40 @@
+<?php
+/**
+ * @var \Laminas\View\Renderer\PhpRenderer $this
+ * @var array $data
+ */
+
+$translate = $this->plugin('translate');
+?>
+
+<h1 class="dcterms-title"><?= $data['dcterms:title'] ?></h1>
+<?php if ($data['dcterms:creator']): ?>
+<h2 class="dcterms-creator"><?= $data['dcterms:creator'] ?></h2>
+<?php endif; ?>
+
+<br />
+
+<?php if ($data['dcterms:description']): ?>
+<div class="dcterms-description"><?= $data['dcterms:description'] ?></div>
+<?php endif; ?>
+
+<?php if ($data['dcterms:publisher'] && $data['publisher_url']): ?>
+<p class="dcterms-publisher"><?= $this->hyperlink($data['dcterms:publisher'], $data['publisher_url']) ?></p>
+<?php elseif ($data['dcterms:publisher']): ?>
+<p class="dcterms-publisher"><?= $data['dcterms:publisher'] ?></p>
+<?php elseif ($data['publisher_url']): ?>
+<p class="dcterms-publisher"><?= $this->hyperlink($data['publisher_url'], $data['publisher_url']) ?></p>
+<?php endif; ?>
+
+<?php if ($data['dcterms:rights']): ?>
+<div class="dcterms-rights"><?= $data['dcterms:rights'] ?></div>
+<?php endif; ?>
+
+<?php if ($data['dcterms:subject']): ?>
+<div class="dcterms-subject">
+<p><?= $translate('Subjects') ?></p>
+<ul>
+    <li><?= implode("</li>\n    <li>", $data['dcterms:subject']); ?></li>
+</ul>
+</div>
+<?php endif; ?>
