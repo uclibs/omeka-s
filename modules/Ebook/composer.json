@@ -1,0 +1,75 @@
+{
+    "name": "daniel-km/omeka-s-module-ebook",
+    "description": "eBook creator (module for Omeka S)",
+    "type": "library",
+    "license": "CECILL-2.1",
+    "authors": [
+        {
+            "name": "Daniel Berthereau",
+            "email": "Daniel.packagist@Berthereau.net"
+        }
+    ],
+    "homepage": "https://gitlab.com/Daniel-KM/Omeka-S-module-Ebook",
+    "support": {
+        "issues": "https://gitlab.com/Daniel-KM/Omeka-S-module-Ebook/-/issues",
+        "forum": "https://forum.omeka.org/"
+    },
+    "keywords": [
+        "Omeka S",
+        "Omeka S module",
+        "ebook",
+        "epub",
+        "pdf",
+        "publishing",
+        "report",
+        "archiving"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Ebook\\": "src/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://gitlab.com/Daniel-KM/PHPePub"
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "futurepress/epubjs-reader",
+                "version": "0.3",
+                "type": "omeka-module-asset",
+                "dist": {
+                     "type": "zip",
+                     "url": "https://github.com/futurepress/epubjs-reader/archive/refs/heads/master.zip"
+                }
+            }
+        }
+    ],
+    "require": {
+        "futurepress/epubjs-reader": "0.3",
+        "gmo/iso-639": "^1.0",
+        "grandt/phpepub": "dev-master",
+        "oomphinc/composer-installers-extender": "^2.0",
+        "vanilla/htmlawed": "~1.0"
+    },
+    "extra": {
+        "installer-types": ["omeka-module-asset"],
+        "installer-paths": {
+            "asset/vendor/{$name}/": [
+                "type:omeka-module-asset",
+                "futurepress/epubjs-reader"
+            ]
+        }
+    },
+   "scripts": {
+        "post-install-cmd": "@build",
+        "post-update-cmd": "@build",
+        "build": [
+            "mv asset/vendor/epubjs-reader/reader asset/vendor/reader",
+            "rm -rf asset/vendor/epubjs-reader",
+            "mv asset/vendor/reader asset/vendor/epubjs-reader"
+        ]
+    }
+}

@@ -1,0 +1,21 @@
+<?php
+$summary = $showSummary ? $site->summary() : null;
+?>
+<div class="site">
+    <?php 
+	echo "<img src='".getExhibitThumb($site, $this)."' class='site-thumbnail' alt='' / >" . PHP_EOL;
+
+	echo "<details>" . PHP_EOL;
+	echo "	<summary>" . PHP_EOL;
+	// Then add the Site title as a link to the site    
+		echo $this->hyperlink($site->title(), $site->siteUrl(), ['class' => 'site-link']) . PHP_EOL; 
+	echo "	</summary>" . PHP_EOL;
+    ?>
+    <?php 
+    // If the Site has a description, show it, properly marked up
+    if ($summary):
+    ?>
+    <p class="site-summary"><?php echo nl2br($this->escapeHtml($summary)); ?></p>
+    <?php endif; ?>
+    </details>
+</div>

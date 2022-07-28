@@ -124,7 +124,7 @@ final class Versions
   'lsolesen/pel' => '0.9.10@04ecb8a29e4b1628414193b0df9294232a44f8a9',
   'ml/iri' => '1.1.4@cbd44fa913e00ea624241b38cefaa99da8d71341',
   'ml/json-ld' => '1.2.0@c74a1aed5979ed1cfb1be35a55a305fd30e30b93',
-  'omeka-s-themes/default' => 'dev-develop@1c1797c148e4705489507c4b0f1fbfc22fe25478',
+  'omeka-s-themes/default' => 'dev-develop@a203cbbf17c3df76c85dbd21c07d11909b1952d4',
   'omeka/composer-addon-installer' => '1.0@acaf7604e506ac3a4cba691e89e8e2527d0d8194',
   'paragonie/random_compat' => 'v9.99.99@84b4dfb120c6f9b4ff7b3685f9b8f1aa365a0c95',
   'psr/cache' => '1.0.1@d11b50ad223250cf17b86e38383413f5a6764bf8',
@@ -138,7 +138,7 @@ final class Versions
   'symfony/service-contracts' => 'v1.1.9@b776d18b303a39f56c63747bcb977ad4b27aca26',
   'true/punycode' => 'v2.1.1@a4d0c11a36dd7f4e7cd7096076cab6d3378a071e',
   'webimpress/safe-writer' => '2.1.0@5cfafdec5873c389036f14bf832a5efc9390dcdd',
-  'omeka/omeka-s' => 'v3.1.0@a81dd1ada330239cac169b2cecd6580580d7d3be',
+  'omeka/omeka-s' => 'v3.2.0@0bfc348afcdcb632fda90041859d998a0c92b689',
 );
 
     private function __construct()

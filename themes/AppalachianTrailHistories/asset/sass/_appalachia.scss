@@ -1,0 +1,402 @@
+/* @group ----- Basic HTML Elements ----- */
+
+body {
+  background-color: #f9ffed;
+}
+
+blockquote {
+  font-size: 1.5 * $global-font-size; 
+  border-left: 0;
+  background-color: $secondary-color;
+  padding: 2 * $global-padding;
+  margin: (2 * $global-margin) 0;
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  
+  &:before {
+    content: "";
+    position: absolute;
+    top: (-1 * $global-margin);
+    left: $global-margin;
+    bottom: (-1 * $global-margin);
+    right: 0;
+    background: url('../img/blaze.png') no-repeat left/contain;
+    opacity: .75;
+    z-index: -1;
+    transform: rotate(10deg);
+  }
+  
+  * {
+    position: relative;
+    z-index: 1;
+  }
+
+  p {
+     color: #000;
+     
+     &:last-child {
+       margin-bottom: 0;
+     }
+  }
+}
+
+img,
+a img {
+  border: 10px solid #000;
+  padding: $global-padding;
+  background-color: #fff;
+}
+
+/* #end */
+
+/* @group ----- Header ----- */
+
+header {
+  @include grid-row;
+  background-color: $light-gray;
+  text-align: center;
+  margin-bottom: $global-margin;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+header nav {
+  @include grid-column;
+  width: 100%;
+  font-family: $header-font-family;
+  text-transform: uppercase;
+  font-size: (1.125 * $global-font-size);
+  font-weight: 600;
+  padding: $global-padding;
+  position: relative;
+  z-index: 1;
+}
+
+header nav a {
+    color: $white;
+}
+
+header nav li ul {
+    display: none;
+}
+
+header .menu .active > a {
+    background-color: transparent;
+}
+
+header .menu {
+    justify-content: center;
+}
+
+header a.logo {
+    padding: (5 * $global-margin) ($global-margin);
+    background: url('../img/header.jpg') no-repeat center center/cover;
+    width: 100%;
+
+  &:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-color: rgba(21, 68, 1, 0.39);
+  }
+    
+    img {
+        position: relative;
+        z-index: 1;
+        max-height: (6 * $global-padding);
+        width: auto;
+        border: 0;
+        padding: 0;
+        background-color: transparent;
+    }
+}
+
+/* @end */
+
+/* @group ----- Main Content ----- */
+
+main {
+  @include grid-row;
+  padding: (2 * $global-padding) 0;
+}
+
+/* @end */
+
+/* @group ----- Footer ----- */
+
+footer {
+  background-color: $alert-color;
+  padding: (2 * $global-padding) 0;
+  color: #fff;
+
+  nav {
+    @include grid-row;
+  }
+}
+
+/* @end */
+
+/* @group ----- Omeka ----- */
+
+#search-form {
+  display: flex;
+}
+
+.resource-list {
+  margin: ($global-margin) 0
+}
+
+.resource-list .media-object {
+  margin: (3 * $global-margin) 0;
+}
+
+.resource-list .media-object-section:first-child {
+  width: 30%;
+  text-align: center;
+}
+
+.resource-list .media-object-section:last-child {
+  width: 70%;
+}
+
+.advanced-search,
+.search-filters {
+  display: none;
+}
+
+.blocks > h2:first-child {
+  margin-bottom: (2 * $global-margin);
+}
+
+.blocks .file {
+  text-align: center;
+}
+
+.blocks .medium.file {
+  max-width: 25%;
+}
+
+.blocks .large.file {
+  max-width: 30%;
+  
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+.left.file {
+  float: left;
+  margin: 0 (2 * $global-margin) (2 * $global-margin) 0;
+}
+
+.right.file {
+  float: right;
+  margin: 0 0 (2 * $global-margin) (2 * $global-margin);
+}
+
+.file h3 {
+  font-size: $global-font-size;
+}
+
+.file img {
+  margin-bottom: (.5 * $global-margin);
+}
+
+.site-page-pagination {
+  display: flex;
+  justify-content: center;
+  clear: both;
+}
+
+.site-page-pagination a {
+  background-color: $warning-color;
+  color: $alert-color;
+  font-family: $header-font-family;
+  font-weight: 900;
+  padding: (.5 * $global-padding) ($global-padding);
+  font-size: 1.25 * $global-font-size;
+  position: relative;
+  
+  &.previous {
+    margin-left: (.75 * $global-padding);    
+  }
+  
+  &.previous:before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-right: (.75 * $global-padding) solid $warning-color;
+    border-top: (1.425 * $global-padding) solid transparent;
+    border-bottom: (1.425 * $global-padding) solid transparent;
+    position: absolute;
+    right: 100%;
+    top: 0;
+  }
+  
+  &.next {
+    margin-right: (.75 * $global-padding);
+  }
+  
+  &.next:after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: (.75 * $global-padding) solid $warning-color;
+    border-top: (1.425 * $global-padding) solid transparent;
+    border-bottom: (1.425 * $global-padding) solid transparent;
+    position: absolute;
+    left: 100%;
+    top: 0;
+  }
+}
+
+.sub-menu {
+  background: $warning-color;
+  padding: $global-padding;
+  margin: 0 0 (3 * $global-margin) ($global-margin);
+  position: relative;
+  width: 25vw;
+  text-align: center;
+  float: right;
+  
+  &:before {
+    content: "";
+    background: url('../img/at-mark.png') no-repeat center center/50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    opacity: .25;
+  }
+  
+  &:after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 12.5vw solid transparent;
+    border-right: 12.5vw solid transparent;
+    border-top: (2 * $global-padding) solid $warning-color;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+  }
+  
+  * {
+    position: relative;
+    z-index: 1;
+  }
+  
+  h3 {
+    text-transform: uppercase;
+    font-weight: 400;
+    font-size: (1.125 * $global-font-size);
+    letter-spacing: 1px;
+    margin-bottom: $global-margin;
+    background-color: transparentize($alert-color, .7);
+    padding: (.5 * $global-padding);
+  }
+
+  ul {
+    padding: 0;
+    list-style: none;
+    margin: 0;
+  }
+  
+  a {
+      color: $alert-color;
+      font-family: $header-font-family;
+  }
+  
+  li:not(:last-child) {
+    border-bottom: 1px solid $alert-color;
+    padding-bottom: (.5 * $global-padding);
+    margin-bottom: (.5 * $global-margin);
+  }
+}
+
+.browse-controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pagination,
+.sorting {
+  max-width: 40%;
+}
+
+.pagination a, 
+.pagination .button {
+  color: #fff;
+}
+
+.pagination-previous a:before, 
+.pagination-previous.disabled:before {
+  content: "\f104";
+  margin-right: 0;
+}
+
+.pagination .disabled,
+.pagination a:before {
+  padding: $button-padding;
+}
+
+.pagination a.button {
+  padding: 0;
+}
+
+.pagination-next a:before, 
+.pagination-next.disabled:before {
+  content: "\f105";
+  margin-right: 0;
+}
+
+/* @end */
+
+/* @group ----- Foundation Overrides ----- */
+
+::placeholder {
+  color: #333;
+}
+
+.thumbnail {
+  border: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+.input-group-field {
+  height: 100%;
+}
+
+.input-group-label {
+  background: transparent;
+  border: 0;
+}
+
+.input-group .input-group,
+.input-group .button,
+.input-group select {
+  margin-bottom: 0;
+  height: auto;
+}
+
+.primary.button {
+  color: #fff;
+}
+
+.top-bar, 
+.top-bar ul {
+  background-color: $success-color;
+}
+
+/* @end */

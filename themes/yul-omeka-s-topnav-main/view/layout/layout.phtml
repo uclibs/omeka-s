@@ -1,0 +1,130 @@
+<?php
+$escape = $this->plugin('escapeHtml');
+$style_switcher = $this->themeSetting('style_switcher');
+$this->htmlElement('html')->setAttribute('lang', $this->lang());
+$this->headMeta()->setCharset('utf-8');
+$this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1');
+$this->headTitle($this->setting('installation_title', 'Omeka S'))->setSeparator(' · ');
+$this->headLink()->prependStylesheet($this->assetUrl('css/fonts.css'));
+if (isset($style_switcher)) {
+	if ($style_switcher == "default" OR $style_switcher == "mrc" ) {
+	    $this->headLink()->appendStylesheet($this->assetUrl("css/default.css"));
+	}
+	if ($style_switcher == "classic" OR $style_switcher == "style" ) {
+	    $this->headLink()->appendStylesheet($this->assetUrl("css/classic.css"));
+	}
+} else {
+	$this->headLink()->appendStylesheet($this->assetUrl('css/default.css'));
+}
+$this->headLink()->prependStylesheet($this->assetUrl('css/iconfonts.css', 'Omeka'));
+$this->headLink()->prependStylesheet('//fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic,700italic,700');
+$this->headScript()->prependFile($this->assetUrl('js/default.js'));
+$this->headScript()->prependFile($this->assetUrl('js/global.js', 'Omeka'));
+$this->headScript()->prependFile($this->assetUrl('vendor/jquery/jquery.min.js', 'Omeka'));
+//
+// BEGIN slider files & script
+// https://bxslider.com/
+//
+$this->headLink()->prependStylesheet("https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css");
+$this->headScript()->appendFile("https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js");
+$sliderScript = "$(document).ready(function(){
+      $('.slider').bxSlider({
+      	auto: true
+      });
+    });";
+$this->headScript()->appendScript($sliderScript);
+//
+// END slider files & script
+//
+$this->trigger('view.layout');
+$title = $this->pageTitle($site->title());
+$logo = $this->themeSettingAssetUrl('logo');
+if ($logo):
+    $title = '<img src="' . $this->escapeHtml($logo) . '">';
+endif;
+$userBar = $this->userBar();
+?>
+<?php echo $this->doctype(); ?>
+<?php echo $this->htmlElement('html'); ?>
+    <head>
+        <?php echo $this->headMeta(); ?>
+        <?php echo $this->headTitle(); ?>
+        <?php echo $this->headLink(); ?>
+        <?php echo $this->headStyle(); ?>
+        <?php echo $this->headScript(); ?>
+    </head>
+	<a href="#content" class="skip">Skip to main content</a>
+    <?php echo $this->htmlElement('body'); ?>
+        <?php echo $userBar; ?>
+
+        <header>
+            <div id="primary-nav">
+            	<a href="/" class="site-title sitelogo"><img src="<?php echo $this->assetUrl("img/exhibitionlogo.png") ?>" alt="[logo alt text]" title="[logo title]" /></a>
+				<ul class="universal-nav">
+					<li><a href="#">Home Page Destination Name</a></li>
+				</ul>
+				<?php
+				$headerContent = $this->themeSetting('header');
+				$headerAltText = $this->themeSetting('header_alt_text');
+				if ($headerAltText):
+					$headerAltText = ' alt="' . $headerAltText . '"';
+				else:
+					$headerAltText = ' alt=""';
+				endif;
+				if ($headerContent):
+					echo "<img src=" . $this->themeSettingAssetUrl('header') . " class='header-image'".$headerAltText.">";
+				endif;
+				?>
+				<?php
+				// YUL suppresses the search bar in Site for browsing all exhibits,
+				// but does it by checking for the known slug of our site for browsing
+				// exhibits. We don't know what your slug is, but have left the control
+				// structure in place in case you want to use it.
+				if ($site->slug() != "browse-yul-exhibits"):
+				?>
+				<div id="search">
+					<?php echo $this->partial('common/search-form'); ?>
+				</div>
+				<div class="spacer"></div>
+				<?php
+				endif;
+				?>
+            </div>
+			<?php echo $this->pageTitle($site->title()); ?>
+			<?php
+			// YUL suppresses the nav bar in Site for browsing all exhibits,
+			// but does it by checking for the known slug of our site for browsing
+			// exhibits. We don't know what your slug is, but have left the control
+			// structure in place in case you want to use it.
+			if ($site->slug() != "browse-yul-exhibits"):
+			?>
+			<nav>
+				<?php
+				echo $site->publicNav()->menu()->renderMenu(null, [
+					'maxDepth' => $this->themeSetting('nav_depth') - 1
+				]);
+				?>
+			</nav>
+			<?php
+			endif;
+			?>
+        </header>
+        <div id="content" role="main">
+            <?php echo $this->content; ?>
+        </div>
+        <footer>
+		<div id="footer-content">
+			[Organizational Name] &nbsp; Copyright &copy; 2019 <br />
+			<nav>
+			<ul>
+				<li>Privacy Policy •</li>
+				<li>Terms Governing Use •</li>
+				<li>Data Use •</li>
+				<li>Accessibility</li>
+			</ul>
+			</nav>
+			<a href="/admin">Admin Dashboard</a>
+		</div>
+        </footer>
+    </body>
+</html>

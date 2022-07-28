@@ -1,0 +1,53 @@
+<?php
+
+// As the stylesheet stack is empty by default, the use of append vs. prepend is
+// irrelevant in this context.
+$this->headLink()->appendStylesheet($this->assetUrl('css/iconfonts.css'));
+$this->headLink()->appendStylesheet($this->assetUrl('css/vendor/normalize.css'));
+$this->headLink()->appendStylesheet($this->assetUrl('css/style.css'));
+
+// Second argument specifies to load a built-in Omeka-S stylesheet.
+// These styles are required to support alignments of media-embeds within page blocks.
+$this->headLink()->appendStylesheet($this->assetUrl('css/page-blocks.css', 'Omeka'));
+
+$this->headLink(['rel' => 'icon', 'href' => $this->assetUrl('img/pulse_logo.png')]);
+
+// Masonry 4.2.2.
+$this->headScript()->appendFile($this->assetUrl('js/vendor/masonry.js'));
+$this->headScript()->appendFile($this->assetUrl('js/utility.js'));
+$this->headScript()->appendFile($this->assetUrl('js/reanimated.js'));
+?>
+
+<?= $this->doctype() ?>
+
+<html>
+  <head>
+    <?= $this->headLink() ?>
+    <?= $this->headScript() ?>
+  </head>
+
+  <body>
+    <div class="rdt-page">
+    <header>
+      <div class="rdt-site-title">
+        <h1><?= $site->title() ?></h1>
+      </div>
+      <div class="rdt-search">
+        <?= $this->partial('common/search-form') ?>
+      </div>
+    </header>
+
+
+    <div class="rdt-container">
+       <div class="rdt-navigation-menu">
+         <?= $site->publicNav()->menu() ?>
+       </div>
+             
+       <div class="rdt-main-content">
+         <?= $this->content ?>
+       </div>
+    </div>
+
+    </div>
+  </body>
+</html>
