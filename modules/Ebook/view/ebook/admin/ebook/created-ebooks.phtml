@@ -1,0 +1,53 @@
+<?php
+/**
+ * @var \Laminas\View\Renderer\PhpRenderer $this
+ * @var array $ebooks
+ * @var array $urlRead
+ */
+
+$translate = $this->plugin('translate');
+$escape = $this->plugin('escapeHtml');
+$hyperlink = $this->plugin('hyperlink');
+
+$this->htmlElement('body')->appendAttribute('class', 'ebook created-ebooks');
+?>
+
+<?= $this->pageTitle($translate('Ebooks'), 1, $translate('Created ebooks')) ?>
+
+<label>
+    <?= $escape($translate('List of all past created ebooks')) ?>
+</label>
+
+<table class="tablesaw" data-tablesaw-mode="stack">
+    <thead>
+        <tr>
+            <th><?= $escape($translate('Job')) ?></th>
+            <th><?= $escape($translate('Status')) ?></th>
+            <th><?= $escape($translate('Started')) ?></th>
+            <th><?= $escape($translate('Ended')) ?></th>
+            <th><?= $escape($translate('Ebook link')); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+
+    <?php foreach ($ebooks as $ebook): ?>
+        <tr>
+            <td>
+                <?= '#' . $ebook['job_id']; ?>
+                <?= $hyperlink($translate('details'), $this->url('admin/id', ['controller' => 'job', 'action' => 'show', 'id' => $ebook['job_id']])) ?>
+            </td>
+            <td><?= $ebook['status'] ?></td>
+            <td><?= $ebook['started'] ?></td>
+            <td><?= $ebook['ended'] ?></td>
+            <td>
+                <?php if ($ebook['resource_data']): ?>
+                    <?= $hyperlink($translate('Download'), $this->basePath() . '/' . $ebook['resource_data']) ?>
+                /
+                    <?= $hyperlink($translate('Read it'), $urlRead . $this->basePath() . '/' . $ebook['resource_data'], ['target' => '_blank']) ?>
+                <?php endif; ?>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+
+    </tbody>
+</table>

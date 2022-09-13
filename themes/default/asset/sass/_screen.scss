@@ -139,27 +139,19 @@ select {
     flex-wrap: wrap;
 }
 
-.field .field-meta {
-    width: 30%;
-    padding: $spacing-s gutter() 0 0;
+.field .inputs input[type="checkbox"] {
+    vertical-align: bottom;
 }
 
-.field .inputs {
-    width: 70%;
-    padding-left: gutter();
+.field .field-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
 
-    & > select,
-    & > textarea,
-    & > input[type="text"],
-    & > input[type="password"],
-    & > input[type="email"],
-    & > input[type="url"] {
-        width: 100%;
-    }
-
-    input[type="checkbox"] {
-        vertical-align: bottom;
-    }
+.field.multi-value .label,
+.field.multi-value .field-description {
+    margin-right: $spacing-s;
 }
 
 .field.required .field-meta:after {
@@ -174,6 +166,14 @@ select {
 
 .field-description {
     font-size: .75 * $base-font-size;
+}
+
+.field .inputs {
+    width: 100%;
+}
+
+.field .value * {
+    max-width: 100%;
 }
 
 /* @end */
@@ -415,10 +415,11 @@ nav.pagination {
 
 /* @group ----- Header ----- */
 
-.site-title h1 {
+h1.site-title {
     font-size: 1.25 * $base-font-size;
     line-height: $base-line-height;
-    padding-right: $base-line-height;
+    padding-right: 1.5 * $base-line-height;
+    padding-left: gutter();
 }
 
 header {
@@ -429,8 +430,7 @@ header {
 
     & > * {
         @include container;
-        padding: 0 gutter();
-        display: block;
+         display: block;
     }
 }
 
@@ -485,6 +485,18 @@ button.o-icon-search {
         text-indent: 0;
         line-height: 1.5 * $base-line-height;
     }
+}
+
+.banner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.banner img {
+    width: 100%;
 }
 
 /* @end */
@@ -614,6 +626,32 @@ ul.resource-list .resource img ~ * {
 
 /* @group ----- Show ----- */
 
+.expand:after,
+.collapse:after {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+}
+
+.expand:after {
+    content: "\f0da";
+}
+
+.collapse:after {
+    content: "\f0d7"
+}
+
+.collapsible {
+    display: none;
+}
+
+.collapse + .collapsible {
+    display: block;
+    border-left: 3px solid $gray;
+    padding: $spacing-s $spacing-l;
+    margin: $spacing-m 0;
+    width: 100%;
+}
+
 body.resource #content > h2:first-of-type + h3 {
     font-size: .75 * $base-font-size;
     text-transform: uppercase;
@@ -622,11 +660,33 @@ body.resource #content > h2:first-of-type + h3 {
 
 .property {
     margin-bottom: $spacing-l;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
 }
 
 .property h4 {
     margin-bottom: 0;
     font-size: .75 * $base-font-size;
+
+    &:first-child {
+        margin-top: 0;
+    }
+}
+
+.value {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    &:not(:last-child) {
+        margin-bottom: $spacing-m;
+    }
+}
+
+.value-content:not(:only-child) {
+    margin-right: $spacing-s;
 }
 
 .resource-link img {
@@ -652,14 +712,24 @@ body.resource #content > h2:first-of-type + h3 {
 
 .property .value .language {
     background-color: lighten($gray, 15%);
-    padding: .5 * $spacing-s;
-    font-size: .5 * $base-font-size;
+    padding: 0 $spacing-s;
+    font-size: .75 * $base-font-size;
+    margin-right: $spacing-s;
 }
 
 .property .private:after {
     content: "\f070";
     font-family: "Font Awesome 5 Free";
     font-size: .75 * $base-font-size;
+}
+
+.media-list .resource-link {
+    width: 100%;
+    display: block;
+
+    &:not(:last-child) {
+        margin-bottom: $spacing-m;
+    }
 }
 
 #content .media.resource {
@@ -708,20 +778,9 @@ body.resource #content > h2:first-of-type + h3 {
 }
 
 .remove-value {
-    text-indent: -9999px;
     position: relative;
     width: 1.5 * $spacing-l;
     margin-left: $spacing-s;
-
-    &:before {
-        text-indent: 0;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        line-height: 1.5 * $base-line-height;
-    }
 }
 
 /* @end */
@@ -793,6 +852,10 @@ body.resource #content > h2:first-of-type + h3 {
   margin-bottom: $spacing-s;
   padding-bottom: $spacing-s;
   border-bottom: 1px solid $gray;
+}
+
+.items.search #search {
+    display: none;
 }
 
 /* @end */

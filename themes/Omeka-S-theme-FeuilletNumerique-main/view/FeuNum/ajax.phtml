@@ -1,0 +1,19 @@
+<?php
+error_reporting(E_ERROR | E_WARNING | E_PARSE);
+$type = $this->params()->fromQuery('type','');
+$log = $this->logger();
+
+switch ($type) {
+    case 'savePosi':
+    case 'getPosis':
+        $user = $this->identity();
+        $posi = $this->CartoAffectFactory(['user'=>$user,'post'=>$this->params()->fromPost(),'query'=>$this->params()->fromQuery()]);
+        echo $this->json($posi);                
+    break;
+}
+
+
+?>
+
+
+
