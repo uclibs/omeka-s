@@ -39,7 +39,7 @@ See the [user manual](https://omeka.org/s/docs/user-manual) for more information
 You can find Omeka-specific code under `application/`.
 
 ## Updating
-*Before updating, deactivate all modules!*
+
 *Make a backup copy of your entire site and its database!*
 
 ### Updating from GitHub
