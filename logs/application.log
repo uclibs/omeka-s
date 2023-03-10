@@ -1,0 +1,295 @@
+2022-05-20T21:40:48+00:00 ERR (3): PDOException: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php:132
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(132): PDO->query('CREATE TABLE va...')
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOQueryImplementation.php(36): Doctrine\DBAL\Driver\PDOConnection->doQuery('CREATE TABLE va...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1437): Doctrine\DBAL\Driver\PDOConnection->query('CREATE TABLE va...')
+#3 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#4 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#5 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#13 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#14 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#15 {main}
+
+Next Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDO/Exception.php:18
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(134): Doctrine\DBAL\Driver\PDO\Exception::new(Object(PDOException))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOQueryImplementation.php(36): Doctrine\DBAL\Driver\PDOConnection->doQuery('CREATE TABLE va...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1437): Doctrine\DBAL\Driver\PDOConnection->query('CREATE TABLE va...')
+#3 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#4 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#5 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#13 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#14 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#15 {main}
+
+Next Doctrine\DBAL\Exception\TableExistsException: An exception occurred while executing 'CREATE TABLE value_annotation (id INT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;':
+
+SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractMySQLDriver.php:57
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(182): Doctrine\DBAL\Driver\AbstractMySQLDriver->convertException('An exception oc...', Object(Doctrine\DBAL\Driver\PDO\Exception))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(159): Doctrine\DBAL\DBALException::wrapException(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'An exception oc...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(2214): Doctrine\DBAL\DBALException::driverExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE va...', Array)
+#3 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1439): Doctrine\DBAL\Connection->handleExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE va...')
+#4 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#5 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#6 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#7 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#14 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#15 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#16 {main}
+2022-05-20T21:41:05+00:00 ERR (3): PDOException: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php:132
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(132): PDO->query('CREATE TABLE va...')
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOQueryImplementation.php(36): Doctrine\DBAL\Driver\PDOConnection->doQuery('CREATE TABLE va...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1437): Doctrine\DBAL\Driver\PDOConnection->query('CREATE TABLE va...')
+#3 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#4 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#5 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#13 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#14 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#15 {main}
+
+Next Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDO/Exception.php:18
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(134): Doctrine\DBAL\Driver\PDO\Exception::new(Object(PDOException))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOQueryImplementation.php(36): Doctrine\DBAL\Driver\PDOConnection->doQuery('CREATE TABLE va...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1437): Doctrine\DBAL\Driver\PDOConnection->query('CREATE TABLE va...')
+#3 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#4 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#5 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#13 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#14 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#15 {main}
+
+Next Doctrine\DBAL\Exception\TableExistsException: An exception occurred while executing 'CREATE TABLE value_annotation (id INT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;':
+
+SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractMySQLDriver.php:57
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(182): Doctrine\DBAL\Driver\AbstractMySQLDriver->convertException('An exception oc...', Object(Doctrine\DBAL\Driver\PDO\Exception))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(159): Doctrine\DBAL\DBALException::wrapException(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'An exception oc...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(2214): Doctrine\DBAL\DBALException::driverExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE va...', Array)
+#3 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1439): Doctrine\DBAL\Connection->handleExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE va...')
+#4 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#5 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#6 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#7 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#14 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#15 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#16 {main}
+2022-05-20T21:50:47+00:00 ERR (3): PDOException: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php:132
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(132): PDO->query('CREATE TABLE va...')
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOQueryImplementation.php(36): Doctrine\DBAL\Driver\PDOConnection->doQuery('CREATE TABLE va...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1437): Doctrine\DBAL\Driver\PDOConnection->query('CREATE TABLE va...')
+#3 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#4 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#5 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#13 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#14 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#15 {main}
+
+Next Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDO/Exception.php:18
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(134): Doctrine\DBAL\Driver\PDO\Exception::new(Object(PDOException))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOQueryImplementation.php(36): Doctrine\DBAL\Driver\PDOConnection->doQuery('CREATE TABLE va...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1437): Doctrine\DBAL\Driver\PDOConnection->query('CREATE TABLE va...')
+#3 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#4 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#5 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#13 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#14 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#15 {main}
+
+Next Doctrine\DBAL\Exception\TableExistsException: An exception occurred while executing 'CREATE TABLE value_annotation (id INT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;':
+
+SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractMySQLDriver.php:57
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(182): Doctrine\DBAL\Driver\AbstractMySQLDriver->convertException('An exception oc...', Object(Doctrine\DBAL\Driver\PDO\Exception))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(159): Doctrine\DBAL\DBALException::wrapException(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'An exception oc...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(2214): Doctrine\DBAL\DBALException::driverExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE va...', Array)
+#3 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1439): Doctrine\DBAL\Connection->handleExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE va...')
+#4 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#5 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#6 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#7 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#14 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#15 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#16 {main}
+2022-05-24T15:48:03+00:00 ERR (3): PDOException: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php:132
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(132): PDO->query('CREATE TABLE va...')
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOQueryImplementation.php(36): Doctrine\DBAL\Driver\PDOConnection->doQuery('CREATE TABLE va...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1437): Doctrine\DBAL\Driver\PDOConnection->query('CREATE TABLE va...')
+#3 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#4 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#5 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#13 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#14 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#15 {main}
+
+Next Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDO/Exception.php:18
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(134): Doctrine\DBAL\Driver\PDO\Exception::new(Object(PDOException))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOQueryImplementation.php(36): Doctrine\DBAL\Driver\PDOConnection->doQuery('CREATE TABLE va...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1437): Doctrine\DBAL\Driver\PDOConnection->query('CREATE TABLE va...')
+#3 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#4 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#5 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#13 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#14 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#15 {main}
+
+Next Doctrine\DBAL\Exception\TableExistsException: An exception occurred while executing 'CREATE TABLE value_annotation (id INT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;':
+
+SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractMySQLDriver.php:57
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(182): Doctrine\DBAL\Driver\AbstractMySQLDriver->convertException('An exception oc...', Object(Doctrine\DBAL\Driver\PDO\Exception))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(159): Doctrine\DBAL\DBALException::wrapException(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'An exception oc...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(2214): Doctrine\DBAL\DBALException::driverExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE va...', Array)
+#3 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1439): Doctrine\DBAL\Connection->handleExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE va...')
+#4 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#5 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#6 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#7 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#14 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#15 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#16 {main}
+2022-05-24T15:50:41+00:00 ERR (3): PDOException: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php:132
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(132): PDO->query('CREATE TABLE va...')
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOQueryImplementation.php(36): Doctrine\DBAL\Driver\PDOConnection->doQuery('CREATE TABLE va...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1437): Doctrine\DBAL\Driver\PDOConnection->query('CREATE TABLE va...')
+#3 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#4 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#5 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#13 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#14 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#15 {main}
+
+Next Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDO/Exception.php:18
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(134): Doctrine\DBAL\Driver\PDO\Exception::new(Object(PDOException))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOQueryImplementation.php(36): Doctrine\DBAL\Driver\PDOConnection->doQuery('CREATE TABLE va...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1437): Doctrine\DBAL\Driver\PDOConnection->query('CREATE TABLE va...')
+#3 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#4 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#5 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#13 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#14 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#15 {main}
+
+Next Doctrine\DBAL\Exception\TableExistsException: An exception occurred while executing 'CREATE TABLE value_annotation (id INT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;':
+
+SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'value_annotation' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractMySQLDriver.php:57
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(182): Doctrine\DBAL\Driver\AbstractMySQLDriver->convertException('An exception oc...', Object(Doctrine\DBAL\Driver\PDO\Exception))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(159): Doctrine\DBAL\DBALException::wrapException(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'An exception oc...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(2214): Doctrine\DBAL\DBALException::driverExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE va...', Array)
+#3 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1439): Doctrine\DBAL\Connection->handleExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE va...')
+#4 /var/www/omekas/application/data/migrations/20210810083804_AddValueAnnotation.php(11): Doctrine\DBAL\Connection->query('CREATE TABLE va...')
+#5 /var/www/omekas/application/src/Db/Migration/Manager.php(80): Omeka\Db\Migrations\AddValueAnnotation->up(Object(Doctrine\DBAL\Connection))
+#6 /var/www/omekas/application/src/Controller/MigrateController.php(38): Omeka\Db\Migration\Manager->upgrade()
+#7 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(77): Omeka\Controller\MigrateController->indexAction()
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(103): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(139): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(321): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(178): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#14 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(331): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#15 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#16 {main}
