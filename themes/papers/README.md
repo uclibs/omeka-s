@@ -28,3 +28,16 @@ Like Omeka S itself and many of its themes, the "Papers" theme manages its style
 ### Theme Configuration and Scripto
 
 An important note: because Scripto is totally controlled with CSS, it cannot interact with theme options in a site theme, like user-set image assets or colors. If you plan on using custom backgrounds or logos for a site theme alongside a Scripto theme, save the images to a folder within your site theme and reference them using relative paths accordingly. Theme colors and styles will have to be implemented within the `papers.css` file in Scripto.
+
+## Copyright
+Papers is Copyright © 2019-present Corporation for Digital Scholarship, Vienna, Virginia, USA http://digitalscholar.org
+
+The Corporation for Digital Scholarship distributes the Omeka source code
+under the GNU General Public License, version 3 (GPLv3). The full text
+of this license is given in the license file.
+
+The Omeka name is a registered trademark of the Corporation for Digital Scholarship.
+
+Third-party copyright in this distribution is noted where applicable.
+
+All rights not expressly granted are reserved.

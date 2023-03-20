@@ -24,7 +24,7 @@ class ResourceTemplatePropertyDataRepresentation extends AbstractRepresentation
         $this->resource = $rtpData;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         // This is not a json-ld resource, so no need to encapsulate it.
         return $this->data();
@@ -68,7 +68,7 @@ class ResourceTemplatePropertyDataRepresentation extends AbstractRepresentation
                 $params = array_filter(array_map('trim', explode("\n", trim($meta))), 'strlen');
                 $list = [];
                 foreach ($params as $keyValue) {
-                    list($key, $value) = strpos($keyValue, '=') === false
+                    [$key, $value] = strpos($keyValue, '=') === false
                         ? [$keyValue, null]
                         : array_map('trim', explode('=', $keyValue, 2));
                     if ($key !== '') {
@@ -144,5 +144,10 @@ class ResourceTemplatePropertyDataRepresentation extends AbstractRepresentation
     public function isPrivate(): bool
     {
         return (bool) $this->dataValue('o:is_private');
+    }
+
+    public function defaultLang(): ?string
+    {
+        return $this->dataValue('o:default_lang');
     }
 }

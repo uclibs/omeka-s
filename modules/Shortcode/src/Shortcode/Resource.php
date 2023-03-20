@@ -3,7 +3,9 @@
 namespace Shortcode\Shortcode;
 
 use Omeka\Api\Exception\NotFoundException;
+use Omeka\Api\Representation\AbstractEntityRepresentation;
 use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
+use Omeka\Api\Representation\AssetRepresentation;
 use Omeka\Api\Representation\MediaRepresentation;
 
 class Resource extends AbstractShortcode
@@ -71,6 +73,13 @@ class Resource extends AbstractShortcode
             } catch (NotFoundException $e) {
                 return '';
             }
+        } elseif ($resourceNameFromShortcode === 'assets') {
+            try {
+                /** @var \Omeka\Api\Representation\AssetRepresentation $resource */
+                $resource = $this->view->api()->read('assets', ['id' => $args['id']])->getContent();
+            } catch (NotFoundException $e) {
+                return '';
+            }
         } else {
             try {
                 /** @var \Omeka\Api\Representation\AbstractResourceEntityRepresentation $resource */
@@ -114,13 +123,15 @@ class Resource extends AbstractShortcode
             }
         }
 
+        if ($this->shortcodeName === 'image' && empty($args['player'])) {
+            $args['player'] = 'image';
+        }
+
         $player = null;
         if (isset($args['player'])) {
             $args['player'] = lcfirst($args['player']);
-            if ($args['player'] === 'default') {
-                return $resourceName === 'media'
-                    ? $this->renderMedia($resource, $args)
-                    : '';
+            if ($args['player'] === 'default' || $args['player'] === 'image') {
+                return $this->renderMedia($resource, $args);
             }
             $plugins = $this->view->getHelperPluginManager();
             if ($plugins->has($args['player'])) {
@@ -146,6 +157,7 @@ class Resource extends AbstractShortcode
 
         $resourceTemplates = [
             'annotations' => 'annotation',
+            'assets' => 'asset',
             'items' => 'item',
             'item_sets' => 'item-set',
             'media' => 'media',
@@ -171,30 +183,32 @@ class Resource extends AbstractShortcode
         ]);
     }
 
-    protected function urlResource(AbstractResourceEntityRepresentation $resource, array $args): ?string
+    protected function urlResource(AbstractEntityRepresentation $resource, array $args): ?string
     {
         if ($resource instanceof MediaRepresentation && isset($args['file'])) {
             // TODO Use $resource->thumbnailDisplayUrl($type) (but not use often when we want file).
             return $args['file'] === 'original'
                 ? $resource->originalUrl()
                 : $resource->thumbnailUrl($args['file']);
+        } elseif ($resource instanceof AssetRepresentation) {
+            // Asset has no public page, so use the url to the file.
+            return $resource->assetUrl();
         }
         return $resource->url(null, true);
     }
 
-    protected function renderUrl(AbstractResourceEntityRepresentation $resource, array $args): string
+    protected function renderUrl(AbstractEntityRepresentation $resource, array $args): string
     {
         $resourceUrl = $this->urlResource($resource, $args);
         if (!$resourceUrl) {
             return '';
         }
-        $span = empty($args['span']) ? false : $this->view->escapeHtmlAttr($args['span']);
-        return $span
-            ? '<span class="' . $span . '">' . $resourceUrl . '</span>'
+        return array_key_exists('span', $args)
+            ? $this->wrapSpan($resourceUrl, $args['span'])
             : $resourceUrl;
     }
 
-    protected function renderLink(AbstractResourceEntityRepresentation$resource, array $args): string
+    protected function renderLink(AbstractEntityRepresentation$resource, array $args): string
     {
         $resourceUrl = $this->urlResource($resource, $args);
         if (!$resourceUrl) {
@@ -204,7 +218,6 @@ class Resource extends AbstractShortcode
         $plugins = $this->view->getHelperPluginManager();
         $escape = $plugins->get('escapeHtml');
         $hyperlink = $plugins->get('hyperlink');
-        $escapeAttr = $plugins->get('escapeHtmlAttr');
 
         $displayTitle = method_exists($resource, 'displayTitle')
             ? $resource->displayTitle()
@@ -224,17 +237,18 @@ class Resource extends AbstractShortcode
             $attributes['type'] = $args['file'] === 'original'
                 ? $resource->mediaType()
                 : 'image/jpeg';
+        } elseif ($resource instanceof AssetRepresentation) {
+            $attributes['type'] = $resource->mediaType();
         }
 
         $link = $hyperlink->raw($escape($title), $resourceUrl, $attributes);
 
-        $span = empty($args['span']) ? false : $escapeAttr($args['span']);
-        return $span
-            ? '<span class="' . $span . '">' . $link . '</span>'
+        return array_key_exists('span', $args)
+            ? $this->wrapSpan($link, $args['span'])
             : $link;
     }
 
-    protected function renderMedia(MediaRepresentation $resource, array $args): string
+    protected function renderMedia(AbstractResourceEntityRepresentation $resource, array $args): string
     {
         //  This is the type of thumbnail, that is rendered and converted into a
         // class in Omeka Classic.
@@ -255,8 +269,19 @@ class Resource extends AbstractShortcode
         } elseif (isset($args['size'])) {
             $thumbnailType = $thumbnailTypes[$args['size']] ?? 'medium';
         } else {
-            $thumbnailType = null;
+            $thumbnailType = 'medium';
         }
+
+        $isSite = $this->view->status()->isSiteRequest();
+
+        $args['thumbnailType'] = $thumbnailType;
+        $args['link'] = $isSite
+            ? $this->view->siteSetting('attachment_link_type', 'item')
+            : $this->view->setting('attachment_link_type', 'item');
+
+        $defaultTemplate = $args['player'] === 'image'
+            ? 'common/shortcode/image'
+            : 'common/shortcode/file';
 
         unset(
             $args['thumbnail'],
@@ -264,13 +289,10 @@ class Resource extends AbstractShortcode
             $args['player']
         );
 
-        $args['thumbnailType'] = $thumbnailType;
-        $args['link'] = $this->view->siteSetting('attachment_link_type', 'item');
-
-        $partial = $this->getThemeTemplet($args) ?? 'common/shortcode/file';
+        $partial = $this->getViewTemplate($args) ?? $defaultTemplate;
         return $this->view->partial($partial, [
             'resource' => $resource,
-            'media' => $resource,
+            'media' => $resource->primaryMedia(),
             'thumbnailType' => $thumbnailType,
             'options' => $args,
         ]);

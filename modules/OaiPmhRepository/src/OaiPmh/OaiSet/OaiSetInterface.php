@@ -36,47 +36,41 @@ interface OaiSetInterface
 
     /**
      * Get the list of set specs of an item.
-     *
-     * @return array
      */
-    public function listSets();
+    public function listSets(): array;
 
     /**
      * Get the list of set specs of an item.
      *
      * @param ItemRepresentation $item
-     * @return array
      */
-    public function listSetSpecs(ItemRepresentation $item);
+    public function listSetSpecs(ItemRepresentation $item): array;
 
     /**
-     * Get the oai set spec of the specified resource (item set or site).
+     * Get the oai set spec of the specified resource (item set, site or array).
      *
-     * @param AbstractEntityRepresentation $representation
-     * @return string
+     * @param AbstractEntityRepresentation|array $set Item set, site, or query.
      */
-    public function getSetSpec(AbstractEntityRepresentation $set);
+    public function getSetSpec($set): ?string;
 
     /**
-     * Get the oai set name of the specified resource (item set or site).
+     * Get the oai set name of the specified resource (item set, site or array).
      *
-     * @param AbstractEntityRepresentation $representation
-     * @return string
+     * @param AbstractEntityRepresentation|array $set Item set, site, or query.
      */
-    public function getSetName(AbstractEntityRepresentation $set);
+    public function getSetName($set): ?string;
 
     /**
-     * Get the oai set description of the specified resource (item set or site).
+     * Get the oai set description of the resource (item set, siten or array).
      *
-     * @param AbstractEntityRepresentation $representation
-     * @return string
+     * @param AbstractEntityRepresentation|array $set Item set, site, or query.
      */
-    public function getSetDescription(AbstractEntityRepresentation $set);
+    public function getSetDescription($set): ?string;
 
     /**
-     * Get the Omeka item set or site according to the oai set spec.
+     * Get the Omeka item set, site or array according to the oai set spec.
      *
-     * @return AbstractEntityRepresentation
+     * @return AbstractEntityRepresentation|string
      */
     public function findResource($setSpec);
 }

@@ -8,7 +8,7 @@ Anonymous users are redirected to a standard public-facing login page, without t
 
 ## Installing / Getting started
 
-Starting v2.0, RestrictedSites requires Omeka S v3 or greater.
+Starting v2.2, RestrictedSites requires Omeka S v4 or greater.
 
 * Download and unzip in your `omeka-s/modules` directory.
 * Rename the uncompressed folder to `RestrictedSites`.
@@ -105,9 +105,13 @@ Some code and logic based on other Omeka-S modules:
 * MetaDataBrowse: https://github.com/omeka-s-modules/MetadataBrowse
 * Omeka-S main repository: https://github.com/omeka/omeka-s
 
-Check out the UserNames module for more info: https://github.com/ManOnDaMoon/omeka-s-module-UserNames
+Check out my other modules:
 
-Check out the RoleBasedNavigation module for more info: https://github.com/ManOnDaMoon/omeka-s-module-RoleBasedNavigation
+* RestrictedSites: https://github.com/ManOnDaMoon/omeka-s-module-RestrictedSites
+* UserNames: https://github.com/ManOnDaMoon/omeka-s-module-UserNames
+* RoleBasedNavigation: https://github.com/ManOnDaMoon/omeka-s-module-RoleBasedNavigation
+* Sitemaps: https://github.com/ManOnDaMoon/omeka-s-module-Sitemaps
+* Siteswitcher: https://github.com/ManOnDaMoon/omeka-s-module-SiteSwitcher
 
 ## Licensing
 

@@ -18,11 +18,12 @@ use Omeka\Mvc\Status;
 
 class Module extends AbstractModule
 {
-    protected $excludedRoutes = array('sitelogin',
+    protected $excludedRoutes = ['sitelogin',
         'sitelogout',
         'sitelogin/forgot-password',
-        'sitelogin/create-password'
-    );
+        'sitelogin/create-password',
+        'site/css-editor',
+    ];
 
     /**
      * Attach to Laminas and Omeka specific listeners
@@ -34,16 +35,16 @@ class Module extends AbstractModule
         $sharedEventManager->attach(
             'Omeka\Form\SiteSettingsForm',
             'form.add_elements',
-            array(
+            [
                         $this,
-                        'addRestrictedSiteSetting'
-                )
+                        'addRestrictedSiteSetting',
+                ]
         );
 
         // Attach to the router event to redirect to sitelogin
         $sharedEventManager->attach('*', MvcEvent::EVENT_ROUTE, [
             $this,
-            'redirectToSiteLogin'
+            'redirectToSiteLogin',
         ]);
     }
 
@@ -97,10 +98,10 @@ class Module extends AbstractModule
             // Anonymous visitor : redirecting to sitelogin/login
             $url = $event->getRouter()->assemble(
                 [
-                            'site-slug' => $siteSlug
+                            'site-slug' => $siteSlug,
                     ],
                 [
-                            'name' => 'sitelogin'
+                            'name' => 'sitelogin',
                     ]
             );
             $session = Container::getDefaultManager()->getStorage();
@@ -218,7 +219,7 @@ class Module extends AbstractModule
         $acl->allow(
             null,
             [
-                        'RestrictedSites\Controller\Site\SiteLogin'
+                        'RestrictedSites\Controller\Site\SiteLogin',
                 ],
             null
         );
@@ -248,20 +249,20 @@ class Module extends AbstractModule
         $rsFieldset = $form->get('restrictedsites');
 
         $rsFieldset->add(
-            array(
+            [
                         'name' => 'restrictedsites_restricted',
                         'type' => 'Checkbox',
-                        'options' => array(
+                        'options' => [
                                 'label' => 'Restrict access to this site\'s user list', // @translate
                                 'info' => 'Activates front-end login, logout and password reset UI for this site. Your site visibility must be set to Visible (in Site info pannel) for this feature to work properly.', // @translate
-                        ),
-                        'attributes' => array(
+                        ],
+                        'attributes' => [
                                 'value' => (bool) $siteSettings->get(
                                     'restrictedsites_restricted',
                                     false
-                                )
-                        )
-                )
+                                ),
+                        ],
+                ]
         );
         return;
     }

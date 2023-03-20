@@ -97,6 +97,10 @@ td {
     padding: $spacing-s;
 }
 
+pre {
+    overflow-x: scroll;
+}
+
     /* @group ----- Form elements ----- */
 
     textarea,
@@ -182,7 +186,7 @@ td {
 /* @group ----- Containers ----- */
 
 @mixin container {
-    max-width: 960px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -244,7 +248,7 @@ nav ul {
 }
 
 header {
-    max-width: 960px;
+    max-width: 1200px;
     margin: 0 auto;
     color: #e7e7e7;
     display: flex;
@@ -383,12 +387,27 @@ header nav a:visited {
     border-radius: 0;
 }
 
+.banner {
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.banner.contained {
+    @include container();
+    padding: 0 $spacing-l;
+}
+
+.banner img {
+    width: 100%;
+}
+
 /* @end */
 
 /* @group ----- Footer ----- */
 
 footer {
-    max-width: 960px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: $spacing-l;
     overflow: hidden;
@@ -402,10 +421,6 @@ footer {
 .oc-pusher,
 .oc-content {
   height: 100%;
-}
-
-.oc-content {
-  //overflow-y: scroll;
 }
 
 .oc-content,
@@ -512,7 +527,7 @@ footer {
 /* @group ----- Page and Blocks ----- */
 
 #content {
-    max-width: 960px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: $spacing-l;
     overflow: hidden;
@@ -545,8 +560,10 @@ nav.breadcrumbs {
 
 .site-page-pagination {
     clear: both;
-    margin-top: $spacing-l;
+    margin: 0 auto;
+    padding: $spacing-l;
     color: #fff;
+    max-width: 1200px;
 }
 
 .site-page-pagination a {
@@ -614,6 +631,33 @@ ul.resource-list .resource img ~ * {
 
 /* @group ----- Resource/Show ----- */
 
+.expand:after,
+.collapse:after {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+}
+
+.expand:after {
+    content: "\f0da";
+}
+
+.collapse:after {
+    content: "\f0d7";
+}
+
+.collapsible {
+    display: none;
+}
+
+.collapse + .collapsible {
+    width: 100%;
+    display: block;
+    margin: $spacing-l 0;
+    padding-left: $spacing-l;
+    border-left: 3px solid $gray;
+    overflow: hidden;
+}
+
 .resource.show #content > h2:first-of-type {
     margin-bottom: 0;
     display: block;
@@ -632,27 +676,50 @@ ul.resource-list .resource img ~ * {
     display: block;
     margin: $spacing-s 0;
     line-height: $base-line-height;
-    vertical-align: middle;
     width: calc(20% - #{.75 * $spacing-l});;
     float: left;
     text-align: right;
 }
 
+.with-sidebar {
+    width: 65%;
+    float: left;
+}
+
+.resource.show .media-list, 
 .resource.show .property {
     margin-bottom: $spacing-l;
-    text-align: right;
-    width: 80%;
-    float: left;
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
     padding-right: $spacing-l;
-    clear: left;
+    width: 100%;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
 }
 
-.resource.show .property h4,
-#linked-resources > h4 {
+.media-list dt,
+.property dt {
+    font-weight: bold;
+}
+
+.media-list dt,
+.property dt,
+.media-list .value,
+.property .value {
+    width: 100%;
+    margin-left: 0;
+}
+
+.item-with-metadata .property dt,
+.item-with-metadata .media-list dt,
+.full-width .media-list dt,
+.full-width .property dt,
+#linked-resources > dt {
     width: 25%;
+    text-align: right;
     display: inline-block;
     margin: 0;
     vertical-align: top;
@@ -666,12 +733,14 @@ ul.resource-list .resource img ~ * {
     display: inline-block;
 }
 
-.resource.show .property .values,
-.resource.show .property h4 ~ .value {
+.item-with-metadata .property .value,
+.full-width .property .value,
+.full-width .media-list dt ~ .resource-link {
     width: 75%;
-    display: inline-block;
-    vertical-align: top;
+    display: inline-flex;
+    flex-wrap: wrap;
     text-align: left;
+    margin-left: 0;
 
     &:not(:first-of-type) {
         border-top: 1px solid $gray;
@@ -683,6 +752,27 @@ ul.resource-list .resource img ~ * {
 .resource.show .property .language {
     background-color: $light;
     padding: 0 $spacing-s;
+    margin-right: $spacing-s;
+}
+
+.values .value {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    &:not(:last-child) {
+        margin-bottom: $spacing-m;
+    }
+}
+
+.value-content:not(:only-child) {
+    margin-right: $spacing-s;
+}
+
+.resource-link {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: bottom;
 }
 
 .resource-link img {
@@ -696,26 +786,18 @@ ul.resource-list .resource img ~ * {
     margin-top: -$spacing-s;
 }
 
-.resource.show .media-list {
-    width: 20%;
-    margin: $spacing-l 0 0;
-    display: inline-block;
-    text-align: center;
-}
-
-.resource.show .media-list .resource-link {
+.resource.show #itemfiles.media-list {
+    width: 100%;
     margin-bottom: $spacing-l;
-    display: block;
 }
 
-.resource.show .media-list img {
-    max-width: 100%;
-    height: auto;
+.resource.show .media-embeds,
+.resource.show .media-list .resource-link:not(:last-child) {
+    margin-bottom: $spacing-l;
 }
 
 .resource.show .media-list .resource-name {
     word-wrap: break-word;
-    margin-top: $spacing-s;
     display: block;
 }
 
@@ -736,7 +818,7 @@ ul.resource-list .resource img ~ * {
     display: flex;
 }
 
-.media.resource.show .property h4 {
+.media.resource.show .property dt {
     width: 20%;
 }
 
@@ -831,6 +913,10 @@ ul.resource-list .resource img ~ * {
     align-items: center;
 }
 
+.item-set-items {
+    clear: both;
+}
+
 /* @end */
 
 /* @group ----- Resource/Browse ----- */
@@ -863,10 +949,52 @@ a.advanced-search {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+
+    & > * {
+        margin-bottom: $spacing-m;
+    }
 }
 
 .sorting button {
     margin-left: 0;
+}
+
+.resource.browse .resource .resource-link {
+    display: inline;
+}
+
+/* @end */
+
+/* @group ----- Resource/Show ----- */
+
+.resource.show .sidebar.right {
+    width: 35%;
+    float: right;
+    padding-left: $spacing-l;
+
+    .media-list,
+    .media-list dt,
+    .media-list .resource-link,
+    .property dt,
+    .property .value {
+        width: 100%;
+        text-align: left;
+        padding-right: 0;
+    }
+
+    .media-list dt {
+        margin-bottom: $spacing-s;
+    }
+
+    .media-list .resource-link {
+        align-items: flex-start;
+        word-break: break-word;
+    }
+
+    .media-render * {
+        max-width: 100%;
+        height: auto;
+    }
 }
 
 /* @end */
@@ -946,7 +1074,7 @@ a.advanced-search {
  
 .results > a:last-child {
    @include button;
-   margin-top: (-1 * $spacing-m);
+   margin-top: 0;
  }
 
 .pagination + .results {

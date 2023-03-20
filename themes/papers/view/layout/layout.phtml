@@ -7,15 +7,16 @@ $this->headTitle($this->setting('installation_title', 'Omeka S'))->setSeparator(
 $this->headLink()->prependStylesheet($this->assetUrl('css/style.css'));
 $this->headLink()->prependStylesheet($this->assetUrl('css/iconfonts.css', 'Omeka'));
 $this->headLink()->prependStylesheet($this->assetUrl('vendor/tablesaw/tablesaw.stackonly.css', 'Omeka'));
-$this->headScript()->prependFile($this->assetUrl('js/default.js'));
 $this->headScript()->prependFile($this->assetUrl('js/global.js', 'Omeka'));
 $this->headScript()->prependFile($this->assetUrl('vendor/tablesaw/tablesaw.stackonly.jquery.js', 'Omeka'));
 $this->headScript()->prependFile($this->assetUrl('vendor/jquery/jquery.min.js', 'Omeka'));
 $this->trigger('view.layout');
+$this->jsTranslate();
 $title = $this->pageTitle($site->title());
 $logo = $this->themeSettingAssetUrl('logo');
 $bg = $this->themeSettingAssetUrl('background_image');
 $bgStyle = $this->themeSetting('background_layout');
+$bgColor = $this->themeSetting('bg_color');
 if ($logo):
     $title = '<img src="' . $this->escapeHtml($logo) . '">';
 endif;
@@ -29,29 +30,43 @@ $userBar = $this->userBar();
         <?php echo $this->headLink(); ?>
         <?php echo $this->headStyle(); ?>
         <style>
-        <?php if ($bg): ?>
           body {
-            background: url(<?php echo $this->escapeHtml($bg); ?>);
-            <?php if (isset($bgStyle) && ($bgStyle !== 'tile')): ?>
-            background-repeat: no-repeat;
-            background-size: <?php echo $bgStyle; ?>;
-            background-attachment: fixed;
+            <?php if ($bgStyle == 'none'): ?>
+                background-image: none;
+                background-color: <?php echo ($bgColor) ? $bgColor : "#fefefe"; ?>
+            <?php else: ?>
+                <?php if ($bg): ?>
+                background: url(<?php echo $this->escapeHtml($bg); ?>);
+                <?php endif; ?>
+                <?php if (isset($bgStyle) && ($bgStyle !== 'tile')): ?>
+                background-repeat: no-repeat;
+                background-size: <?php echo $bgStyle; ?>;
+                background-attachment: fixed;
+                <?php endif; ?>
             <?php endif; ?>
           }
-        <?php endif; ?>
 
         <?php if ($headerColor = $this->themeSetting('header_color')): ?>
         .site-title {
           background-color: <?php echo $headerColor; ?>;
         }
+
+        table tr:nth-child(2n) {
+            background-color: <?php echo $this->RgbaColor($headerColor); ?>; ?>;
+        }
         <?php endif; ?>
         
         <?php if ($buttonColor = $this->themeSetting('button_color')): ?>
-        buttton,
+        button,
         .button,
+        .yellow.button,
         [type="submit"],
         .toc-block > ul > li {
-          background-color: <?php echo $buttonColor; ?>;
+          background-color: <?php echo $buttonColor; ?>
+        }
+
+        table tr {
+            background-color: <?php echo $this->RgbaColor($buttonColor); ?>;
         }
         <?php endif; ?>
         
@@ -70,18 +85,15 @@ $userBar = $this->userBar();
         <?php echo $userBar; ?>
         <header class="site-header" role="banner">
             <div class="wrapper">
+                <h1>
                 <?php if ($this->themeSetting('logo')): ?>
-                <a href="<?php echo $site->url(); ?>" class="site-title logo"><img src="<?php echo $this->themeSettingAssetUrl('logo'); ?>" title="Logo"></a>
+                <a href="<?php echo $site->url(); ?>" class="site-title logo" title="<?php echo $this->translate('Home'); ?>"><img src="<?php echo $this->themeSettingAssetUrl('logo'); ?>" title="Logo"></a>
                 <?php else: ?>
-                <a href="<?php echo $site->url(); ?>" class="site-title"><?php echo $site->title(); ?></a>
+                <a href="<?php echo $site->url(); ?>" class="site-title"><?php echo $escape($site->title()); ?></a>
                 <?php endif; ?>
+                </h1>
     
                 <nav class="site-nav">
-                    <input type="checkbox" id="nav-trigger" class="nav-trigger" aria-label="<?php echo $this->translate('Toggle menu'); ?>"/>
-                    <label for="nav-trigger">
-                        <span class="menu-icon"></span>
-                    </label>
-
                     <div class="trigger">
                         <?php
                         echo $site->publicNav()->menu()->renderMenu(null, [
@@ -97,7 +109,7 @@ $userBar = $this->userBar();
                 </nav>
             </div>
         </header>
-        <main class="page-content" aria-label="<?php echo $this->escapeHtml($this->translate('Content')); ?>">
+        <main id="content" class="page-content" aria-label="<?php echo $this->escapeHtml($this->translate('Content')); ?>">
             <div class="wrapper">
             <?php echo $this->content; ?>
             </div>

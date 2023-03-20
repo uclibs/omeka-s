@@ -1,1 +1,0 @@
-# Omeka-S-theme-FeuilletNumerique

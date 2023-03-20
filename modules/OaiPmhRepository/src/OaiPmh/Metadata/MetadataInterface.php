@@ -5,15 +5,9 @@ namespace OaiPmhRepository\OaiPmh\Metadata;
 use DOMElement;
 use OaiPmhRepository\OaiPmh\OaiSet\OaiSetInterface;
 use Omeka\Api\Representation\ItemRepresentation;
-use Omeka\Settings\SettingsInterface;
 
 interface MetadataInterface
 {
-    /**
-     * @param SettingsInterface $settings
-     */
-    public function setSettings(SettingsInterface $settings);
-
     /**
      * @param OaiSetInterface $oaiSet
      */
@@ -22,14 +16,14 @@ interface MetadataInterface
     /**
      * @return OaiSetInterface $oaiSet
      */
-    public function getOaiSet();
+    public function getOaiSet(): OaiSetInterface;
 
     /**
      * Returns the OAI-PMH metadata prefix for the output format.
      *
      * @return string Metadata prefix
      */
-    public function getMetadataPrefix();
+    public function getMetadataPrefix(): string;
 
     /**
      * Appends a metadataFormat element to the document.

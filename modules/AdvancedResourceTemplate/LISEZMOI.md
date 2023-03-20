@@ -123,10 +123,14 @@ l’édition des ressources :
   propriété dans le modèle après un ^`/`, par exemple : `dcterms:subject/Sujets Rameau`
   et `dcterms:subject/Sujets libres`.
 
+  ![Exemple d’affichage de groupes de propriétés](data/images/groups_properties.png)
+
 - Sélection de la langue et langue par défaut par modèle et par propriété, ou
   aucune langue :
 
   ![Exemple de langue par modèle et par propriété](data/images/advanced_language_settings.png)
+
+  Cette fonctionnalité a été partiellement implémentée dans Omeka S v4.
 
 - Création d’une nouvelle ressource liée pendant l’édition d’une ressource :
 
@@ -389,6 +393,7 @@ https://www.idref.fr/Sru/Solr
 TODO
 ----
 
+- [ ] Ajouter les modèles pour les annotations de valeur.
 - [ ] Remplacer FieldNameToProperty avec AutomapFields ou TransformSource du module BulkImport.
 - [ ] Remplacer `{__value__}` et `{__label__}` par `{value}` et `{label}` (prêt dans module BulkImport).
 - [ ] Inclure tous les suggesteurs du module [Value Suggest].
@@ -406,12 +411,14 @@ TODO
 - [x] Utiliser un événement et supprimer le gabarit spécifique pour resource-values.
 - [ ] Corriger la copie des libellés alternatifs lorsqu’un modèle est importé (actuellement, le modèle doit être resauvé).
 - [ ] Choisir les vocabulaires personnalisés par défaut lorsque l’on importe du même serveur.
+- [ ] Grouper les propriétés dans le formulaire de ressource.
+- [ ] Permettre de grouper les propriétés différemment selon les sites ?
 
 
-Attention
----------
+Avertissement
+-------------
 
-Utilisez-le à vos propres risques.
+À utiliser à vos propres risques.
 
 Il est toujours recommandé de sauvegarder vos fichiers et vos bases de données
 et de vérifier vos archives régulièrement afin de pouvoir les reconstituer si
@@ -461,7 +468,7 @@ connaissance de la licence CeCILL et que vous en acceptez les termes.
 Copyright
 ---------
 
-* Copyright Daniel Berthereau, 2020-2022 (voir [Daniel-KM] sur GitLab)
+* Copyright Daniel Berthereau, 2020-2023 (voir [Daniel-KM] sur GitLab)
 * Library [jQuery-Autocomplete]: Copyright 2012 DevBridge et autres contributeurs
 
 Ces fonctionnalités sont destinées à la future bibliothèque numérique [Manioc]
@@ -474,7 +481,7 @@ des travaux étudiants [Dante] de l’[Université de Toulouse Jean-Jaurès].
 [Advanced Resource Template]: https://gitlab.com/Daniel-KM/Omeka-S-module-AdvancedResourceTemplate
 [English readme]: https://gitlab.com/Daniel-KM/Omeka-S-module-AdvancedResourceTemplate/-/blob/master/README.md
 [Omeka S]: https://omeka.org/s
-[installer un module]: http://dev.omeka.org/docs/s/user-manual/modules/#installing-modules
+[installer un module]: https://omeka.org/s/docs/user-manual/modules/#installing-modules
 [Generic]: https://gitlab.com/Daniel-KM/Omeka-S-module-Generic
 [AdvancedResourceTemplate.zip]: https://gitlab.com/Daniel-KM/Omeka-S-module-AdvancedResourceTemplate/-/releases
 [IdRef]: https://www.idref.fr

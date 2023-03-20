@@ -1,21 +1,20 @@
 'use strict';
 
 var gulp = require('gulp');
+var sass = require('gulp-sass')(require('sass'));
+var postcss = require('gulp-postcss');
+var autoprefixer = require('autoprefixer');
 
 function compileCss() {
-    var sass = require('gulp-sass');
-    var postcss = require('gulp-postcss');
-    var autoprefixer = require('autoprefixer');
-
-    return gulp.src('./asset/sass/**/*.scss')
-        .pipe(sass({
-            outputStyle: 'compressed',
-            includePaths: require('node-normalize-scss').with('../../node_modules/susy/sass')
-        }).on('error', sass.logError))
-        .pipe(postcss([
-            autoprefixer({browsers: ['> 5%', '> 5% in US', 'last 2 versions']})
-        ]))
+    return gulp.src('./asset/sass/*.scss')
+        .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest('./asset/css'));  
+}
+
+function compileScriptoCss() {
+    return gulp.src('./asset/sass/scripto/*.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(gulp.dest('./asset/css/scripto'));  
 }
 
 function buildScriptoTheme() {
@@ -25,12 +24,12 @@ function buildScriptoTheme() {
 
 gulp.task('css', compileCss);
 
-gulp.task('scripto', gulp.series(compileCss, buildScriptoTheme));
+gulp.task('scripto', gulp.series(compileCss, compileScriptoCss, buildScriptoTheme));
 
 gulp.task('css:watch', function () {
     gulp.watch('./asset/sass/*.scss', gulp.parallel('css'));
 });
 
 gulp.task('scripto:watch', function () {
-    gulp.watch('./asset/sass/**/*.scss', gulp.parallel(compileCss, buildScriptoTheme));
+    gulp.watch('./asset/sass/**/*.scss', gulp.series(compileCss, compileScriptoCss, buildScriptoTheme));
 });

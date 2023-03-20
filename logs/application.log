@@ -1,0 +1,255 @@
+2023-03-10T18:51:43+00:00 ERR (3):
+2023-03-10T18:51:43+00:00 ERR (3): Command "command -v 'exiftool'" failed with status code 1.
+2023-03-10T18:51:43+00:00 ERR (3):
+2023-03-10T18:51:43+00:00 ERR (3): Command "command -v 'exiftool'" failed with status code 1.
+2023-03-10T18:51:49+00:00 ERR (3):
+2023-03-10T18:51:49+00:00 ERR (3): Command "command -v 'catdoc'" failed with status code 1.
+2023-03-10T18:51:49+00:00 ERR (3):
+2023-03-10T18:51:49+00:00 ERR (3): Command "command -v 'docx2txt'" failed with status code 1.
+2023-03-10T18:51:49+00:00 ERR (3):
+2023-03-10T18:51:49+00:00 ERR (3): Command "command -v 'lynx'" failed with status code 1.
+2023-03-10T18:51:49+00:00 ERR (3):
+2023-03-10T18:51:49+00:00 ERR (3): Command "command -v 'odt2txt'" failed with status code 1.
+2023-03-10T18:51:49+00:00 ERR (3):
+2023-03-10T18:51:49+00:00 ERR (3): Command "command -v 'pdftotext'" failed with status code 1.
+2023-03-10T18:51:59+00:00 ERR (3): PDOException: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'fedora_item' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php:55
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(55): PDO->exec('CREATE TABLE fe...')
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1579): Doctrine\DBAL\Driver\PDOConnection->exec('CREATE TABLE fe...')
+#2 /var/www/omekas/modules/FedoraConnector/Module.php(33): Doctrine\DBAL\Connection->exec('CREATE TABLE fe...')
+#3 /var/www/omekas/application/src/Module/Manager.php(226): FedoraConnector\Module->install(Object(Laminas\ServiceManager\ServiceManager))
+#4 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->installAction()
+#6 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#8 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#10 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#12 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#14 {main}
+
+Next Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'fedora_item' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDO/Exception.php:18
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(60): Doctrine\DBAL\Driver\PDO\Exception::new(Object(PDOException))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1579): Doctrine\DBAL\Driver\PDOConnection->exec('CREATE TABLE fe...')
+#2 /var/www/omekas/modules/FedoraConnector/Module.php(33): Doctrine\DBAL\Connection->exec('CREATE TABLE fe...')
+#3 /var/www/omekas/application/src/Module/Manager.php(226): FedoraConnector\Module->install(Object(Laminas\ServiceManager\ServiceManager))
+#4 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->installAction()
+#6 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#8 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#10 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#12 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#14 {main}
+
+Next Doctrine\DBAL\Exception\TableExistsException: An exception occurred while executing 'CREATE TABLE fedora_item (id INT AUTO_INCREMENT NOT NULL, item_id INT NOT NULL, job_id INT NOT NULL, uri VARCHAR(255) NOT NULL, last_modified DATETIME NULL, UNIQUE INDEX UNIQ_D02FFFF9126F525E (item_id), INDEX IDX_D02FFFF9BE04EA9 (job_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB;':
+
+SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'fedora_item' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractMySQLDriver.php:57
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(182): Doctrine\DBAL\Driver\AbstractMySQLDriver->convertException('An exception oc...', Object(Doctrine\DBAL\Driver\PDO\Exception))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(159): Doctrine\DBAL\DBALException::wrapException(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'An exception oc...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(2226): Doctrine\DBAL\DBALException::driverExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE fe...', Array)
+#3 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1581): Doctrine\DBAL\Connection->handleExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE fe...')
+#4 /var/www/omekas/modules/FedoraConnector/Module.php(33): Doctrine\DBAL\Connection->exec('CREATE TABLE fe...')
+#5 /var/www/omekas/application/src/Module/Manager.php(226): FedoraConnector\Module->install(Object(Laminas\ServiceManager\ServiceManager))
+#6 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#7 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->installAction()
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#14 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#15 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#16 {main}
+2023-03-10T18:52:50+00:00 ERR (3): PDOException: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'fedora_item' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php:55
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(55): PDO->exec('CREATE TABLE fe...')
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1579): Doctrine\DBAL\Driver\PDOConnection->exec('CREATE TABLE fe...')
+#2 /var/www/omekas/modules/FedoraConnector/Module.php(33): Doctrine\DBAL\Connection->exec('CREATE TABLE fe...')
+#3 /var/www/omekas/application/src/Module/Manager.php(226): FedoraConnector\Module->install(Object(Laminas\ServiceManager\ServiceManager))
+#4 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->installAction()
+#6 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#8 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#10 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#12 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#14 {main}
+
+Next Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'fedora_item' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDO/Exception.php:18
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(60): Doctrine\DBAL\Driver\PDO\Exception::new(Object(PDOException))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1579): Doctrine\DBAL\Driver\PDOConnection->exec('CREATE TABLE fe...')
+#2 /var/www/omekas/modules/FedoraConnector/Module.php(33): Doctrine\DBAL\Connection->exec('CREATE TABLE fe...')
+#3 /var/www/omekas/application/src/Module/Manager.php(226): FedoraConnector\Module->install(Object(Laminas\ServiceManager\ServiceManager))
+#4 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->installAction()
+#6 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#8 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#10 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#12 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#14 {main}
+
+Next Doctrine\DBAL\Exception\TableExistsException: An exception occurred while executing 'CREATE TABLE fedora_item (id INT AUTO_INCREMENT NOT NULL, item_id INT NOT NULL, job_id INT NOT NULL, uri VARCHAR(255) NOT NULL, last_modified DATETIME NULL, UNIQUE INDEX UNIQ_D02FFFF9126F525E (item_id), INDEX IDX_D02FFFF9BE04EA9 (job_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB;':
+
+SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'fedora_item' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractMySQLDriver.php:57
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(182): Doctrine\DBAL\Driver\AbstractMySQLDriver->convertException('An exception oc...', Object(Doctrine\DBAL\Driver\PDO\Exception))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(159): Doctrine\DBAL\DBALException::wrapException(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'An exception oc...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(2226): Doctrine\DBAL\DBALException::driverExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE fe...', Array)
+#3 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1581): Doctrine\DBAL\Connection->handleExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE fe...')
+#4 /var/www/omekas/modules/FedoraConnector/Module.php(33): Doctrine\DBAL\Connection->exec('CREATE TABLE fe...')
+#5 /var/www/omekas/application/src/Module/Manager.php(226): FedoraConnector\Module->install(Object(Laminas\ServiceManager\ServiceManager))
+#6 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#7 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->installAction()
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#14 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#15 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#16 {main}
+2023-03-10T18:56:43+00:00 NOTICE (5): Starting "{process}". {"process":"db_log_check","referenceId":"easy-admin/check/job_36"}
+2023-03-10T18:56:43+00:00 NOTICE (5): The table "{table}" has a size of {size} MB. {old}/{all} records are older than {days} days and below or equal severity "{severity}". {"table":"log","size":"0.19","old":64,"all":77,"days":10,"severity":"Error","referenceId":"easy-admin/check/job_36"}
+2023-03-10T18:56:43+00:00 NOTICE (5): Process "{process}" completed. {"process":"db_log_check","referenceId":"easy-admin/check/job_36"}
+2023-03-10T18:57:55+00:00 ERR (3): Exception: The current theme is not active. Its current state is "invalid_omeka_version". in /var/www/omekas/application/src/Mvc/MvcListeners.php:330
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Omeka\Mvc\MvcListeners->preparePublicSite(Object(Laminas\Mvc\MvcEvent))
+#1 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#2 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(304): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#3 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#4 {main}
+2023-03-10T19:10:50+00:00 NOTICE (5): Starting "{process}". {"process":"db_job_check","referenceId":"easy-admin/check/job_37"}
+2023-03-10T19:10:50+00:00 NOTICE (5): There is no dead job. {"referenceId":"easy-admin/check/job_37"}
+2023-03-10T19:10:50+00:00 NOTICE (5): Process "{process}" completed. {"process":"db_job_check","referenceId":"easy-admin/check/job_37"}
+2023-03-10T19:57:31+00:00 ERR (3): Exception: The current theme is not active. Its current state is "not_found". in /var/www/omekas/application/src/Mvc/MvcListeners.php:330
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Omeka\Mvc\MvcListeners->preparePublicSite(Object(Laminas\Mvc\MvcEvent))
+#1 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#2 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(304): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#3 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#4 {main}
+2023-03-10T19:58:31+00:00 ERR (3): Exception: The current theme is not active. Its current state is "not_found". in /var/www/omekas/application/src/Mvc/MvcListeners.php:330
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Omeka\Mvc\MvcListeners->preparePublicSite(Object(Laminas\Mvc\MvcEvent))
+#1 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#2 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(304): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#3 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#4 {main}
+2023-03-10T19:58:44+00:00 ERR (3): Exception: The current theme is not active. Its current state is "invalid_omeka_version". in /var/www/omekas/application/src/Mvc/MvcListeners.php:330
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Omeka\Mvc\MvcListeners->preparePublicSite(Object(Laminas\Mvc\MvcEvent))
+#1 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#2 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(304): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#3 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#4 {main}
+2023-03-10T20:00:22+00:00 ERR (3): Exception: The current theme is not active. Its current state is "invalid_omeka_version". in /var/www/omekas/application/src/Mvc/MvcListeners.php:330
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Omeka\Mvc\MvcListeners->preparePublicSite(Object(Laminas\Mvc\MvcEvent))
+#1 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#2 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(304): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#3 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#4 {main}
+2023-03-10T20:41:49+00:00 ERR (3): Exception: The current theme is not active. Its current state is "not_found". in /var/www/omekas/application/src/Mvc/MvcListeners.php:330
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Omeka\Mvc\MvcListeners->preparePublicSite(Object(Laminas\Mvc\MvcEvent))
+#1 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#2 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(304): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#3 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#4 {main}
+2023-03-20T16:26:00+00:00 ERR (3): Omeka\Api\Exception\NotFoundException: Omeka\Entity\ItemSet entity with criteria {"id":"17"} not found in /var/www/omekas/application/src/Api/Adapter/AbstractEntityAdapter.php:714
+Stack trace:
+#0 /var/www/omekas/application/src/Api/Adapter/AbstractEntityAdapter.php(432): Omeka\Api\Adapter\AbstractEntityAdapter->findEntity(Array, Object(Omeka\Api\Request))
+#1 /var/www/omekas/application/src/Api/Manager.php(230): Omeka\Api\Adapter\AbstractEntityAdapter->read(Object(Omeka\Api\Request))
+#2 /var/www/omekas/application/src/Api/Manager.php(115): Omeka\Api\Manager->execute(Object(Omeka\Api\Request))
+#3 /var/www/omekas/modules/ItemSetsTree/Module.php(281): Omeka\Api\Manager->read('item_sets', '17')
+#4 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): ItemSetsTree\Module->onItemApiSearchPre(Object(Laminas\EventManager\Event))
+#5 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(171): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\EventManager\Event))
+#6 /var/www/omekas/application/src/Api/Manager.php(300): Laminas\EventManager\EventManager->triggerEvent(Object(Laminas\EventManager\Event))
+#7 /var/www/omekas/application/src/Api/Manager.php(216): Omeka\Api\Manager->initialize(Object(Omeka\Api\Adapter\ItemAdapter), Object(Omeka\Api\Request))
+#8 /var/www/omekas/application/src/Api/Manager.php(59): Omeka\Api\Manager->execute(Object(Omeka\Api\Request))
+#9 /var/www/omekas/modules/AdvancedSearch/src/Api/ManagerDelegator.php(131): Omeka\Api\Manager->search('items', Array, Array)
+#10 /var/www/omekas/application/src/Job/UpdateSiteItems.php(81): AdvancedSearch\Api\ManagerDelegator->search('items', Array, Array)
+#11 /var/www/omekas/application/src/Job/UpdateSiteItems.php(62): Omeka\Job\UpdateSiteItems->updateSiteItems(4, Array, 'add')
+#12 /var/www/omekas/application/src/Job/DispatchStrategy/Synchronous.php(34): Omeka\Job\UpdateSiteItems->perform()
+#13 /var/www/omekas/application/src/Job/Dispatcher.php(105): Omeka\Job\DispatchStrategy\Synchronous->send(Object(Omeka\Entity\Job))
+#14 /var/www/omekas/application/data/scripts/perform-job.php(66): Omeka\Job\Dispatcher->send(Object(Omeka\Entity\Job), Object(Omeka\Job\DispatchStrategy\Synchronous))
+#15 {main}
+2023-03-20T19:04:56+00:00 ERR (3): PDOException: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'fedora_item' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php:55
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(55): PDO->exec('CREATE TABLE fe...')
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1579): Doctrine\DBAL\Driver\PDOConnection->exec('CREATE TABLE fe...')
+#2 /var/www/omekas/modules/FedoraConnector/Module.php(33): Doctrine\DBAL\Connection->exec('CREATE TABLE fe...')
+#3 /var/www/omekas/application/src/Module/Manager.php(226): FedoraConnector\Module->install(Object(Laminas\ServiceManager\ServiceManager))
+#4 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->installAction()
+#6 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#8 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#10 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#12 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#14 {main}
+
+Next Doctrine\DBAL\Driver\PDO\Exception: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'fedora_item' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDO/Exception.php:18
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOConnection.php(60): Doctrine\DBAL\Driver\PDO\Exception::new(Object(PDOException))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1579): Doctrine\DBAL\Driver\PDOConnection->exec('CREATE TABLE fe...')
+#2 /var/www/omekas/modules/FedoraConnector/Module.php(33): Doctrine\DBAL\Connection->exec('CREATE TABLE fe...')
+#3 /var/www/omekas/application/src/Module/Manager.php(226): FedoraConnector\Module->install(Object(Laminas\ServiceManager\ServiceManager))
+#4 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->installAction()
+#6 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#8 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#10 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#12 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#14 {main}
+
+Next Doctrine\DBAL\Exception\TableExistsException: An exception occurred while executing 'CREATE TABLE fedora_item (id INT AUTO_INCREMENT NOT NULL, item_id INT NOT NULL, job_id INT NOT NULL, uri VARCHAR(255) NOT NULL, last_modified DATETIME NULL, UNIQUE INDEX UNIQ_D02FFFF9126F525E (item_id), INDEX IDX_D02FFFF9BE04EA9 (job_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB;':
+
+SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'fedora_item' already exists in /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractMySQLDriver.php:57
+Stack trace:
+#0 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(182): Doctrine\DBAL\Driver\AbstractMySQLDriver->convertException('An exception oc...', Object(Doctrine\DBAL\Driver\PDO\Exception))
+#1 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/DBALException.php(159): Doctrine\DBAL\DBALException::wrapException(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'An exception oc...')
+#2 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(2226): Doctrine\DBAL\DBALException::driverExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\MySQL\Driver), Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE fe...', Array)
+#3 /var/www/omekas/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php(1581): Doctrine\DBAL\Connection->handleExceptionDuringQuery(Object(Doctrine\DBAL\Driver\PDO\Exception), 'CREATE TABLE fe...')
+#4 /var/www/omekas/modules/FedoraConnector/Module.php(33): Doctrine\DBAL\Connection->exec('CREATE TABLE fe...')
+#5 /var/www/omekas/application/src/Module/Manager.php(226): FedoraConnector\Module->install(Object(Laminas\ServiceManager\ServiceManager))
+#6 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#7 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->installAction()
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#12 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#14 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#15 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#16 {main}
+2023-03-20T19:13:32+00:00 ERR (3):
+2023-03-20T19:13:32+00:00 ERR (3): Command "command -v 'vips'" failed with status code 1.
+2023-03-20T19:13:32+00:00 ERR (3):
+2023-03-20T19:13:32+00:00 ERR (3): Command "command -v 'vips'" failed with status code 1.

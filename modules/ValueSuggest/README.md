@@ -20,6 +20,7 @@ This module includes the following vocabularies:
 - IdRef
 - Library of Congress Linked Data Service
 - OCLC Metadata Services
+- Omeka
 - PACTOLS of Frantiq
 - PeriodO
 - RDA Value Vocabularies
@@ -36,16 +37,28 @@ This module includes the following vocabularies:
 
 ### [Dutch Digital Heritage Network of Terms: NDE Termennetwerk](https://termennetwerk.netwerkdigitaalerfgoed.nl/)
 
+- Art & Architecture Thesaurus - materialen
+- Art & Architecture Thesaurus - processen en technieken
+- Art & Architecture Thesaurus - stijlen en periodes
 - Archeologisch Basisregister
+- Adamlink: straten in Amsterdam
 - Brinkman trefwoordenthesaurus
 - Cultuurhistorische Thesaurus
+- Cultuurhistorische Thesaurus - Materialen
+- Cultuurhistorische Thesaurus - Stijlen en periodes
+- EuroVoc - thesaurus van de Europese Unie
+- GeoNames: geografische namen in Nederland, België en Duitsland
 - GTAA: genres
 - GTAA: onderwerpen
+- Homosaurus
+- Iconclass
+- Indisch Erfgoed Thesaurus
 - Muziek: genres en stijlen
 - Muziek: personen en groepen
 - Muziekschatten: onderwerpen
 - Nederlandse Thesaurus van Auteursnamen
 - RKDartists
+- STCN: drukkers
 - Thesaurus Nationaal Museum van Wereldculturen
 - Thesaurus Tweede Wereldoorlog Nederland
 - Wikidata: alle entiteiten
@@ -60,6 +73,7 @@ This module includes the following vocabularies:
 ### [GeoNames](http://www.geonames.org/)
 
 - The GeoNames geographical database
+- GeoNames features
 
 ### [The Getty Vocabularies](http://vocab.getty.edu/)
 
@@ -106,6 +120,7 @@ This module includes the following vocabularies:
 - MARC Relators
 - Medium of Performance Thesaurus for Music
 - Name Authority File
+- Rare Materials Cataloging
 - Subject Headings
 - Thesaurus for Graphic Materials
 
@@ -130,6 +145,15 @@ This module includes the following vocabularies:
 - Faceted Application of Subject Terminologies (FAST)
 - The Virtual International Authority File (VIAF)
 
+### Omeka
+
+Suggest values that already exist in the working Omeka installation.
+
+- Omeka: Property: suggest values using the current value's property
+- Omeka: Property / Resource template: suggest values using the current value's property and current resource's template
+- Omeka: Property / Resource class: suggest values using the current value's property and current resource's class
+
+
 ### [PACTOLS of Frantiq](https://pactols.frantiq.fr/)
 
 - The entire pactols thesaurus
@@ -149,9 +173,12 @@ This module includes the following vocabularies:
 - Carrier Extent Unit
 - Carrier Type
 - Cartographic Data Type
+- Collection Accrual Method
+- Collection Accrual Policy
 - Colour Content
 - Configuration of Playback Channels
 - Content Type
+- Extension Plan
 - Conventional Collective Title
 - File Type
 - Font Size
@@ -164,7 +191,9 @@ This module includes the following vocabularies:
 - Groove Pitch of an Analog Cylinder
 - Groove Width of an Analog Disc
 - Illustrative Content
+- Interactivity Mode
 - Layout
+- Linked Data Work
 - Material
 - Media Type
 - Mode of Issuance
@@ -172,6 +201,8 @@ This module includes the following vocabularies:
 - Presentation Format
 - Production Method
 - Recording Medium
+- Recording Methods
+- Recording Sources
 - Reduction Ratio Designation
 - Regional Encoding
 - Scale Designation
@@ -180,7 +211,10 @@ This module includes the following vocabularies:
 - Status of Identification
 - Terms
 - Track Configuration
+- Type Of Binding
 - Type of Recording
+- Unit of Time
+- User Tasks
 - Video Format
 
 #### RDA Local value vocabularies

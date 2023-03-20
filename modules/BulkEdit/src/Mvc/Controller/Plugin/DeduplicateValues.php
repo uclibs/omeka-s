@@ -57,15 +57,15 @@ class DeduplicateValues extends AbstractPlugin
         $connection = $this->entityManager->getConnection();
 
         // The query modifies the sql mode, so it should be reset.
-        $sqlMode = $connection->fetchColumn('SELECT @@SESSION.sql_mode;');
+        $sqlMode = $connection->fetchOne('SELECT @@SESSION.sql_mode;');
 
         $query = is_null($resourceIds)
             ? $this->prepareQuery()
             : $this->prepareQueryForResourceIds($resourceIds);
 
-        $processed = $connection->exec($query);
+        $processed = $connection->executeStatement($query);
 
-        $connection->exec("SET sql_mode = '$sqlMode';");
+        $connection->executeStatement("SET sql_mode = '$sqlMode';");
 
         if ($processed) {
             $this->logger->info(sprintf('Deduplicated %d values.', $processed));
@@ -75,6 +75,7 @@ class DeduplicateValues extends AbstractPlugin
 
     protected function prepareQuery()
     {
+        // TODO Remove "Any_value", but it cannot be replaced by "Min".
         if ($this->supportAnyValue) {
             $prefix = 'ANY_VALUE(';
             $suffix = ')';

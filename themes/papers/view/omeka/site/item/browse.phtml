@@ -7,25 +7,12 @@ $siteItemSets = $site->siteItemSets();
 $query = $this->params()->fromQuery();
 $itemSetShow = isset($itemSet);
 if ($itemSetShow):
+    $this->headLink()->prependStylesheet($this->assetUrl('css/resource-page-blocks', 'Omeka'));
     $this->htmlElement('body')->appendAttribute('class', 'item-set');
     $query['item_set_id'] = $itemSet->id();
 endif;
 $headingTerm = $this->siteSetting('browse_heading_property_term');
 $bodyTerm = $this->siteSetting('browse_body_property_term');
-$sortHeadings = [
-    [
-        'label' => $translate('Title'),
-        'value' => 'dcterms:title'
-    ],
-    [
-        'label' => $translate('Identifier'),
-        'value' => 'dcterms:identifier'
-    ],
-    [
-        'label' => $translate('Created'),
-        'value' => 'created'
-    ],
-];
 ?>
 
 
@@ -33,7 +20,7 @@ $sortHeadings = [
     <?php echo $this->pageTitle($itemSet->displayTitle(), 2); ?>
     <h3><?php echo $translate('Item set'); ?></h3>
     <div class="metadata">
-        <?php echo $itemSet->displayValues(); ?>
+        <?php echo $this->resourcePageBlocks($itemSet)->getBlocks(); ?>
     </div>
     <div class="item-set-items">
     <?php echo '<h3>' . $escape($translate('Items')) . '</h3>'; ?>
@@ -46,7 +33,7 @@ $sortHeadings = [
 <div class="browse-controls">
     <?php echo $this->pagination(); ?>
     <?php echo $this->hyperlink($translate('Advanced search'), $this->url('site/resource', ['controller' => 'item', 'action' => 'search'], ['query' => $query], true), ['class' => 'advanced-search']); ?>
-    <?php echo $this->sortSelector($sortHeadings); ?>
+    <?php echo $this->browse()->renderSortSelector('items'); ?>
 </div>
 
 <?php $this->trigger('view.browse.before'); ?>
@@ -57,13 +44,15 @@ foreach ($items as $item):
     $body = $bodyTerm ? $item->value($bodyTerm) : $item->displayDescription();
 ?>
     <li class="item resource">
-        <div class="item-meta">
-            <h4><?php echo $item->link($heading); ?></h4>
+        <div class="resource-meta">
+            <?php echo $item->link($heading, null, ['class' => 'resource-title']); ?>
             <?php if ($body): ?>
-            <div class="description"><?php echo $body; ?></div>
+            <div class="description"><?php echo $escape($body); ?></div>
             <?php endif; ?>
         </div>
-        <?php echo $item->linkRaw($this->thumbnail($item, 'medium'), null, ['class' => 'item-thumbnail']); ?>
+        <?php if ($itemThumbnail = $this->thumbnail($item, 'medium', ['alt' => ''])): ?>
+        <?php echo $item->linkRaw($itemThumbnail, null, ['class' => 'resource-thumbnail', 'aria-hidden' => 'true', 'tabindex' => '-1']); ?>
+        <?php endif; ?>
     </li>
 <?php endforeach; ?>
 </ul>
