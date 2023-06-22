@@ -13,7 +13,7 @@ class GroupTextarea extends Textarea implements InputProviderInterface
         return $this;
     }
 
-    public function getInputSpecification()
+    public function getInputSpecification(): array
     {
         return [
             'name' => $this->getName(),
@@ -78,7 +78,7 @@ class GroupTextarea extends Textarea implements InputProviderInterface
                 // Set a default group name when missing.
                 $groupName = sprintf('Group %d', $id); // $translate
             }
-            $groupsArray[$groupName][] =$cleanString;
+            $groupsArray[$groupName][] = $cleanString;
         }
 
         return $groupsArray;

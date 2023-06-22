@@ -11,10 +11,10 @@ $this->htmlElement('body')->appendAttribute('class', 'item-set resource browse')
 <?php echo $this->searchFilters(); ?>
 
 <?php 
-    $layoutSetting = $this->themeSetting('browse_layout');
+    $layoutSetting = $this->themeSetting('browse_layout', 'grid');
     $gridState = ($layoutSetting == 'togglegrid') ? 'disabled' : '';
     $listState = ($layoutSetting == 'togglelist') ? 'disabled': '';
-    $currentLayout = (!isset($layoutSetting) || strpos($layoutSetting, 'grid') !== false) ? 'grid' : 'list';
+    $currentLayout = (strpos($layoutSetting, 'grid') !== false) ? 'grid' : 'list';
 ?>
 <div class="browse-controls">
     <?php echo $this->pagination(); ?>
@@ -43,7 +43,7 @@ foreach ($itemSets as $itemSet):
         <div class="resource-meta">
             <h4><?php echo $itemSet->link($heading); ?></h4>
             <?php if ($body): ?>
-            <div class="description"><?php echo $body; ?></div>
+            <div class="description"><?php echo $escape($body); ?></div>
             <?php endif; ?>
         </div>
     </li>

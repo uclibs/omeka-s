@@ -247,21 +247,20 @@ $(document).ready(function() {
      * Init the language input.
      */
     function initValueLanguage(languageInput, field) {
+        const languageWrapper = languageInput.closest('.language-wrapper');
         const languageButton = languageInput.prev('a.value-language');
-        var languageElement;
         var language = languageInput.val();
         if (field.data('no-language') == true) {
             language = '';
-            languageButton.removeClass('active').addClass('no-language');
-            languageInput.prop('disabled', true).removeClass('active');
+            languageWrapper.removeClass('active');
+            languageButton.addClass('no-language');
+            languageInput.prop('disabled', true);
         } else {
             languageButton.removeClass('no-language');
             languageInput.prop('disabled', false);
-            languageElement = languageInput;
         }
         if (language !== '') {
-            languageButton.addClass('active');
-            languageElement.addClass('active');
+            languageWrapper.addClass('active');
         }
     }
 
@@ -285,12 +284,12 @@ $(document).ready(function() {
         var defaultLanguage = templateData && templateData.default_language && templateData.default_language.length
             ? templateData.default_language
             : '';
-        defaultLanguage = rtpData.default_language && rtpData.default_language.length
-            ? rtpData.default_language
+        defaultLanguage = rtpData['o:default_lang'] && rtpData['o:default_lang'].length
+            ? rtpData['o:default_lang']
             : defaultLanguage;
         if (defaultLanguage.length) {
-            value.find('input.value-language').val(defaultLanguage).addClass('active');
-            value.find('a.value-language').addClass('active');
+            value.find('input.value-language').val(defaultLanguage);
+            value.find('.language-wrapper').addClass('active');
         }
     }
 
@@ -329,7 +328,7 @@ $(document).ready(function() {
         }
 
         const term = propertyLi.data('property-term');
-        const field = $('.resource-values.field.template').clone(true);
+        const field = $('.resource-property.template').clone(true);
         field.removeClass('template');
         field.find('.field-label').text(propertyLi.data('child-search')).attr('id', 'property-' + propertyId + '-label');
         field.find('.field-term').text(term);
@@ -362,7 +361,7 @@ $(document).ready(function() {
      * @see resource-form.js makeNewValue()
      */
     const makeNewValue = function(term, dataType, valueObj) {
-        var field = $('.resource-values.field[data-property-term="' + term + '"]');
+        var field = $('.resource-property[data-property-term="' + term + '"]');
         // Get the value node from the templates.
         if (!dataType || typeof dataType !== 'string') {
             dataType = valueObj ? valueObj['type'] : field.find('.add-value:visible:first').data('type');
@@ -758,7 +757,7 @@ $(document).ready(function() {
     function autofill(values) {
         Object.keys(values).forEach(function(term) {
             values[term].forEach(function(value) {
-                var field = $('.resource-values.field[data-property-term="' + term + '"]').filter(function() { return $.inArray(value.type, $(this).data('data-types').split(',')) > -1; });
+                var field = $('.resource-property[data-property-term="' + term + '"]').filter(function() { return $.inArray(value.type, $(this).data('data-types').split(',')) > -1; });
                 if (!field.length) {
                     field = makeNewField(term);
                 }
@@ -777,8 +776,8 @@ $(document).ready(function() {
             maxHeight: 600,
             paramName: 'q',
             params: {
-                prop: autocompleteField.closest('.resource-values.field').data('property-id'),
-                type: autocompleteField.closest('.resource-values.field').data('autocomplete'),
+                prop: autocompleteField.closest('.resource-property').data('property-id'),
+                type: autocompleteField.closest('.resource-property').data('autocomplete'),
             },
             deferRequestBy: 200,
             // minChars: 3,
@@ -861,7 +860,7 @@ $(document).ready(function() {
             return;
         }
 
-        const fields = $('#properties .resource-values.field');
+        const fields = $('#properties .resource-property');
 
         if (!$('#resource-values').data('locked-ready')) {
             fields.each(function(index, field) {
@@ -885,7 +884,7 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('o:property-added', '.resource-values.field', function() {
+    $(document).on('o:property-added', '.resource-property', function() {
         const field = $(this);
         // This is managed after values (and useless for this event).
         // prepareFieldLength(field);
@@ -901,7 +900,7 @@ $(document).ready(function() {
         prepareValueDisplay(value);
 
         const term = value.data('term');
-        var field = value.closest('.resource-values.field');
+        var field = value.closest('.resource-property');
         if (!field.length) {
             field = $('#properties [data-property-term="' + term + '"].field')
                 .filter(function() { return $.inArray(dataType, $(this).data('data-types').split(',')) > -1; }).first();
@@ -984,7 +983,7 @@ $(document).ready(function() {
      * @todo Manage the issue when there are two values, but only one max.
      */
     $(document).on('click', 'a.remove-value', function(e) {
-        var field = $(this).closest('.resource-values.field');
+        var field = $(this).closest('.resource-property');
         const rtpData = field.data('template-property-data');
         if (!rtpData) {
             return;

@@ -1,7 +1,7 @@
 <?php
 namespace UnApi\Controller;
 
-use EasyRdf_Graph;
+use EasyRdf\Graph;
 use Laminas\Mvc\Controller\AbstractActionController;
 
 class IndexController extends AbstractActionController
@@ -25,7 +25,7 @@ class IndexController extends AbstractActionController
                     default:
                         $easyRdfFormat = 'rdfxml';
                 }
-                $graph = new EasyRdf_Graph;
+                $graph = new Graph;
                 $graph->parse(json_encode($item), 'jsonld');
                 $content = $graph->serialise($easyRdfFormat);
             }

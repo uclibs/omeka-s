@@ -5,6 +5,7 @@ function MappingBlock(mapDiv, timelineDiv) {
     var map = new L.map(mapDiv[0], {
         minZoom: mapData.min_zoom ? mapData.min_zoom : 0,
         maxZoom: mapData.max_zoom ? mapData.max_zoom : 19,
+        fullscreenControl: true
     });
     var timelineData = timelineDiv.length ? timelineDiv.data('data') : null;
     var timelineOptions = timelineDiv.length ? timelineDiv.data('options') : null;
@@ -59,6 +60,24 @@ function MappingBlock(mapDiv, timelineDiv) {
             }
         }
     };
+
+    // Set the scroll wheel zoom behavior.
+    switch (mapData['scroll_wheel_zoom']) {
+        case 'disable':
+            map.scrollWheelZoom.disable()
+            break;
+        case 'click':
+            map.scrollWheelZoom.disable()
+            map.on('click', function() {
+                if (!map.scrollWheelZoom.enabled()) {
+                    map.scrollWheelZoom.enable();
+                }
+            });
+            break;
+        default:
+            map.scrollWheelZoom.enable()
+            break;
+    }
 
     // Set the markers.
     $.each(markerData, function(index, data) {

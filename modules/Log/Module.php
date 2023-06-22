@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /*
- * Copyright Daniel Berthereau, 2017-2021
+ * Copyright Daniel Berthereau, 2017-2023
  *
  * This software is governed by the CeCILL license under French law and abiding
  * by the rules of distribution of free software.  You can use, modify and/ or
@@ -36,12 +36,18 @@ if (!class_exists(\Generic\AbstractModule::class)) {
 }
 
 use Generic\AbstractModule;
+use Laminas\ModuleManager\ModuleManager;
 use Laminas\Mvc\MvcEvent;
 use Omeka\Permissions\Assertion\OwnsEntityAssertion;
 
 class Module extends AbstractModule
 {
     public const NAMESPACE = __NAMESPACE__;
+
+    public function init(ModuleManager $moduleManager): void
+    {
+        require_once __DIR__ . '/vendor/autoload.php';
+    }
 
     public function onBootstrap(MvcEvent $event): void
     {
@@ -53,7 +59,7 @@ class Module extends AbstractModule
     {
         $services = $this->getServiceLocator();
         $t = $services->get('MvcTranslator');
-        $messenger = new \Omeka\Mvc\Controller\Plugin\Messenger;
+        $messenger = $services->get('ControllerPluginManager')->get('messenger');
         $config = $services->get('Config');
         if (empty($config['logger']['log'])) {
             $messenger->addError($t->translate("Logging is not active. You should enable it in the file config/local.config.php: `'log' => true`.")); // @translate

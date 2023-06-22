@@ -25,9 +25,19 @@ return [
             dirname(__DIR__) . '/view',
         ],
     ],
+    'form_elements' => [
+        'factories' => [
+            Form\Element\CustomVocabSelect::class => Service\Form\Element\CustomVocabSelectFactory::class,
+        ],
+    ],
     'controllers' => [
         'invokables' => [
             Controller\IndexController::class => Controller\IndexController::class,
+        ],
+    ],
+    'datascribe_data_types' => [
+        'factories' => [
+            'custom_vocab_select' => Service\DatascribeDataType\CustomVocabSelectFactory::class,
         ],
     ],
     'navigation' => [

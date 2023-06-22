@@ -53,13 +53,19 @@ class CleanLanguageCodes extends AbstractPlugin
         // The entity manager may be used directly, but it is simpler with sql.
         $connection = $this->entityManager->getConnection();
 
-        $quotedFrom = $connection->quote($from);
-        $quotedTo = empty($to) ? 'NULL' : $connection->quote($to);
+        $quotedFrom = empty($from)
+            ? '"" OR `v`.`lang` IS NULL'
+            : $connection->quote($from);
+        $quotedTo = empty($to)
+            ? 'NULL'
+            : $connection->quote($to);
 
         $sql = <<<SQL
 UPDATE `value` AS `v`
-SET `v`.`lang` = $quotedTo
-WHERE `v`.`lang` = $quotedFrom
+SET
+    `v`.`lang` = $quotedTo
+WHERE
+    `v`.`lang` = $quotedFrom
 SQL;
 
         $idsString = is_null($resourceIds) ? '' : implode(',', $resourceIds);
@@ -83,7 +89,7 @@ SQL;
             }
         }
 
-        $processed = $connection->exec($sql);
+        $processed = $connection->executeStatement($sql);
         if ($processed) {
             $this->logger->info(sprintf('Updated language from "%s" to "%s" of %d values.', $from, $to, $processed));
         }
@@ -107,23 +113,18 @@ SQL;
         $connection = $this->entityManager->getConnection();
         $qb = $connection->createQueryBuilder();
         $qb
-            ->select([
-                'DISTINCT property.id AS id',
+            ->select(
                 'CONCAT(vocabulary.prefix, ":", property.local_name) AS term',
-                // Only the two first selects are needed, but some databases
-                // require "order by" or "group by" value to be in the select.
-                'vocabulary.id',
-                'property.id',
-            ])
+                'property.id AS id',
+                // Required with only_full_group_by.
+                'vocabulary.id'
+            )
             ->from('property', 'property')
             ->innerJoin('property', 'vocabulary', 'vocabulary', 'property.vocabulary_id = vocabulary.id')
             ->orderBy('vocabulary.id', 'asc')
             ->addOrderBy('property.id', 'asc')
             ->addGroupBy('property.id')
         ;
-        $stmt = $connection->executeQuery($qb);
-        // Fetch by key pair is not supported by doctrine 2.0.
-        $properties = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return array_map('intval', array_column($properties, 'id', 'term'));
+        return array_map('intval', $connection->executeQuery($qb)->fetchAllKeyValue());
     }
 }

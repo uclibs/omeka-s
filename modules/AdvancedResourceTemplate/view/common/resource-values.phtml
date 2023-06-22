@@ -1,10 +1,9 @@
 <?php
 /**
  * @var \Laminas\View\Renderer\PhpRenderer $this
- * @var array $values
- * @var array $templateProperties
- * Options:
  * @var \Omeka\Api\Representation\AbstractResourceEntityRepresentation $resource
+ * @var array|\AppendIterator $values
+ * @var array $templateProperties
  */
 
 // Wrap the core template view/common/resource-values with group labels, if any.
@@ -13,14 +12,13 @@
 $mainViewTemplate = OMEKA_PATH . '/application/view/common/resource-values.phtml';
 
 // When the module AdvancedResourceTemplate is not available, use default template.
+// Normally useless, except when copied in a theme.
 if (!$values || !class_exists('AdvancedResourceTemplate\Api\Representation\ResourceTemplatePropertyDataRepresentation')) {
     include $mainViewTemplate;
     return;
 }
 
 $plugins = $this->getHelperPluginManager();
-$escape = $plugins->get('escapeHtml');
-$translate = $plugins->get('translate');
 
 /*
 // Can be used to optimize the included main view template when not using the core one.
@@ -41,42 +39,45 @@ if ($this->status()->isSiteRequest()) {
 }
 */
 
+// For compatibility with value annotations, waiting fix omeka/omeka-s#1997.
+if (empty($resource)) {
+    /** @var \Omeka\Api\Representation\ValueRepresentation $firstValueValue */
+    $firstValue = is_array($values) ? reset($values) : $values->current();
+    $firstValueValue = reset($firstValue['values']);
+    $resource = $firstValueValue->resource();
+}
+$templateProperties ??= [];
+
 /**
- * @todo To be removed with https://github.com/omeka/omeka-s/pull/1958
- * @var \Omeka\Api\Representation\AbstractResourceEntityRepresentation $resource
  * @var \AdvancedResourceTemplate\Api\Representation\ResourceTemplateRepresentation $template
  * @var array $groups
  */
-if (empty($resource)) {
-    $firstPropertyData = reset($values) ?: [];
-    if (isset($firstPropertyData['resource'])) {
-        $resource = $firstPropertyData['resource'];
-    } elseif ($firstPropertyValues = $firstPropertyData['values']) {
-        $resource = (reset($firstPropertyValues))->resource();
-    } else {
-        $resource = null;
-    }
-}
-$template = $resource ? $resource->resourceTemplate() : null;
+$template = $resource->resourceTemplate();
 $groups = $template ? $template->dataValue('groups', []) : null;
 
 if (!$template || !$groups) {
     include $mainViewTemplate;
     return;
 }
+
+$escape = $plugins->get('escapeHtml');
+$translate = $plugins->get('translate');
 ?>
 
 <div class="property-groups">
     <?php
+    // $values is an AppendIterator: array_filter(), count(), etc. cannot be used.
     $sourceValues = $values;
     foreach (array_keys($groups) as $groupLabel):
-        $valuesGroup = array_filter($sourceValues, function ($v) use ($groupLabel) {
-            return $v['group'] === $groupLabel;
-        });
-        $sourceValues = array_filter($sourceValues, function ($v) use ($groupLabel) {
-            return $v['group'] !== $groupLabel;
-        });
-        if (count($valuesGroup)):
+        $valuesGroup = new \AppendIterator();
+        $sourceValuesFiltered = new \AppendIterator();
+        foreach ($sourceValues as $term => $propertyData) {
+            $propertyData['group'] === $groupLabel
+                ? $valuesGroup->append(new \ArrayIterator([$term => $propertyData]))
+                : $sourceValuesFiltered->append(new \ArrayIterator([$term => $propertyData]));
+        }
+        $sourceValues = $sourceValuesFiltered;
+        if ($valuesGroup->key() !== null):
             $values = $valuesGroup;
         ?>
     <div class="property-group">
@@ -86,7 +87,7 @@ if (!$template || !$groups) {
         <?php endif;
     endforeach;
     // Display metadata that are not in any group.
-    if (count($sourceValues)):
+    if ($sourceValues->key()):
         $values = $sourceValues; ?>
     <div class="property-group">
         <h3><?= $escape($translate('Other metadata')) ?></h3>

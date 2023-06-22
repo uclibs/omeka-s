@@ -17,17 +17,17 @@ td {
 
 .field .field-meta {
     width: 30%;
-    align-items: flex-start;
-}
-
-.field .label,
-.field label {
-    padding-top: $spacing-s;
+    align-self: flex-start;
 }
 
 .field .inputs {
     width: 70%;
     padding-left: gutter();
+}
+
+.field .value select {
+    width: initial;
+    margin-bottom: 0;
 }
 
 /* @group ----- Header ----- */
@@ -187,6 +187,7 @@ header nav > ul > li > .parent-link > a {
 header nav > ul > li > .parent-link a:after {
     font-family: "Font Awesome 5 Free";
     content: "\f107";
+    font-weight: 900;
     display: inline-block;
     margin-left: $spacing-s;
 }

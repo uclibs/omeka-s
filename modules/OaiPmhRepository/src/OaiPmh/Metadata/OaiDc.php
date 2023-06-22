@@ -3,7 +3,7 @@
  * @author John Flatness, Yu-Hsun Lin
  * @copyright Copyright 2009 John Flatness, Yu-Hsun Lin
  * @copyright BibLibre, 2016
- * @copyright Daniel Berthereau, 2014-2018
+ * @copyright Daniel Berthereau, 2014-2023
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
  */
 namespace OaiPmhRepository\OaiPmh\Metadata;
@@ -70,6 +70,8 @@ class OaiDc extends AbstractMetadata
             'rights',
         ];
 
+        $bnfVignette = $this->params['oai_dc']['bnf_vignette'];
+
         /* Must create elements using createElement to make DOM allow a
          * top-level xmlns declaration instead of wasteful and non-
          * compliant per-node declarations.
@@ -78,10 +80,15 @@ class OaiDc extends AbstractMetadata
         foreach ($localNames as $localName) {
             $term = 'dcterms:' . $localName;
             $termValues = $values[$term]['values'] ?? [];
-            $termValues = $this->filterValues($item, $term, $termValues);
             foreach ($termValues as $value) {
-                list($text, $attributes) = $this->formatValue($value);
+                [$text, $attributes] = $this->formatValue($value);
                 $this->appendNewElement($oai, 'dc:' . $localName, $text, $attributes);
+            }
+            if ($bnfVignette !== 'none' && $localName === 'relation') {
+                $thumbnail = $item->thumbnailDisplayUrl($bnfVignette);
+                if ($thumbnail) {
+                    $this->appendNewElement($oai, 'dc:relation', 'vignette : ' . $thumbnail, []);
+                }
             }
         }
 
@@ -96,20 +103,5 @@ class OaiDc extends AbstractMetadata
                 $this->appendNewElement($oai, 'dc:identifier', $media->originalUrl(), ['xsi:type' => 'dcterms:URI']);
             }
         }
-    }
-
-    public function getMetadataPrefix()
-    {
-        return self::METADATA_PREFIX;
-    }
-
-    public function getMetadataSchema()
-    {
-        return self::METADATA_SCHEMA;
-    }
-
-    public function getMetadataNamespace()
-    {
-        return self::METADATA_NAMESPACE;
     }
 }

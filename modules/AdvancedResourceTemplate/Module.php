@@ -8,7 +8,6 @@ if (!class_exists(\Generic\AbstractModule::class)) {
         : __DIR__ . '/src/Generic/AbstractModule.php';
 }
 
-use AdvancedResourceTemplate\Api\Representation\ResourceTemplateRepresentation;
 use Generic\AbstractModule;
 use Laminas\EventManager\Event;
 use Laminas\EventManager\SharedEventManagerInterface;
@@ -141,6 +140,8 @@ class Module extends AbstractModule
         // For compatibility with other modules (HideProperties, Internationalisation)
         // that use the term as key in the list of displayed values, the event
         // should be triggered lastly.
+        // Anyway, this is now an iterator that keeps the same key for multiple
+        // values.
         $sharedEventManager->attach(
             \Omeka\Api\Representation\ItemRepresentation::class,
             'rep.resource.display_values',
@@ -278,17 +279,18 @@ class Module extends AbstractModule
             return;
         }
 
-        /** @var \Omeka\Api\Adapter\AbstractResourceEntityAdapter $adapter */
+        /**
+         * @var \Omeka\Api\Adapter\AbstractResourceEntityAdapter $adapter
+         * @var \AdvancedResourceTemplate\Api\Representation\ResourceTemplateRepresentation $template
+         * @var \Omeka\Api\Request $request
+         * @var \Omeka\Stdlib\ErrorStore $errorStore
+         * @var \Doctrine\DBAL\Connection $connection
+         */
         $adapter = $event->getTarget();
-
-        /** @var \AdvancedResourceTemplate\Api\Representation\ResourceTemplateRepresentation $template */
         $template = $adapter->getAdapter('resource_templates')->getRepresentation($templateEntity);
-
-        /** @var \Omeka\Api\Request $request */
         // $request = $event->getParam('request');
-
-        /** @var \Omeka\Stdlib\ErrorStore $errorStore */
         $errorStore = $event->getParam('errorStore');
+        $connection = $services->get('Omeka\Connection');
 
         // Because the form doesn't contain the properties, that are added
         // dynamically, and because the resource controllers don't include the
@@ -300,11 +302,11 @@ class Module extends AbstractModule
         $routeMatch = $status->getRouteMatch();
         // RouteMatch may be unavailable during background process.
         $routeName = $routeMatch ? $routeMatch->getMatchedRouteName() : null;
-        // Module Contribute can use the error store, so no issue here.
+        // Module Contribute can use the error store so don't output issue here.
         $directMessage = $routeName === 'admin/default'
             && in_array($routeMatch->getParam('__CONTROLLER__'), ['item', 'item-set', 'media', 'annotation'])
             && in_array($routeMatch->getParam('action'), ['add', 'edit']);
-        $messenger = $directMessage ? new \Omeka\Mvc\Controller\Plugin\Messenger() : null;
+        $messenger = $directMessage ? $services->get('ControllerPluginManager')->get('messenger') : null;
 
         // Template level.
         $resourceClass = $entity->getResourceClass();
@@ -347,6 +349,7 @@ class Module extends AbstractModule
         // Some checks can be done simpler via representation.
         /** @var \Omeka\Api\Representation\AbstractResourceEntityRepresentation $resource */
         $resource = $adapter->getRepresentation($entity);
+        $resourceId = (int) $resource->id();
 
         // Property level.
         foreach ($template->resourceTemplateProperties() as $templateProperty) {
@@ -380,14 +383,11 @@ class Module extends AbstractModule
                     }
                 }
 
-                // TODO Fix api($form) to manage the minimum number of values in admin resource form.
-                if ($directMessage) {
-                    continue;
-                }
-
                 $minValues = (int) $rtpData->dataValue('min_values');
                 $maxValues = (int) $rtpData->dataValue('max_values');
-                if ($minValues || $maxValues) {
+                // TODO Fix api($form) to manage the minimum number of values in admin resource form.
+                // The check for directMessage is to be removed with the fix.
+                if (!$directMessage && ($minValues || $maxValues)) {
                     // The number of values may be specific for each type.
                     $isRequired = $rtpData->isRequired();
                     $values = $resource->value($term, ['all' => true, 'type' => $rtpData->dataTypes()]);
@@ -416,6 +416,65 @@ class Module extends AbstractModule
                     }
                 }
 
+                $uniqueValue = (bool) $rtpData->dataValue('unique_value');
+                if ($uniqueValue) {
+                    $values = $resource->value($term, ['all' => true]);
+                    if ($values) {
+                        $sqlWhere = [];
+                        // Get all values by main type in one query.
+                        $bind = [
+                            'resource_id' => $resourceId,
+                            'property_id' => $templateProperty->property()->id(),
+                        ];
+                        $types = [
+                            'resource_id' => \Doctrine\DBAL\ParameterType::INTEGER,
+                            'property_id' => \Doctrine\DBAL\ParameterType::INTEGER,
+                        ];
+                        foreach ($values as $value) {
+                            if ($k = $value->valueResource()) {
+                                $bind['resource'][] = $k->id();
+                            } elseif ($k = $value->uri()) {
+                                $bind['uri'][] = $k;
+                            } else {
+                                $bind['literal'][] = $value->value();
+                            }
+                        }
+                        if (isset($bind['resource'])) {
+                            $sqlWhere[] = 'value.value_resource_id IN (:resource)';
+                            $types['resource'] = $connection::PARAM_INT_ARRAY;
+                        }
+                        if (isset($bind['uri'])) {
+                            $sqlWhere[] = 'value.uri IN (:uri)';
+                            $types['uri'] = $connection::PARAM_STR_ARRAY;
+                        }
+                        if (isset($bind['literal'])) {
+                            $sqlWhere[] = 'value.value IN (:literal)';
+                            $types['literal'] = $connection::PARAM_STR_ARRAY;
+                        }
+                        $sqlWhere = implode(' OR ', $sqlWhere);
+                        $sql = <<<SQL
+SELECT value.resource_id
+FROM value
+WHERE value.resource_id != :resource_id
+    AND value.property_id = :property_id
+    AND ($sqlWhere)
+LIMIT 1;
+SQL;
+                        $resId = $connection->executeQuery($sql, $bind, $types)->fetchOne();
+                        if ($resId) {
+                            $message = new \Omeka\Stdlib\Message(
+                                'The value for term "%1$s" should be unique, but already set for resource #%2$s.', // @translate
+                                $term, $resId
+                            );
+                            $errorStore->addError($term, $message);
+                            if ($directMessage) {
+                                $messenger->addError($message);
+                            }
+                            break;
+                        }
+                    }
+                }
+
                 // TODO Check language (but they are suggested languages).
             }
         }
@@ -425,10 +484,12 @@ class Module extends AbstractModule
      * Prepare specific data to display the list of the resource values data.
      *
      * Specific data passed to display values for this module are:
-     * - resource: added to each property to simplify view template because it
-     *   is not passed by default
-     * - duplicated properties with a specific label and comments
      * - groups of properties, managed in overridden view template resource-values
+     * - term, like the key
+     * - duplicated properties with a specific label and comments
+     *
+     * Some of the complexity of the module is needed to kept compatibility
+     * with core, even if the module is removed.
      *
      * @see \Omeka\Api\Representation\AbstractResourceEntityRepresentation::displayValues()
      */
@@ -453,18 +514,20 @@ class Module extends AbstractModule
         }
 
         $newValues = count($templateProperties)
-            ? $this->prepareResourceAndGroupsValues($resource, $templateProperties, $values, $groups)
-            : $this->prependResourceAndGroupsToValues($resource, $values, $groups);
+            ? $this->prepareGroupsValues($resource, $templateProperties, $values, $groups)
+            : $this->prependGroupsToValues($resource, $values, $groups);
 
         $event->setParam('values', $newValues);
     }
 
     /**
-     * Prepend keys "resouce" and "group" to display values.
+     * Prepend keys "group" and "term" to display values.
+     *
+     * Manage the rare case where there is a template without property.
      *
      * Warning: Duplicate properties are not managed here.
      */
-    protected function prependResourceAndGroupsToValues(
+    protected function prependGroupsToValues(
         AbstractResourceEntityRepresentation $resource,
         array $values,
         array $groups
@@ -472,7 +535,6 @@ class Module extends AbstractModule
         if (!$groups) {
             foreach ($values as $term => &$propertyData) {
                 $propertyData = [
-                    'resource' => $resource,
                     'group' => null,
                     'term' => $term,
                 ] + $propertyData;
@@ -491,7 +553,6 @@ class Module extends AbstractModule
                 }
             }
             $propertyData = [
-                'resource' => $resource,
                 'group' => $currentGroup,
                 'term' => $term,
             ] + $propertyData;
@@ -503,19 +564,22 @@ class Module extends AbstractModule
     /**
      * Prepare duplicate properties with specific labels and comments.
      *
-     * In that case, modify the key "term" as term + index, and update label and
-     * comment, so the default template "common/resource-values" will be able to
-     * display them as standard ones.
+     * In that case, convert the array into an IteratorIterator, so the key
+     * (term) stays the same, but there are more values with it.
+     *
+     * In the previous version, the key "term" was modified as term + index,
+     * and the label and comment were updated, so the default template "common/resource-values"
+     * was wrapped and was able to display values as standard ones.
      *
      * @see \Omeka\Api\Representation\AbstractResourceEntityRepresentation::values()
      * @see \Omeka\Api\Representation\AbstractResourceEntityRepresentation::displayValues()
      */
-    protected function prepareResourceAndGroupsValues(
+    protected function prepareGroupsValues(
         AbstractResourceEntityRepresentation $resource,
         array $templateProperties,
         array $values,
         array $groups
-    ): array {
+    ): iterable {
         // The process should take care of values appended to a resource that
         // have a data type that is not specified in template properties, in
         // particular the default ones (literal, resource, uri). It may fix bad
@@ -541,7 +605,7 @@ class Module extends AbstractModule
         }
 
         if (!$hasMultipleLabels) {
-            return $this->prependResourceAndGroupsToValues($resource, $values, $groups);
+            return $this->prependGroupsToValues($resource, $values, $groups);
         }
 
         // Prepare values to display when specific labels are defined for some
@@ -575,14 +639,15 @@ class Module extends AbstractModule
                 }
             }
             $propertyData = [
-                'resource' => $resource,
                 'group' => $currentGroup,
                 'term' => $term,
             ] + $propertyData;
         }
         unset($propertyData);
 
-        $newValues = [];
+        // Instead of an array, use an iterator to keep the same term for
+        // multiple propertyDatas.
+        $newValues = new \AppendIterator();
         $hasGroups = !empty($groups);
         $currentGroup = null;
         foreach ($valuesWithLabel as $term => $propData) {
@@ -600,8 +665,8 @@ class Module extends AbstractModule
                         }
                     }
                 }
+                // Unset values to keep it at the end of the array.
                 unset($propertyData['values']);
-                $propertyData['resource'] = $resource;
                 $propertyData['group'] = $currentGroup;
                 $propertyData['term'] = $term;
                 $propertyData['term_label'] = $termLabel;
@@ -609,7 +674,7 @@ class Module extends AbstractModule
                 $propertyData['alternate_label'] = $dataTypeLabel;
                 $propertyData['alternate_comment'] = $dataTypesLabelsToComments[$dataTypeLabel];
                 $propertyData['values'] = $valuesWithLabel[$term][$dataTypeLabel]['values'];
-                $newValues[$termLabel] = $propertyData;
+                $newValues->append(new \ArrayIterator([$term => $propertyData]));
             }
         }
 
@@ -709,17 +774,20 @@ class Module extends AbstractModule
         $autofillers = $settings->get('advancedresourcetemplate_autofillers') ?: [];
         $value = $this->autofillersToString($autofillers);
 
-        $event
-            ->getTarget()
-            ->get('advancedresourcetemplate')
+        $fieldset = version_compare(\Omeka\Module::VERSION, '4', '<')
+            ? $event->getTarget()->get('advancedresourcetemplate')
+            : $event->getTarget();
+        $fieldset
             ->get('advancedresourcetemplate_autofillers')
             ->setValue($value);
     }
 
     public function handleMainSettingsFilters(Event $event): void
     {
-        $event->getParam('inputFilter')
-            ->get('advancedresourcetemplate')
+        $inputFilter = version_compare(\Omeka\Module::VERSION, '4', '<')
+            ? $event->getParam('inputFilter')->get('advancedresourcetemplate')
+            : $event->getParam('inputFilter');
+        $inputFilter
             ->add([
                 'name' => 'advancedresourcetemplate_autofillers',
                 'required' => false,
@@ -1208,5 +1276,23 @@ class Module extends AbstractModule
             }
         }
         return $result;
+    }
+
+    /**
+     * Get each line of a string separately.
+     */
+    public function stringToList($string): array
+    {
+        return array_filter(array_map('trim', explode("\n", $this->fixEndOfLine($string))), 'strlen');
+    }
+
+    /**
+     * Clean the text area from end of lines.
+     *
+     * This method fixes Windows and Apple copy/paste from a textarea input.
+     */
+    public function fixEndOfLine($string): string
+    {
+        return str_replace(["\r\n", "\n\r", "\r"], ["\n", "\n", "\n"], (string) $string);
     }
 }

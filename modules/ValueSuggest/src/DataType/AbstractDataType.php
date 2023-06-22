@@ -6,7 +6,6 @@ use Omeka\Api\Representation\ValueRepresentation;
 use Omeka\DataType\AbstractDataType as BaseAbstractDataType;
 use Omeka\Entity\Value;
 use Laminas\Form\Element\Hidden;
-use Laminas\Form\Element\Text;
 use Laminas\ServiceManager\ServiceManager;
 use Laminas\View\Renderer\PhpRenderer;
 
@@ -47,19 +46,12 @@ abstract class AbstractDataType extends BaseAbstractDataType implements DataType
             'data-value-key' => '@value',
         ]);
 
-        $languageInput = new Text('valuesuggest-language');
-        $languageInput->setAttributes([
-            'data-value-key' => '@language',
-            'class' => 'value-language',
-        ]);
-
         $rdfLabel = $this->getLabel();
 
         return $view->partial('common/data-type/suggested', [
             'labelInput' => $labelInput,
             'idInput' => $idInput,
             'valueInput' => $valueInput,
-            'languageInput' => $languageInput,
             'rdfLabel' => $rdfLabel,
         ]);
     }

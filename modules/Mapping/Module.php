@@ -72,6 +72,12 @@ class Module extends AbstractModule
     {
         parent::onBootstrap($event);
 
+        // Set the corresponding visibility rules on Mapping resources.
+        $em = $this->getServiceLocator()->get('Omeka\EntityManager');
+        $filter = $em->getFilters()->getFilter('resource_visibility');
+        $filter->addRelatedEntity('Mapping\Entity\Mapping', 'item_id');
+        $filter->addRelatedEntity('Mapping\Entity\MappingMarker', 'item_id');
+
         $acl = $this->getServiceLocator()->get('Omeka\Acl');
         $acl->allow(
             null,
@@ -143,17 +149,32 @@ class Module extends AbstractModule
             'view.show.after',
             [$this, 'handleViewShowAfter']
         );
-        $sharedEventManager->attach(
-            'Omeka\Controller\Site\Item',
-            'view.show.after',
-            [$this, 'handleViewShowAfter']
-        );
-        // Add the mapping fields to the site's map browse page.
+        // Add the mapping fields to advanced search pages.
         $sharedEventManager->attach(
             'Mapping\Controller\Site\Index',
             'view.advanced_search',
-            [$this, 'filterViewAdvancedSearch']
+            [$this, 'filterMapBrowseAdvancedSearch']
         );
+        $sharedEventManager->attach(
+            'Omeka\Controller\Admin\Item',
+            'view.advanced_search',
+            [$this, 'filterItemAdvancedSearch']
+        );
+        $sharedEventManager->attach(
+            'Omeka\Controller\Site\Item',
+            'view.advanced_search',
+            [$this, 'filterItemAdvancedSearch']
+        );
+        $sharedEventManager->attach(
+            'Omeka\Controller\Admin\Query',
+            'view.advanced_search',
+            [$this, 'filterItemAdvancedSearch']
+        );
+        $sharedEventManager->attach(
+            '*',
+            'view.search.filters',
+            [$this, 'filterSearchFilters']
+         );
         // Add the "has_markers" filter to item search.
         $sharedEventManager->attach(
             'Omeka\Api\Adapter\ItemAdapter',
@@ -196,6 +217,45 @@ class Module extends AbstractModule
             'api.hydrate.post',
             [$this, 'handleMarkers']
         );
+        $sharedEventManager->attach(
+            'Omeka\Form\SiteSettingsForm',
+            'form.add_elements',
+            [$this, 'addSiteSettings']
+        );
+    }
+
+    public function addSiteSettings(Event $event)
+    {
+        $services = $this->getServiceLocator();
+        $siteSettings = $services->get('Omeka\Settings\Site');
+        $form = $event->getTarget();
+
+        $groups = $form->getOption('element_groups');
+        $groups['mapping'] = 'Mapping'; // @translate
+        $form->setOption('element_groups', $groups);
+
+        $form->add([
+            'type' => 'checkbox',
+            'name' => 'mapping_advanced_search_add_marker_presence',
+            'options' => [
+                'element_group' => 'mapping',
+                'label' => 'Add marker presence to advanced search',
+            ],
+            'attributes' => [
+                'value' => $siteSettings->get('mapping_advanced_search_add_marker_presence'),
+            ],
+        ]);
+        $form->add([
+            'type' => 'checkbox',
+            'name' => 'mapping_advanced_search_add_geographic_location',
+            'options' => [
+                'element_group' => 'mapping',
+                'label' => 'Add geographic location to advanced search',
+            ],
+            'attributes' => [
+                'value' => $siteSettings->get('mapping_advanced_search_add_geographic_location'),
+            ],
+        ]);
     }
 
     public function handleViewFormAfter(Event $event)
@@ -208,24 +268,83 @@ class Module extends AbstractModule
         echo $event->getTarget()->partial('mapping/index/show');
     }
 
-    public function filterViewAdvancedSearch(Event $event)
+    public function filterMapBrowseAdvancedSearch(Event $event)
     {
         $partials = $event->getParam('partials');
-        $partials[] = 'mapping/index/advanced-search';
+        // Remove any unneeded partials.
+        $removePartials = ['common/advanced-search/sort'];
+        $partials = array_diff($partials, $removePartials);
+        // Put geographic location fields at the beginning of the form.
+        array_unshift($partials, 'common/advanced-search/mapping-item-geographic-location');
         $event->setParam('partials', $partials);
+    }
+
+    public function filterItemAdvancedSearch(Event $event)
+    {
+        $services = $this->getServiceLocator();
+        $status = $services->get('Omeka\Status');
+        $siteSettings = $services->get('Omeka\Settings\Site');
+        $partials = $event->getParam('partials');
+
+        // Conditionally add the marker presence field.
+        if ($status->isAdminRequest() || ($status->isSiteRequest() && $siteSettings->get('mapping_advanced_search_add_marker_presence'))) {
+            $partials[] = 'common/advanced-search/mapping-item-marker-presence';
+        }
+        // Conditionally add the geographic location fields.
+        if ($status->isAdminRequest() || ($status->isSiteRequest() && $siteSettings->get('mapping_advanced_search_add_geographic_location'))) {
+            $partials[] = 'common/advanced-search/mapping-item-geographic-location';
+        }
+        $event->setParam('partials', $partials);
+    }
+
+    public function filterSearchFilters(Event $event)
+    {
+        $view = $event->getTarget();
+        $query = $event->getParam('query');
+        $filters = $event->getParam('filters');
+
+        // Add the marker presence search filter label.
+        if (isset($query['has_markers']) && in_array($query['has_markers'], ['0', '1'])) {
+            $filterLabel = $view->translate('Map marker presence');
+            $filters[$filterLabel][] = $query['has_markers'] ? $view->translate('Has map markers') : $view->translate('Has no map markers');
+        }
+        // Add the geographic location search filter label.
+        $address = $query['mapping_address'] ?? null;
+        $radius = $query['mapping_radius'] ?? null;
+        $radiusUnit = $query['mapping_radius_unit'] ?? null;
+        if (isset($address) && '' !== trim($address) && isset($radius) && is_numeric($radius)) {
+            $filterLabel = $view->translate('Geographic location');
+            $filters[$filterLabel][] = sprintf('%s (%s %s)', $address, $radius, $radiusUnit);
+        }
+        $event->setParam('filters', $filters);
     }
 
     public function handleApiSearchQuery(Event $event)
     {
+        $itemAdapter = $event->getTarget();
+        $qb = $event->getParam('queryBuilder');
         $query = $event->getParam('request')->getContent();
-        if (isset($query['has_markers'])) {
-            $qb = $event->getParam('queryBuilder');
-            $itemAdapter = $event->getTarget();
+        if (isset($query['has_markers']) && (is_numeric($query['has_markers']) || is_bool($query['has_markers']))) {
             $mappingMarkerAlias = $itemAdapter->createAlias();
-            $qb->innerJoin(
-                'Mapping\Entity\MappingMarker', $mappingMarkerAlias,
-                'WITH', "$mappingMarkerAlias.item = omeka_root.id"
-            );
+            if ($query['has_markers']) {
+                $qb->innerJoin(
+                    'Mapping\Entity\MappingMarker', $mappingMarkerAlias,
+                    'WITH', "$mappingMarkerAlias.item = omeka_root.id"
+                );
+            } else {
+                $qb->leftJoin(
+                    'Mapping\Entity\MappingMarker', $mappingMarkerAlias,
+                    'WITH', "$mappingMarkerAlias.item = omeka_root.id"
+                );
+                $qb->andWhere($qb->expr()->isNull($mappingMarkerAlias));
+            }
+        }
+        $address = $query['mapping_address'] ?? null;
+        $radius = $query['mapping_radius'] ?? null;
+        $radiusUnit = $query['mapping_radius_unit'] ?? null;
+        if (isset($address) && '' !== trim($address) && isset($radius) && is_numeric($radius)) {
+            $mappingMarkerAdapter = $itemAdapter->getAdapter('mapping_markers');
+            $mappingMarkerAdapter->buildGeographicLocationQuery($qb, $address, $radius, $radiusUnit, $itemAdapter);
         }
     }
 

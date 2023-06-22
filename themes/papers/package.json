@@ -1,7 +1,7 @@
 {
   "name": "papers",
-  "version": "1.2.0",
-  "description": "An Omeka S theme for Papers of the War Department.",
+  "version": "1.4.1",
+  "description": "A Omeka S theme for Papers of the War Department.",
   "main": "gulpfile.js",
   "scripts": {
     "test": "test"
@@ -21,15 +21,16 @@
   },
   "homepage": "https://github.com/omeka-s-themes/papers#readme",
   "devDependencies": {
-    "autoprefixer": "^6.4.0",
-    "gulp": "^4.0.0",
-    "gulp-postcss": "^6.1.1",
-    "gulp-sass": "^4.0.2",
-    "node-normalize-scss": "^8.0.0",
-    "susy": "^2.2.12",
-    "lodash.template": ">=4.5.0"
+    "autoprefixer": "^10.2.5",
+    "gulp": "^4.0.2",
+    "gulp-postcss": "^9.0.1",
+    "gulp-sass": "^5.0.0",
+    "lodash.template": ">=4.5.0",
+    "node-sass": "^7.0.1"
   },
-  "dependencies": {
-    "normalize.css": "^8.0.0"
-  }
+  "browserslist": [
+    "> 5%",
+    "> 1% in US"
+  ],
+  "dependencies": {}
 }

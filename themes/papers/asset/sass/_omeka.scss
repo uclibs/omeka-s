@@ -18,6 +18,42 @@
   }
 }
 
+.expand,
+.collapse {
+  display: inline-block;
+}
+
+.expand:after,
+.collapse:after {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+}
+
+.expand:after {
+  content: "\f0da";
+}
+
+.collapse:after {
+  content: "\f0d7";
+}
+
+.collapsible {
+  display: none;
+}
+
+.collapse + .collapsible {
+  width: 100%;
+  display: block;
+  padding: (.5 * $spacing-unit) $spacing-unit;
+  border: 1px solid $grey-color;
+  margin: (.5 * $spacing-unit) 0 $spacing-unit;
+}
+
+.site-header .wrapper > h1 {
+  margin: 0;
+  padding: 0;
+}
+
 header ul.navigation {
   display: inline-block
 }
@@ -174,7 +210,7 @@ body:not([class]) .page-content .wrapper {
     margin: 0 auto;
 }
 
-.item.browse .resource-list {
+.browse .resource-list {
     @include resource-list;
 }
 
@@ -216,9 +252,15 @@ body:not([class]) .page-content .wrapper {
     font-variant: small-caps;
 }
 
-.properties {
+#content .wrapper {
     max-width: 1200px;
     margin: 0 auto;
+}
+
+.item-with-metadata .resource.show > dl:not(:first-of-type),
+#content .wrapper > dl:not(:first-of-type) {
+    border-top: 1px solid $grey-color-dark;
+    margin-top: -.5 * $spacing-unit;
 }
 
 .media-list,
@@ -226,12 +268,14 @@ body:not([class]) .page-content .wrapper {
     display: flex;
     width: 100%;
     padding: (.25 * $spacing-unit) 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 
     &:not(:last-child) {
         border-bottom: 1px solid $grey-color-dark;
     }
     
-    h4 {
+    dt {
         width: 30%;
         padding-right: $spacing-unit;
         text-align: right;
@@ -241,22 +285,39 @@ body:not([class]) .page-content .wrapper {
         text-overflow: ellipsis;
     }
     
-    a.resource-link,
-    .values {
+    dd.value {
         width: 70%;
-    }
-
-    .resource-link {
         display: flex;
         align-items: center;
-        
-        img {
-            width: 1.5 * $spacing-unit;
-            height: 1.5 * $spacing-unit;
-            margin-right: (.25 * $spacing-unit);
+        flex-wrap: wrap;
+
+        &:not(:last-child) {
+            margin-bottom: .5 * $spacing-unit;
         }
-        
     }
+
+    .value-content:not(:only-child) {
+        margin-right: .5 * $spacing-unit;
+    }
+
+}
+
+.resource-link {
+    display: flex;
+    align-items: center;
+    
+    img {
+        width: 1.5 * $spacing-unit;
+        height: 1.5 * $spacing-unit;
+        margin-right: (.25 * $spacing-unit);
+    }
+    
+}
+
+.property .language {
+  background-color: $grey-color-light;
+  padding: 0 (.25 * $spacing-unit);
+  margin-right: .25 * $spacing-unit;
 }
 
 .media-list {
@@ -301,26 +362,32 @@ body:not([class]) .page-content .wrapper {
     display: none;
 }
 
-#advanced-search .field {
+.field {
     display: flex;
     margin-bottom: $spacing-unit;
 }
 
-#advanced-search .field-meta {
+.field-meta {
     width: 20%;
     padding-right: (.25 * $spacing-unit);
 }
 
-#advanced-search .field-meta .label {
+.field-meta .label {
     font-size: 1.25 * $base-font-size;
 }
 
-#advanced-search .inputs {
+.field button {
+    border-width: 1px;
+    font-size: .75 * $base-font-size;
+    margin-left: .25 * $spacing-unit;
+}
+
+.field .inputs {
     width: 80%;
     padding-left: .25 * $spacing-unit;
 }
 
-#advanced-search .field-description {
+.field .field-description {
     font-size: .875 * $base-font-size;
 }
 
@@ -351,7 +418,7 @@ body:not([class]) .page-content .wrapper {
   margin: $spacing-unit 0 0;
 }
 
-#linked-filter h4 {
+#linked-filter label {
   margin: (.25 * $spacing-unit) (.5 * $spacing-unit) (.25 * $spacing-unit) 0;
 }
 
@@ -548,7 +615,7 @@ body:not([class]) .page-content .wrapper {
         align-self: flex-start;
     }
     
-    .property h4 {
+    .property dt {
           padding-right: (.5 * $spacing-unit);
     }
 

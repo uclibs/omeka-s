@@ -57,6 +57,9 @@
                             .attr('title', Omeka.jsTranslate('Make private'));
                     }
                 }
+                if (thisInput.hasClass('value-language') && thisInput.val() !== "") {
+                    thisInput.closest('.language-wrapper').addClass('active');
+                }
             });
         };
         // Prepare the value annotation markup.
@@ -202,16 +205,14 @@
 
         $('#resource-values').on('click', 'a.value-language', function(e) {
             e.preventDefault();
-            var languageButton = $(this);
-            var languageInput = languageButton.next('input.value-language');
-            languageButton.toggleClass('active');
-            languageInput.toggleClass('active');
-            if (languageInput.hasClass('active')) {
-                languageInput.focus();
+            var languageWrapper = $(this).closest('.language-wrapper');
+            languageWrapper.toggleClass('active');
+            if (languageWrapper.hasClass('active')) {
+                languageWrapper.find('input.value-language').focus();
             }
         });
 
-        $('input.value-language').on('keyup, change', function(e) {
+        $('input.value-language').on('keyup change', function(e) {
             if ('' === this.value || Omeka.langIsValid(this.value)) {
                 this.setCustomValidity('');
             } else {
@@ -228,7 +229,7 @@
         $('#properties').on('click', '.add-value', function(e) {
             e.preventDefault();
             var typeButton = $(this);
-            var field = typeButton.closest('.resource-values.field');
+            var field = typeButton.closest('.resource-property');
             var value = makeNewValue(field.data('property-term'), typeButton.data('type'));
             field.find('.values').append(value);
         });
@@ -278,6 +279,7 @@
             var valueObj = $('.resource-details').data('resource-values');
             var value = $('.value.selecting-resource');
             if (value.hasClass('value')) {
+                // Use value_resource_name that is more precise than value data-data-type.
                 const dataTypeNames = {items: 'resource:item', item_sets: 'resource:itemset', media: 'resource:media'};
                 const dataTypeName = dataTypeNames[valueObj.value_resource_name] ? dataTypeNames[valueObj.value_resource_name] : 'resource';
                 $(document).trigger('o:prepare-value', [dataTypeName, value, valueObj]);
@@ -293,6 +295,12 @@
             Omeka.closeSidebar($('#select-resource'));
         });
 
+        // Manage primary media selection labels.
+        $('#media-list').on('change', '.primary-media-input', function() {
+            $('.primary-media-label-text:not(.sr-only)').addClass('sr-only');
+            $(this).parent('.primary-media').find('.primary-media-label-text').removeClass('sr-only');
+        });
+
         // Prevent resource details from opening when quick add is toggled on.
         $('#select-resource').on('click', '.quick-select-toggle', function() {
             $('#item-results').find('a.select-resource').each(function() {
@@ -303,9 +311,10 @@
         $('#select-resource').on('o:resources-selected', '.select-resources-button', function(e) {
             var value = $('.value.selecting-resource');
             if (value.hasClass('value')) {
-                var field = value.closest('.resource-values.field');
+                var field = value.closest('.resource-property');
                 $('#item-results').find('.resource')
                     .has('input.select-resource-checkbox:checked').each(function(index) {
+                        // Use value_resource_name that is more precise than value data-data-type.
                         var valueObj = $(this).data('resource-values');
                         const dataTypeNames = {items: 'resource:item', item_sets: 'resource:itemset', media: 'resource:media'};
                         const dataTypeName = dataTypeNames[valueObj.value_resource_name] ? dataTypeNames[valueObj.value_resource_name] : 'resource';
@@ -327,8 +336,7 @@
                         hydrateValueAnnotation(value, valueObj);
                         $(document).trigger('o:prepare-value-annotation', [dataTypeName, value, valueObj]);
                     } else {
-                        newValue = makeValueAnnotation(dataTypeName, valueObj);
-                        value.after(newValue);
+                        value.after(makeValueAnnotation(dataTypeName, valueObj));
                     }
                 });
             }
@@ -338,13 +346,13 @@
             e.preventDefault();
             var selectButton = $(this);
             var sidebar = $('#select-resource');
-            var term = selectButton.closest('.resource-values').data('property-term');
+            var term = selectButton.closest('.resource-property').data('property-term');
             $('.selecting-resource').removeClass('selecting-resource');
             selectButton.closest('.value').addClass('selecting-resource');
             $('#select-item a').data('property-term', term);
 
             // Copy template property data in sidebar to be able to respond to sidebar events.
-            const templatePropertyData = selectButton.closest('.resource-values').data('template-property-data');
+            const templatePropertyData = selectButton.closest('.resource-property').data('template-property-data');
             sidebar.data('term', term);
             sidebar.data('template-property-data', templatePropertyData);
 
@@ -378,9 +386,9 @@
             // Manage value suggest options from Advanced resource template.
             // TODO Add an event before submit.
             const templateData = $('#resource-values').data('template-data');
-            $('#properties .resource-values.field').find('.values > .value[data-data-type^="valuesuggest"]').each(function () {
+            $('#properties .resource-property').find('.values > .value[data-data-type^="valuesuggest"]').each(function () {
                 const value = $(this);
-                const field = value.closest('.resource-values.field');
+                const field = value.closest('.resource-property');
                 const rtpData = field.data('template-property-data')
                     ? field.data('template-property-data')
                     : { value_suggest_keep_original_label: 'no', value_suggest_require_uri: 'no' };
@@ -408,7 +416,7 @@
             }
 
             // Iterate all required properties.
-            var requiredProps = thisForm.find('.resource-values.required');
+            var requiredProps = thisForm.find('.resource-property.required');
             requiredProps.each(function() {
 
                 var thisProp = $(this);
@@ -506,7 +514,7 @@
      * Make a new value.
      */
     var makeNewValue = function(term, dataType, valueObj) {
-        var field = $('.resource-values.field[data-property-term="' + term + '"]');
+        var field = $('.resource-property[data-property-term="' + term + '"]');
         // Get the value node from the templates.
         if (!dataType || typeof dataType !== 'string') {
             dataType = valueObj ? valueObj['type'] : field.find('.add-value:visible:first').data('type');
@@ -544,6 +552,14 @@
             .attr('aria-labelledby', valueLabelID);
         value.attr('aria-labelledby', valueLabelID);
         $(document).trigger('o:prepare-value', [dataType, value, valueObj]);
+
+        // Add default language, if any.
+        var templateProperty = field.data('template-property');
+        if (templateProperty && templateProperty['o:default_lang']) {
+            value.find('.language-wrapper').addClass('active');
+            value.find('input.value-language').val(templateProperty['o:default_lang']);
+        }
+
         return value;
     };
 
@@ -617,11 +633,11 @@
         }
 
         var term = propertyLi.data('property-term');
-        var field = $('.resource-values.field.template').clone(true);
+        var field = $('.resource-property.template').clone(true);
         field.removeClass('template');
         field.find('.field-label').text(propertyLi.data('child-search')).attr('id', 'property-' + propertyId + '-label');
         field.find('.field-term').text(term);
-        field.find('.field-description').prepend(propertyLi.find('.field-comment').text());
+        field.find('.field-description').text(propertyLi.find('.field-comment').text());
         field.data('property-term', term);
         field.data('property-id', propertyId);
         field.data('data-types', dataTypes.join(','));
@@ -662,6 +678,7 @@
         if (!field.length) {
             field = makeNewField(propertyId, dataTypes);
         }
+        field.data('template-property', templateProperty);
 
         var originalLabel = field.find('.field-label');
         var originalDescription = field.find('.field-description');
@@ -765,7 +782,7 @@
     var applyResourceTemplate = function(changeClass) {
         var templateSelect = $('#resource-template-select');
         var templateId = templateSelect.val();
-        var fields = $('#properties .resource-values');
+        var fields = $('#properties .resource-property');
 
         // Reset data of the previous template.
         $('#resource-values').data('template-data', {});
@@ -775,6 +792,7 @@
         // Fieldsets may have been marked as required or private in a previous state.
         fields.removeClass('required');
         fields.removeClass('private');
+        fields.data('template-property', null);
 
         // Reset all properties to the default selector.
         fields.find('div.multiple-selector').hide();
@@ -842,7 +860,9 @@
 
         function finalize() {
             // Remove empty fields, except the templates and user added ones, to avoid mix of templates fields.
-            fields = templateId ? $('#properties .resource-values[data-template-id!="' + templateId + '"]') : $('#properties .resource-values');
+            fields = templateId
+                ? $('#properties .resource-property[data-template-id!="' + templateId + '"]')
+                : $('#properties .resource-property');
             fields.not('.user-added').each(function() {
                 if ($(this).find('.inputs .values > .value').length === $(this).find('.inputs .values > .value.default-value').length) {
                     $(this).remove();
@@ -850,12 +870,12 @@
             });
 
             // Add default fields if none.
-            if (!$('#properties .resource-values').length) {
+            if (!$('#properties .resource-property').length) {
                 makeDefaultTemplate();
             }
 
             // Add a default empty value if none already exist in the property.
-            fields = $('#properties .resource-values');
+            fields = $('#properties .resource-property');
             fields.each(function(index, field) {
                 field = $(field);
                 if (!field.find('.value').length) {
@@ -874,8 +894,7 @@
     var initValueLanguage = function() {
         var languageInput = $(this);
         if (languageInput.val() !== '') {
-            languageInput.addClass('active');
-            languageInput.prev('a.value-language').addClass('active');
+            languageInput.closest('.language-wrapper').addClass('active');
         }
     }
 
@@ -946,11 +965,14 @@
                 rtpd['o:alternate_comment'] = rtpData['o:alternate_comment'] == '' ? null : rtpData['o:alternate_comment'];
                 rtpd['o:is_private'] = rtpData['o:is_private'] === true || rtpData['o:is_private'] == '1';
                 rtpd['o:is_required'] = rtpData['o:is_required'] === true || rtpData['o:is_required'] == '1';
+                rtpd['o:default_lang'] = rtpData['o:default_lang'] === '' ? null : rtpData['o:default_lang'];
                 rtpd['o:data_type'] = rtpData['o:data_type'] ? rtpData['o:data_type'] : [];
                 // Remove core property keys in data.
                 Object.keys(rtp).forEach(function (key) {
                     delete rtpData[key];
                 });
+                // To simplify process, specific options are kept as data.
+                rtpData['o:default_lang'] = rtpd['o:default_lang'];
                 rtpd['o:data'] = rtpData;
                 rtps.push(rtpd);
             });
@@ -962,7 +984,8 @@
     var prepareFieldsAfter = function() {
         // Furthermore, the values are moved to the property row according to their
         // data type when there are template properties with the same property.
-        fields = $('#properties .resource-values');
+        // Unchanged default values (TItle, Description) are managed like other properties.
+        fields = $('#properties .resource-property');
         if (fields.length > 0) {
             // Prepare the list of data types one time and make easier to fill specific rows first.
             var dataTypesByProperty = {};

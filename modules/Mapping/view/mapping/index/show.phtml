@@ -6,9 +6,13 @@ if (!$mapping && !$markers) {
     return;
 }
 
-$this->headLink()->appendStylesheet($this->assetUrl('vendor/leaflet/leaflet.css', 'Mapping'));
-$this->headScript()->appendFile($this->assetUrl('vendor/leaflet/leaflet.js', 'Mapping'));
-$this->headScript()->appendFile($this->assetUrl('vendor/leaflet.providers/leaflet-providers.js', 'Mapping'));
+$this->headLink()->appendStylesheet($this->assetUrl('node_modules/leaflet/dist/leaflet.css', 'Mapping'));
+$this->headLink()->appendStylesheet($this->assetUrl('node_modules/leaflet.fullscreen/Control.FullScreen.css', 'Mapping'));
+
+$this->headScript()->appendFile($this->assetUrl('node_modules/leaflet/dist/leaflet.js', 'Mapping'));
+$this->headScript()->appendFile($this->assetUrl('node_modules/leaflet.fullscreen/Control.FullScreen.js', 'Mapping'));
+$this->headScript()->appendFile($this->assetUrl('node_modules/leaflet-providers/leaflet-providers.js', 'Mapping'));
+
 $this->headScript()->appendFile($this->assetUrl('js/mapping-show.js', 'Mapping'));
 $this->headScript()->appendFile($this->assetUrl('js/control.fit-bounds.js', 'Mapping'));
 ?>
@@ -32,7 +36,7 @@ $media = $marker->media();
     <h3><?php echo $this->escapeHtml($marker->label()); ?></h3>
     <?php endif; ?>
     <?php if ($media): ?>
-    <img src="<?php echo $this->escapeHtml($media->thumbnailUrl('medium')); ?>">
+    <?php echo $this->thumbnail($media, 'medium'); ?>
     <div>
         <?php echo sprintf($this->translate('Media: %s'), $media->link($media->displayTitle())); ?>
     </div>
