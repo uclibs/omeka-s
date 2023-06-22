@@ -3,7 +3,7 @@
  * @author John Flatness
  * @copyright Copyright 2012 John Flatness
  * @copyright BibLibre, 2016
- * @copyright Daniel Berthereau, 2014-2018
+ * @copyright Daniel Berthereau, 2014-2023
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
  */
 namespace OaiPmhRepository\OaiPmh\Metadata;
@@ -58,24 +58,23 @@ class Mets extends AbstractMetadata
         $metadataSection->setAttribute('ID', (string) $itemDmdId);
         $dataWrap = $this->appendNewElement($metadataSection, 'mdWrap');
 
-        $itemDataFormat = $this->params['mets_data_item'];
+        $itemDataFormat = $this->params['mets']['data_item'];
         switch ($itemDataFormat) {
-            case 'dc':
             default:
-                $this->mdtypeDc($dataWrap, $item);
-                break;
             case 'dcterms':
                 $this->mdtypeDcterms($dataWrap, $item);
                 break;
+            case 'dc':
+                $this->mdtypeDc($dataWrap, $item);
+                break;
             // case 'mods':
-            //    break;
         }
 
         $fileIds = [];
         if ($this->params['expose_media']) {
             $mediaList = $item->media();
             if (count($mediaList)) {
-                $mediaDataFormat = $this->params['mets_data_media'];
+                $mediaDataFormat = $this->params['mets']['data_media'];
 
                 $fileSection = $this->appendNewElement($mets, 'fileSec');
                 $fileGroup = $this->appendNewElement($fileSection, 'fileGrp');
@@ -106,15 +105,14 @@ class Mets extends AbstractMetadata
 
                     $fileDataWrap = $this->appendNewElement($fileContentMetadata, 'mdWrap');
                     switch ($mediaDataFormat) {
-                        case 'dc':
                         default:
-                            $this->mdtypeDc($fileDataWrap, $media);
-                            break;
                         case 'dcterms':
                             $this->mdtypeDcterms($fileDataWrap, $media);
                             break;
-                            // case 'mods':
-                            //    break;
+                        case 'dc':
+                            $this->mdtypeDc($fileDataWrap, $media);
+                            break;
+                        // case 'mods':
                     }
                 }
             }
@@ -127,21 +125,6 @@ class Mets extends AbstractMetadata
             $fptr = $this->appendNewElement($topDiv, 'fptr');
             $fptr->setAttribute('FILEID', (string) $id);
         }
-    }
-
-    public function getMetadataPrefix()
-    {
-        return self::METADATA_PREFIX;
-    }
-
-    public function getMetadataSchema()
-    {
-        return self::METADATA_SCHEMA;
-    }
-
-    public function getMetadataNamespace()
-    {
-        return self::METADATA_NAMESPACE;
     }
 
     protected function mdtypeDc($dataWrap, $resource): void
@@ -172,9 +155,8 @@ class Mets extends AbstractMetadata
         foreach ($localNames as $localName) {
             $term = 'dcterms:' . $localName;
             $termValues = $values[$term]['values'] ?? [];
-            $termValues = $this->filterValues($resource, $term, $termValues);
             foreach ($termValues as $value) {
-                list($text, $attributes) = $this->formatValue($value);
+                [$text, $attributes] = $this->formatValue($value);
                 $this->appendNewElement($dataXml, 'dc:' . $localName, $text, $attributes);
             }
         }
@@ -252,9 +234,8 @@ class Mets extends AbstractMetadata
         foreach ($localNames as $localName) {
             $term = 'dcterms:' . $localName;
             $termValues = $values[$term]['values'] ?? [];
-            $termValues = $this->filterValues($resource, $term, $termValues);
             foreach ($termValues as $value) {
-                list($text, $attributes) = $this->formatValue($value);
+                [$text, $attributes] = $this->formatValue($value);
                 $this->appendNewElement($dataXml, $term, $text, $attributes);
             }
         }

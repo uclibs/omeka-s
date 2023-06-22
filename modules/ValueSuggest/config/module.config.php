@@ -36,6 +36,7 @@ return [
 
             /* Geonames */
             'valuesuggest:geonames:geonames' => Service\GeonamesDataTypeFactory::class,
+            'valuesuggestall:geonames:features' => Service\GeonamesDataTypeFactory::class,
 
             /* Getty */
             'valuesuggest:getty:aat' => Service\GettyDataTypeFactory::class,
@@ -82,19 +83,33 @@ return [
             'valuesuggest:lc:iso6391' => Service\LcDataTypeFactory::class,
             'valuesuggest:lc:iso6392' => Service\LcDataTypeFactory::class,
             'valuesuggest:lc:iso6395' => Service\LcDataTypeFactory::class,
+            'valuesuggest:lc:rbmscv' => Service\LcDataTypeFactory::class,
             // @todo Add more LC data types
 
             /* Network of Terms of the Dutch National Network for Digital Heritage */
+            'valuesuggest:ndeterms:aatm' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
+            'valuesuggest:ndeterms:aatpt' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
+            'valuesuggest:ndeterms:aatsp' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
             'valuesuggest:ndeterms:abr' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
+            'valuesuggest:ndeterms:adamlink' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
             'valuesuggest:ndeterms:btt' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
             'valuesuggest:ndeterms:cht' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
+            'valuesuggest:ndeterms:chtm' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
+            'valuesuggest:ndeterms:chtsp' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
+            'valuesuggest:ndeterms:eurovoc' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
+            'valuesuggest:ndeterms:geonames' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
             'valuesuggest:ndeterms:gtaagen' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
             'valuesuggest:ndeterms:gtaaond' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
+            'valuesuggest:ndeterms:gtm' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
+            'valuesuggest:ndeterms:homosaurus' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
+            'valuesuggest:ndeterms:iconclass' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
+            'valuesuggest:ndeterms:ied' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
             'valuesuggest:ndeterms:muzgs' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
             'valuesuggest:ndeterms:muzpp' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
             'valuesuggest:ndeterms:muzsch' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
             'valuesuggest:ndeterms:nta' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
             'valuesuggest:ndeterms:rkdartists' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
+            'valuesuggest:ndeterms:stcn' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
             'valuesuggest:ndeterms:tnmw' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
             'valuesuggest:ndeterms:ttwn' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
             'valuesuggest:ndeterms:wikiall' => \ValueSuggest\Service\NdeTermsDataTypeFactory::class,
@@ -121,6 +136,11 @@ return [
             'valuesuggest:oclc:viaf' => Service\OclcDataTypeFactory::class,
             'valuesuggest:oclc:fast' => Service\OclcDataTypeFactory::class,
 
+            /* Omeka */
+            'valuesuggest:omeka:property' => Service\OmekaDataTypeFactory::class,
+            'valuesuggest:omeka:propertyResourceTemplate' => Service\OmekaDataTypeFactory::class,
+            'valuesuggest:omeka:propertyResourceClass' => Service\OmekaDataTypeFactory::class,
+
             /* Opentheso / Pactols */
             'valuesuggest:pactols:all' => Service\PactolsDataTypeFactory::class,
             'valuesuggest:pactols:sujets' => Service\PactolsDataTypeFactory::class,
@@ -135,6 +155,8 @@ return [
             'valuesuggestall:rda:RDACarrierEU' => Service\RdaDataTypeFactory::class,
             'valuesuggestall:rda:RDACarrierType' => Service\RdaDataTypeFactory::class,
             'valuesuggestall:rda:RDACartoDT' => Service\RdaDataTypeFactory::class,
+            'valuesuggestall:rda:RDACollectionAccrualMethod' => Service\RdaDataTypeFactory::class,
+            'valuesuggestall:rda:RDACollectionAccrualPolicy' => Service\RdaDataTypeFactory::class,
             'valuesuggestall:rda:RDAColourContent' => Service\RdaDataTypeFactory::class,
             'valuesuggestall:rda:configPlayback' => Service\RdaDataTypeFactory::class,
             'valuesuggestall:rda:RDAContentType' => Service\RdaDataTypeFactory::class,
@@ -243,6 +265,10 @@ return [
             'valuesuggestall:mc:37684874-0820-402d-b53e-f8ab6b9ed8ba' => Service\McDataTypeFactory::class,
             'valuesuggestall:mc:f14e8183-5885-46d6-8fc9-17ebd8f3c27e' => Service\McDataTypeFactory::class,
             'valuesuggestall:mc:2012b973-ddb2-4540-a775-9157c3c1d7fd' => Service\McDataTypeFactory::class,
+
+            /* Thesaurus de la Universitat de Barcelona (THUB) */
+            'valuesuggest:thub:thub' => Service\ThubDataTypeFactory::class,
+
         ],
     ],
     'router' => [

@@ -3,7 +3,7 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
  * @copyright John Flatness, Center for History and New Media, 2013-2014
  * @copyright BibLibre, 2016
- * @copyright Daniel Berthereau, 2014-2020
+ * @copyright Daniel Berthereau, 2014-2023
  */
 namespace OaiPmhRepository;
 
@@ -163,6 +163,8 @@ class Module extends AbstractModule
                 if ($sourceTerm === $destinationTerm
                     || empty($sourceTerm)
                     || empty($destinationTerm)
+                    || is_numeric($sourceTerm)
+                    || is_numeric($destinationTerm)
                     || mb_substr($sourceTerm, 0, 1) === '#'
                     || mb_substr($destinationTerm, 0, 1) === '#'
                     || !strpos($sourceTerm, ':')

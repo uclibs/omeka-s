@@ -23,6 +23,8 @@ abstract class AbstractShortcode implements ShortcodeInterface
     protected $resourceNames = [
         'annotation' => 'annotations',
         'annotations' => 'annotations',
+        'asset' => 'assets',
+        'assets' => 'assets',
         'item' => 'items',
         'items' => 'items',
         'item_set' => 'item_sets',
@@ -48,6 +50,7 @@ abstract class AbstractShortcode implements ShortcodeInterface
      */
     protected $resourceVars = [
         'annotations' => 'annotations',
+        'assets' => 'assets',
         'items' => 'items',
         'item_sets' => 'itemSets',
         'media' => 'medias',
@@ -62,6 +65,7 @@ abstract class AbstractShortcode implements ShortcodeInterface
      */
     protected $resourceTypes = [
         'annotations' => 'annotation',
+        'assets' => 'asset',
         'items' => 'item',
         'item_sets' => 'item-set',
         'media' => 'media',
@@ -105,20 +109,23 @@ abstract class AbstractShortcode implements ShortcodeInterface
             } elseif ($meta === 'o:updated' && isset($jsonLd['o:modified'])) {
                 $meta = 'o:modified';
             }
-            // Fix a common issue.
+            // Fix specific names to avoid common issues.
             elseif ($meta === 'o:description'
                 && $resource instanceof \Omeka\Api\Representation\SiteRepresentation
             ) {
                 $meta = 'o:summary';
+            } elseif ($meta === 'o:title'
+                && $resource instanceof \Omeka\Api\Representation\AssetRepresentation
+            ) {
+                $meta = 'o:name';
+            } elseif ($meta === 'o:description'
+                && $resource instanceof \Omeka\Api\Representation\AssetRepresentation
+            ) {
+                $meta = 'o:alt_text';
             } else {
                 return '';
             }
         }
-
-        $plugins = $this->view->getHelperPluginManager();
-        $escape = $plugins->get('escapeHtml');
-        $escapeAttr = $plugins->get('escapeHtmlAttr');
-        $span = empty($args['span']) ? false : $escapeAttr($args['span']);
 
         $metadata = $jsonLd[$meta];
 
@@ -130,9 +137,14 @@ abstract class AbstractShortcode implements ShortcodeInterface
             return '';
         }
 
+        $plugins = $this->view->getHelperPluginManager();
+        $escape = $plugins->get('escapeHtml');
+
+        $hasSpan = array_key_exists('span', $args);
+
         if (is_scalar($metadata)) {
-            return $span
-                ? '<span class="' . $span . '">' . $escape($metadata) . '</span>'
+            return $hasSpan
+                ? $this->wrapSpan($escape($metadata), $args['span'])
                 : $escape($metadata);
         }
 
@@ -143,8 +155,8 @@ abstract class AbstractShortcode implements ShortcodeInterface
 
         if (method_exists($metadata, 'asHtml')) {
             $metadata = (string) $metadata->asHtml();
-            return $span
-                ? '<span class="' . $span . '">' . $metadata . '</span>'
+            return $hasSpan
+                ? $this->wrapSpan($metadata, $args['span'], false)
                 : $metadata;
         }
 
@@ -164,9 +176,30 @@ abstract class AbstractShortcode implements ShortcodeInterface
             return '';
         }
 
-        return $span
-            ? '<span class="' . $span . '">' . $escape($metadata) . '</span>'
+        return $hasSpan
+            ? $this->wrapSpan($escape($metadata), $args['span'])
             : $escape($metadata);
+    }
+
+    /**
+     * Wrap a string with a span and optionally a class.
+     *
+     * @param string $hml The value should be escaped if needed.
+     * @param string $class
+     * @return string
+     */
+    protected function wrapSpan(string $html, ?string $class = null): string
+    {
+        if (is_null($class) || trim($class) === '') {
+            return '<span>'
+                . $html
+                . '</span>';
+        }
+        $plugins = $this->view->getHelperPluginManager();
+        $escapeAttr = $plugins->get('escapeHtmlAttr');
+        return '<span class="' . $escapeAttr($class) . '">'
+            . $html
+            . '</span>';
     }
 
     /**

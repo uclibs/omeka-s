@@ -3,7 +3,7 @@
  * @author John Flatness, Yu-Hsun Lin
  * @copyright Copyright 2009 John Flatness, Yu-Hsun Lin
  * @copyright BibLibre, 2016
- * @copyright Daniel Berthereau, 2014-2018
+ * @copyright Daniel Berthereau, 2014-2023
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
  */
 namespace OaiPmhRepository\OaiPmh\Metadata;
@@ -16,6 +16,7 @@ use Omeka\Api\Representation\ItemRepresentation;
  * oai_dcterms is output of the 55 Dublin Core terms.
  *
  * This format is not standardized, but used by some repositories.
+ *
  * Note: the namespace and the schema don’t exist. It is designed as an extended
  * version of oai_dc.
  *
@@ -118,6 +119,8 @@ class OaiDcterms extends AbstractMetadata
             'accrualPolicy',
         ];
 
+        $bnfVignette = $this->params['oai_dcterms']['bnf_vignette'];
+
         /* Must create elements using createElement to make DOM allow a
          * top-level xmlns declaration instead of wasteful and non-
          * compliant per-node declarations.
@@ -126,10 +129,15 @@ class OaiDcterms extends AbstractMetadata
         foreach ($localNames as $localName) {
             $term = 'dcterms:' . $localName;
             $termValues = $values[$term]['values'] ?? [];
-            $termValues = $this->filterValues($item, $term, $termValues);
             foreach ($termValues as $value) {
-                list($text, $attributes) = $this->formatValue($value);
+                [$text, $attributes] = $this->formatValue($value);
                 $this->appendNewElement($oai, $term, $text, $attributes);
+            }
+            if ($bnfVignette !== 'none' && $localName === 'relation') {
+                $thumbnail = $item->thumbnailDisplayUrl($bnfVignette);
+                if ($thumbnail) {
+                    $this->appendNewElement($oai, 'dcterms:relation', 'vignette : ' . $thumbnail, []);
+                }
             }
         }
 
@@ -144,20 +152,5 @@ class OaiDcterms extends AbstractMetadata
                 $this->appendNewElement($oai, 'dcterms:identifier', $media->originalUrl(), ['xsi:type' => 'dcterms:URI']);
             }
         }
-    }
-
-    public function getMetadataPrefix()
-    {
-        return self::METADATA_PREFIX;
-    }
-
-    public function getMetadataSchema()
-    {
-        return self::METADATA_SCHEMA;
-    }
-
-    public function getMetadataNamespace()
-    {
-        return self::METADATA_NAMESPACE;
     }
 }

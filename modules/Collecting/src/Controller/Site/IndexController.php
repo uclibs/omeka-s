@@ -37,7 +37,7 @@ class IndexController extends AbstractActionController
         $form = $cForm->getForm();
         $form->setData($this->params()->fromPost());
         if ($form->isValid()) {
-            list($itemData, $cItemData) = $this->getPromptData($cForm);
+            [$itemData, $cItemData] = $this->getPromptData($cForm);
 
             // Temporarily give the user permission to create the Omeka and
             // Collecting items. This gives all roles all privileges to all
@@ -283,6 +283,7 @@ class IndexController extends AbstractActionController
 
         $messagePart = new MimePart($messageContent);
         $messagePart->setType('text/html');
+        $messagePart->setCharset('UTF-8');
 
         $body = new MimeMessage;
         $body->addPart($messagePart);
@@ -331,6 +332,7 @@ class IndexController extends AbstractActionController
 
         $messagePart = new MimePart($messageContent);
         $messagePart->setType('text/html');
+        $messagePart->setCharset('UTF-8');
 
         $body = new MimeMessage;
         $body->addPart($messagePart);

@@ -98,6 +98,7 @@ class ConfigForm extends Form
                         'none' => 'Without oai sets', // @translate
                         'item_set' => 'With item sets as oai sets', // @translate
                         'list_item_sets' => 'With the list of item sets below', // @translate
+                        'queries' => 'With dynamic sets defined by queries below', // @translate
                         'site_pool' => 'With sites as oai sets', // @translate
                     ],
                 ],
@@ -120,6 +121,22 @@ class ConfigForm extends Form
                     'data-placeholder' => 'Select item sets…', // @translate
                 ],
             ])
+            ->add([
+                'name' => 'oaipmhrepository_sets_queries',
+                    'type' => OmekaElement\ArrayTextarea::class,
+                    'options' => [
+                        'label' => 'Dynamic sets based on advanced search queries', // @translate
+                        'as_key_value' => true,
+                    ],
+                    'attributes' => [
+                        'id' => 'oaipmhrepository_sets_queries',
+                        'required' => false,
+                        'placeholder' => 'Articles = resource_template_id[]=2
+Books = resource_template_id[]=3
+',
+                        'rows' => 5,
+                    ],
+                ])
             ->add([
                 'name' => 'oaipmhrepository_by_site_repository',
                 'type' => Element\Radio::class,
@@ -276,8 +293,45 @@ class ConfigForm extends Form
             ])
 
             ->add([
+                'name' => 'oaipmhrepository_oai_dc_bnf_vignette',
+                'type' => Element\Radio::class,
+                'options' => [
+                    'label' => 'Dublin Core: Append the url of the thumbnail for BnF', // @translate
+                    'info' => 'For compliance with the non-standard recommandations of the Bibliothèque nationale de France, the url of the main thumbnail may be automatically included to records.', // @translate
+                    'documentation' => 'https://www.bnf.fr/sites/default/files/2019-02/Guide_oaipmh.pdf',
+                    'value_options' => [
+                        'none' => 'None', // @translate
+                        'large' => 'Large', // @translate
+                        'medium' => 'Medium', // @translate
+                        'square' => 'Square', // @translate
+                    ],
+                ],
+                'attributes' => [
+                    'id' => 'oaipmhrepository_oai_dc_bnf_vignette',
+                    'value' => 'none',
+                ],
+            ])
+            ->add([
+                'name' => 'oaipmhrepository_oai_dcterms_bnf_vignette',
+                'type' => Element\Radio::class,
+                'options' => [
+                    'label' => 'Dublin Core terms: Append the url of the thumbnail for BnF', // @translate
+                    'value_options' => [
+                        'none' => 'None', // @translate
+                        'large' => 'Large', // @translate
+                        'medium' => 'Medium', // @translate
+                        'square' => 'Square', // @translate
+                    ],
+                ],
+                'attributes' => [
+                    'id' => 'oaipmhrepository_oai_dcterms_bnf_vignette',
+                    'value' => 'none',
+                ],
+            ])
+
+            ->add([
                 'name' => 'oaipmhrepository_mets_data_item',
-                'type' => Element\Select::class,
+                'type' => Element\Radio::class,
                 'options' => [
                     'label' => 'Mets: data format for item', // @translate
                     'info' => 'The format of the metadata of item.', // @translate
@@ -290,11 +344,12 @@ class ConfigForm extends Form
                 ],
                 'attributes' => [
                     'id' => 'oaipmhrepository_mets_data_item',
+                    'value' => 'dcterms',
                 ],
             ])
             ->add([
                 'name' => 'oaipmhrepository_mets_data_media',
-                'type' => Element\Select::class,
+                'type' => Element\Radio::class,
                 'options' => [
                     'label' => 'Mets: data format for media', // @translate
                     'info' => 'The format of the metadata of media.', // @translate
@@ -307,8 +362,10 @@ class ConfigForm extends Form
                 ],
                 'attributes' => [
                     'id' => 'oaipmhrepository_mets_data_media',
+                    'value' => 'dcterms',
                 ],
             ])
+
             ->add([
                 'name' => 'oaipmhrepository_human_interface',
                 'type' => Element\Checkbox::class,
@@ -358,7 +415,12 @@ class ConfigForm extends Form
             ->add([
                 'name' => 'oaipmhrepository_generic_dcterms',
                 'required' => false,
-            ]);
+            ])
+            ->add([
+                'name' => 'oaipmhrepository_list_item_sets',
+                'required' => false,
+            ])
+        ;
     }
 
     public function setMetadataFormats(array $metadataFormats): self
