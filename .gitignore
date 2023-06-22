@@ -2,3 +2,5 @@ config/database.ini
 
 files/*
 !files/index.html
+modules-old/*
+themes-old/*
