@@ -12,10 +12,12 @@ use BulkEdit\Form\BulkEditFieldset;
 use Generic\AbstractModule;
 use Laminas\EventManager\Event;
 use Laminas\EventManager\SharedEventManagerInterface;
+use Laminas\Math\Rand;
 use Omeka\Api\Adapter\AbstractResourceEntityAdapter;
 use Omeka\Api\Adapter\ItemAdapter;
 use Omeka\Api\Adapter\MediaAdapter;
 use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
+use Omeka\File\TempFile;
 use Omeka\Stdlib\Message;
 
 /**
@@ -29,6 +31,11 @@ use Omeka\Stdlib\Message;
 class Module extends AbstractModule
 {
     const NAMESPACE = __NAMESPACE__;
+
+    /**
+     * @var string
+     */
+    protected $basePath;
 
     public function attachListeners(SharedEventManagerInterface $sharedEventManager): void
     {
@@ -51,11 +58,13 @@ class Module extends AbstractModule
                 [$this, 'handleResourceProcessPre']
             );
 
+            // Clean batch update request one time.
             $sharedEventManager->attach(
                 $adapter,
                 'api.preprocess_batch_update',
                 [$this, 'handleResourceBatchUpdatePreprocess']
             );
+
             // Batch update is designed to do the same process to all resources,
             // but BulkEdit needs to check each data separately.
             $sharedEventManager->attach(
@@ -63,20 +72,14 @@ class Module extends AbstractModule
                 'api.update.pre',
                 [$this, 'handleResourceUpdatePreBatchUpdate']
             );
-            // Batch update via sql queries.
+            // Nevertheless, some processes can be done one time or via sql
+            // queries.
             $sharedEventManager->attach(
                 $adapter,
                 'api.batch_update.post',
-                [$this, 'handleResourceBatchUpdatePost']
+                [$this, 'handleResourcesBatchUpdatePost']
             );
         }
-
-        // Special listener to manage media html from items.
-        $sharedEventManager->attach(
-            \Omeka\Api\Adapter\ItemAdapter::class,
-            'api.batch_update.pre',
-            [$this, 'handleResourceBatchUpdatePre']
-        );
 
         // Extend the batch edit form via js.
         $sharedEventManager->attach(
@@ -104,8 +107,12 @@ class Module extends AbstractModule
         $form = $event->getTarget();
         $services = $this->getServiceLocator();
         $formElementManager = $services->get('FormElementManager');
+        $resourceType = $form->getOption('resource_type');
+
         /** @var \BulkEdit\Form\BulkEditFieldset $fieldset */
-        $fieldset = $formElementManager->get(BulkEditFieldset::class);
+        $fieldset = $formElementManager->get(BulkEditFieldset::class, [
+            'resource_type' => $resourceType,
+        ]);
         $form->add($fieldset);
     }
 
@@ -114,8 +121,6 @@ class Module extends AbstractModule
      *
      * - preventive trim on property values.
      * - preventive deduplication on property values
-     *
-     * @param Event $event
      */
     public function handleResourceProcessPre(Event $event): void
     {
@@ -242,10 +247,14 @@ class Module extends AbstractModule
             ->appendFile($assetUrl('js/bulk-edit.js', 'BulkEdit'), 'text/javascript', ['defer' => 'defer']);
     }
 
+    /**
+     * Clean the request one time only.
+     *
+     *  Batch process is divided in chunk (100) and each bulk may be run three
+     *  times (replace, remove or append). Omeka S v4.1 cleaned process.
+     */
     public function handleResourceBatchUpdatePreprocess(Event $event): void
     {
-        // Clean the request one time only (batch process is divided in bulks).
-
         /** @var \Omeka\Api\Request $request */
         $request = $event->getParam('request');
         $data = $event->getParam('data');
@@ -258,18 +267,14 @@ class Module extends AbstractModule
         $event->setParam('data', $data);
     }
 
-    public function handleResourceBatchUpdatePre(Event $event): void
-    {
-        $processes = $this->prepareProcesses();
-        $request = $event->getParam('request');
-        $this->updateResourcesPre($event->getTarget(), $request->getIds(), $processes);
-    }
-
+    /**
+     * Process tasks that can be done via api.update.pre for a single resource.
+     */
     public function handleResourceUpdatePreBatchUpdate(Event $event): void
     {
         /**
-         * A batch update process is launched one to three times in the core,
-         * at least with option "collectionAction" = "replace".
+         * A batch update process is launched one to three times in the core, at
+         * least with option "collectionAction" = "replace" (Omeka < 4.1).
          * Batch updates are always partial.
          *
          * @see \Omeka\Job\BatchUpdate::perform()
@@ -285,13 +290,16 @@ class Module extends AbstractModule
             return;
         }
 
-        // Some batch processes are done globally via a single sql or on another
-        // resource or cannot be done via api, so remove them from the standard
-        // process.
+        // Skip process that can be done globally via a single sql or on another
+        // resource or cannot be done via api.
         $postProcesses = [
+            // Start with complex processes.
+            'explode_item' => null,
+            'explode_pdf' => null,
             'media_html' => null,
             'media_type' => null,
             'media_visibility' => null,
+            // Then simple queries.
             'trim_values' => null,
             'specify_datatypes' => null,
             'clean_languages' => null,
@@ -320,13 +328,32 @@ class Module extends AbstractModule
     /**
      * Process action on batch update (all or partial) via direct sql.
      *
-     * Data may need to be reindexed if a module like Search is used, even if
-     * the results are probably the same with a simple trimming.
-     *
-     * @param Event $event
+     * Data may need to be reindexed if a module like AdvancedSearch is used
+     * for processes that use sql.
      */
-    public function handleResourceBatchUpdatePost(Event $event): void
+    public function handleResourcesBatchUpdatePost(Event $event): void
     {
+        /**
+         * A batch update process is launched one to three times in the core,
+         * at least with option "collectionAction" = "replace".
+         * Batch updates are always partial.
+         *
+         * Warning: on batch update all, there is no collectionAction "replace",
+         * so it should be set by default.
+         *
+         * @see \Omeka\Job\BatchUpdate::perform()
+         * @var \Omeka\Api\Request $request
+         */
+        $request = $event->getParam('request');
+        if ($request->getOption('collectionAction', 'replace') !== 'replace') {
+            return;
+        }
+
+        $data = $request->getContent('data');
+        if (empty($data['bulkedit'])) {
+            return;
+        }
+
         /** @var \Omeka\Api\Request $request */
         $request = $event->getParam('request');
         $ids = (array) $request->getIds();
@@ -334,23 +361,33 @@ class Module extends AbstractModule
             return;
         }
 
-        if ($request->getResource() === 'media') {
-            $postProcesses = [
+        $resourceName = $request->getResource();
+
+        $postProcesses = [
+            'items' => [
+                'explode_item' => null,
+                'explode_pdf' => null,
                 'media_html' => null,
                 'media_type' => null,
                 'media_visibility' => null,
-            ];
-        } else {
-            $postProcesses = [];
-        }
+            ],
+            'media' => [
+                'media_html' => null,
+                'media_type' => null,
+                'media_visibility' => null,
+            ],
+        ];
 
-        $postProcesses = array_merge($postProcesses, [
+        $postProcessesResource = $postProcesses[$resourceName] ?? [];
+
+        $postProcesses = array_merge($postProcessesResource, [
             'trim_values' => null,
             'specify_datatypes' => null,
             'clean_languages' => null,
             'clean_language_codes' => null,
             'deduplicate_values' => null,
         ]);
+
         $processes = $this->prepareProcesses();
         $bulkedit = array_intersect_key($processes, $postProcesses);
         if (!count($bulkedit)) {
@@ -358,12 +395,13 @@ class Module extends AbstractModule
         }
 
         $adapter = $event->getTarget();
-        $this->updateViaSql($adapter, $ids, $bulkedit);
+        $this->updateResourcesPost($adapter, $ids, $bulkedit);
     }
 
     protected function prepareProcesses($bulkedit = null)
     {
         static $processes;
+
         if (!is_null($processes)) {
             return $processes;
         }
@@ -383,6 +421,9 @@ class Module extends AbstractModule
             'fill_data' => null,
             'fill_values' => null,
             'remove' => null,
+            'explode_item' => null,
+            'explode_pdf' => null,
+            'media_order' => null,
             'media_html' => null,
             'media_type' => null,
             'media_visibility' => null,
@@ -540,7 +581,36 @@ class Module extends AbstractModule
                 'datatypes' => $params['datatypes'] ?? [],
                 'languages' => $this->stringToList($params['languages']),
                 'visibility' => $params['visibility'],
+                'equal' => $params['equal'],
                 'contains' => $params['contains'],
+            ];
+        }
+
+        $params = $bulkedit['explode_item'] ?? [];
+        if (!empty($params['mode'])) {
+            $processes['explode_item'] = [
+                'mode' => $params['mode'],
+            ];
+        }
+
+        $params = $bulkedit['explode_pdf'] ?? [];
+        if (!empty($params['mode'])) {
+            $processes['explode_pdf'] = [
+                'mode' => $params['mode'],
+                'process' => $params['process'] ?? null,
+                'resolution' => (int) $params['resolution'] ?? null,
+                // TODO Use server-url from job.
+                'base_uri' => $this->getBaseUri(),
+            ];
+        }
+
+        $params = $bulkedit['media_order'] ?? [];
+        $order = $params['order'] ?? '';
+        if (mb_strlen($order)) {
+            $processes['media_order'] = [
+                'order' => $order,
+                'mediatypes' => $params['mediatypes'] ?? [],
+                'extensions' => $params['extensions'] ?? [],
             ];
         }
 
@@ -556,14 +626,18 @@ class Module extends AbstractModule
             || mb_strlen($prepend)
             || mb_strlen($append)
         ) {
-            $processes['media_html'] = [
-                'from' => $from,
-                'to' => $to,
-                'mode' => $params['mode'],
-                'remove' => $remove,
-                'prepend' => $prepend,
-                'append' => $append,
-            ];
+            // TODO Add the check of the validity of the regex in the form.
+            // Early check validity of the regex.
+            if (!($params['mode'] === 'regex' && @preg_match($from, '') === false)) {
+                $processes['media_html'] = [
+                    'from' => $from,
+                    'to' => $to,
+                    'mode' => $params['mode'],
+                    'remove' => $remove,
+                    'prepend' => $prepend,
+                    'append' => $append,
+                ];
+            }
         }
 
         $params = $bulkedit['media_type'] ?? [];
@@ -623,25 +697,9 @@ class Module extends AbstractModule
         return $processes;
     }
 
-    protected function updateResourcesPre(
-        AbstractResourceEntityAdapter$adapter,
-        array $resourceIds,
-        array $processes
-    ): void {
-        // This process is specific, because not for current resources.
-        if ($adapter instanceof ItemAdapter) {
-            if (!empty($processes['media_html'])) {
-                $this->updateMediaHtmlForResources($adapter, $resourceIds, $processes['media_html']);
-            }
-            if (!empty($processes['media_type'])) {
-                $this->updateMediaTypeForResources($adapter, $resourceIds, $processes['media_type']);
-            }
-            if (!empty($processes['media_visibility'])) {
-                $this->updateMediaVisibilityForResources($adapter, $resourceIds, $processes['media_visibility']);
-            }
-        }
-    }
-
+    /**
+     * Run process for a single resource.
+     */
     protected function updateResourcePre(
         AbstractResourceEntityAdapter$adapter,
         AbstractResourceEntityRepresentation $resource,
@@ -686,6 +744,9 @@ class Module extends AbstractModule
             case 'remove':
                 $this->removeValuesForResource($resource, $data, $params);
                 break;
+            case 'media_order':
+                $this->updateMediaOrderForResource($resource, $data, $params);
+                break;
             default:
                 break;
         }
@@ -693,7 +754,10 @@ class Module extends AbstractModule
         return $data;
     }
 
-    protected function updateViaSql(
+    /**
+     * Run process for multiple resources, possibly via sql.
+     */
+    protected function updateResourcesPost(
         AbstractResourceEntityAdapter$adapter,
         array $resourceIds,
         array $processes
@@ -733,6 +797,12 @@ class Module extends AbstractModule
                 /** @var \BulkEdit\Mvc\Controller\Plugin\DeduplicateValues $deduplicateValues */
                 $deduplicateValues = $plugins->get('deduplicateValues');
                 $deduplicateValues($resourceIds);
+                break;
+            case 'explode_item':
+                $this->explodeItemByMedia($adapter, $resourceIds, $params);
+                break;
+            case 'explode_pdf':
+                $this->explodePdf($adapter, $resourceIds, $params);
                 break;
             case 'media_html':
                 $this->updateMediaHtmlForResources($adapter, $resourceIds, $params);
@@ -940,7 +1010,9 @@ class Module extends AbstractModule
             $settings = $params;
             $settings['fromProperties'] = $fromProperties;
             $settings['toProperty'] = $toProperty;
+            $settings['datatypes'] = $datatypes;
             $settings['visibility'] = $visibility;
+            $settings['contains'] = $contains;
             $settings['to'] = $to;
             $settings['processAllProperties'] = $processAllProperties;
             $settings['checkDatatype'] = $checkDatatype;
@@ -1586,6 +1658,7 @@ class Module extends AbstractModule
 
             $settings = $params;
             $settings['properties'] = $properties;
+            $settings['datatypes'] = $datatypes;
             $settings['visibility'] = $visibility;
             $settings['checkDatatype'] = $checkDatatype;
             $settings['checkLanguage'] = $checkLanguage;
@@ -1695,7 +1768,7 @@ class Module extends AbstractModule
             $mode = $params['mode'];
             $properties = $params['properties'] ?? [];
             $datatypes = $params['datatypes'] ?? [];
-            $datatype = $params['datatype'] ?? null;
+            $datatype = empty($params['datatype']) ? null : $params['datatype'];
             $featuredSubject = !empty($params['featured_subject']);
             $language = $params['language'] ?? '';
             $updateLanguage = empty($params['update_language'])
@@ -1722,16 +1795,20 @@ class Module extends AbstractModule
                 ? array_intersect($dataTypeManager->getRegisteredNames(), $managedDatatypes)
                 : array_intersect($dataTypeManager->getRegisteredNames(), $datatypes, $managedDatatypes);
 
-            if ((in_array('literal', $datatypes) || in_array('uri', $datatypes)) && in_array($datatype, ['', 'literal', 'uri'])) {
+            if (!$datatype && count($datatypes) === 1 && in_array(reset($datatypes), $managedDatatypes)) {
+                $datatype = reset($datatypes);
+            }
+
+            if ((in_array('literal', $datatypes) || in_array('uri', $datatypes)) && in_array($datatype, [null, 'literal', 'uri'])) {
                 $logger = $this->getServiceLocator()->get('Omeka\Logger');
-                $logger->warn(new Message('When "literal" or "uri" is used, the datatype should be specified.')); // @translate
+                $logger->warn(new Message('When "literal" or "uri" is used, the precise datatype should be specified.')); // @translate
                 $skip = true;
             }
 
             $isModeUri = $mode === 'uri_missing' || $mode === 'uri_all';
-            if ($isModeUri && !in_array($datatype, $datatypes) || in_array($datatype, ['', 'literal', 'uri'])) {
+            if ($isModeUri && (!in_array($datatype, $datatypes) || in_array($datatype, [null, 'literal', 'uri']))) {
                 $logger = $this->getServiceLocator()->get('Omeka\Logger');
-                $logger->warn(new Message('When filling an uri, the datatype should be specified.')); // @translate
+                $logger->warn(new Message('When filling an uri, the precise datatype should be specified.')); // @translate
                 $skip = true;
             }
 
@@ -1749,6 +1826,7 @@ class Module extends AbstractModule
             $settings = $params;
             $settings['mode'] = $mode;
             $settings['properties'] = $properties;
+            $settings['featuredSubject'] = $featuredSubject;
             $settings['processAllProperties'] = $processAllProperties;
             $settings['datatypes'] = $datatypes;
             $settings['datatype'] = $datatype;
@@ -1826,7 +1904,7 @@ class Module extends AbstractModule
                     if ($onlyMissing && strlen((string) $vvalue)) {
                         continue;
                     }
-                    $vtype = in_array($value['type'], ['literal', 'uri']) ? $datatype: $value['type'];
+                    $vtype = in_array($value['type'], ['literal', 'uri']) ? $datatype : $value['type'];
                     $vvalueNew = $this->getLabelForUri($vuri, $vtype, $labelAndUriOptions);
                     if (is_null($vvalueNew)) {
                         continue;
@@ -1902,6 +1980,7 @@ class Module extends AbstractModule
             $datatypes = array_filter($params['datatypes'] ?? []);
             $languages = $params['languages'];
             $visibility = $params['visibility'] === '' ? null : (int) (bool) $params['visibility'];
+            $equal = (string) $params['equal'];
             $contains = (string) $params['contains'];
 
             if (empty($properties)) {
@@ -1912,13 +1991,25 @@ class Module extends AbstractModule
             $checkDatatype = !empty($datatypes);
             $checkLanguage = !empty($languages);
             $checkVisibility = !is_null($visibility);
+            $checkEqual = (bool) mb_strlen($equal);
             $checkContains = (bool) mb_strlen($contains);
 
+            $mainDataType = $this->getServiceLocator()->get('ViewHelperManager')->get('mainDataType');
+            $mainDataTypes = [];
+            foreach ($datatypes as $datatype) {
+                $mainDataTypes[$datatype] = $mainDataType($datatype);
+            }
+
             $settings = $params;
+            $settings['datatypes'] = $datatypes;
+            $settings['visibility'] = $visibility;
+            $settings['mainDataType'] = $mainDataType;
+            $settings['mainDataTypes'] = $mainDataTypes;
             $settings['processAllProperties'] = $processAllProperties;
             $settings['checkDatatype'] = $checkDatatype;
             $settings['checkLanguage'] = $checkLanguage;
             $settings['checkVisibility'] = $checkVisibility;
+            $settings['checkEqual'] = $checkEqual;
             $settings['checkContains'] = $checkContains;
         } else {
             extract($settings);
@@ -1935,14 +2026,19 @@ class Module extends AbstractModule
             ? array_keys($resource->values())
             : array_intersect($properties, array_keys($resource->values()));
 
-        if (!$checkDatatype && !$checkLanguage && !$checkVisibility && !$checkContains) {
+        if (!$checkDatatype
+            && !$checkLanguage
+            && !$checkVisibility
+            && !$checkEqual
+            && !$checkContains
+        ) {
             $data = array_diff_key($data, array_flip($properties));
             return;
         }
 
         foreach ($properties as $property) {
             foreach ($data[$property] as $key => $value) {
-                $value += ['@language' => null, 'is_public' => 1, '@value' => null];
+                $value += ['@language' => null, 'is_public' => 1, '@value' => null, 'value_resource_id' => null, '@id' => null];
                 if ($checkDatatype && !in_array($value['type'], $datatypes)) {
                     continue;
                 }
@@ -1952,10 +2048,627 @@ class Module extends AbstractModule
                 if ($checkVisibility && (int) $value['is_public'] !== $visibility) {
                     continue;
                 }
-                if ($checkContains && strpos($value['@value'], $contains) === false) {
-                    continue;
+                if ($checkEqual || $checkContains) {
+                    $valueMainDataType = $mainDataType($value['type']);
+                    if ($checkEqual) {
+                        if (($valueMainDataType === 'literal' && $value['@value'] !== $equal)
+                            || ($valueMainDataType === 'resource' && (int) $value['value_resource_id'] !== (int) $equal)
+                            || ($valueMainDataType === 'uri' && $value['@id']  !== $equal)
+                        ) {
+                            continue;
+                        }
+                    }
+                    if ($checkContains) {
+                        if (($valueMainDataType === 'literal' && strpos((string) $value['@value'], $contains) === false)
+                            // || ($valueMainDataType === 'resource' && (int) $value['value_resource_id'] !== (int) $contains)
+                            || ($valueMainDataType === 'uri' && strpos((string) $value['@id'], $contains) === false)
+                        ) {
+                            continue;
+                        }
+                    }
                 }
                 unset($data[$property][$key]);
+            }
+        }
+    }
+
+    /**
+     * Update the media positions for an item.
+     */
+    protected function updateMediaOrderForResource(
+        AbstractResourceEntityRepresentation $resource,
+        array &$data,
+        array $params
+    ): void {
+        static $settings;
+
+        if (is_null($settings)) {
+            $order = $params['order'];
+            $mediaTypes = $params['mediatypes'];
+            $extensions = $params['extensions'];
+
+            $orders = [
+                'title',
+                'source',
+                'basename',
+                'mediatype',
+                'extension',
+            ];
+
+            $mainOrder = null;
+            $subOrder = null;
+            if (in_array($order, $orders)) {
+                $mainOrder = $order;
+            } elseif (strpos($order, '/')) {
+                [$mainOrder, $subOrder] = explode('/', $order, 2);
+            }
+
+            if (!in_array($mainOrder, $orders)
+                || ($subOrder && !in_array($subOrder, $orders))
+            ) {
+                $logger = $this->getServiceLocator()->get('Omeka\Logger');
+                $logger->err(new Message(
+                    'Order "%s" is invalid.', // @translate
+                    $order
+                ));
+                $order = '';
+            }
+
+            $settings = $params;
+            $settings['order'] = $order;
+            $settings['mainOrder'] = $mainOrder;
+            $settings['subOrder'] = $subOrder;
+        } else {
+            extract($settings);
+        }
+
+        if (!$order) {
+            return;
+        }
+
+        if (empty($data['o:media']) || count($data['o:media']) <= 1) {
+            return;
+        }
+
+        $needTitle = $mainOrder === 'title' || $subOrder === 'title';
+        $needSource = $mainOrder === 'source' || $subOrder === 'source';
+        $needBasename = $mainOrder === 'basename' || $subOrder === 'basename';
+        $needMediaType = $mainOrder === 'mediatype' || $subOrder === 'mediatype';
+        $needExtension = $mainOrder === 'extension' || $subOrder === 'extension';
+
+        // Filter on media-type or extension as first or last, so remove
+        // extension from the other order field.
+        $removeExtension = ($needSource || $needBasename)
+            && ($needMediaType || $needExtension);
+
+        $mediaData = [
+            'position' => [],
+            'title' => [],
+            'source' => [],
+            'basename' => [],
+            'mediatype' => [],
+            'mainmediatype' => [],
+            'extension' => [],
+        ];
+
+        /**
+         * @var \Omeka\Api\Representation\ItemRepresentation $resource
+         * @var \Omeka\Api\Representation\MediaRepresentation $media
+         */
+
+        // A quick loop to get all data as string.
+        $position = 0;
+        foreach ($resource->media() as $media) {
+            $mediaId = $media->id();
+            $mediaData['position'][$mediaId] = ++$position;
+            if ($needTitle) {
+                $mediaData['title'][$mediaId] = (string) $media->title();
+            }
+            if ($needSource) {
+                $mediaData['source'][$mediaId] = (string) $media->source();
+            }
+            if ($needBasename) {
+                $source = (string) $media->source();
+                $mediaData['basename'][$mediaId] = $source ? basename($source) : '';
+            }
+            if ($needMediaType) {
+                $mediaType = (string) $media->mediaType();
+                $mediaData['mediatype'][$mediaId] = $mediaType;
+                $mediaData['mainmediatype'][$mediaId] = $mediaType ? strtok($mediaType, '/') : '';
+            }
+            if ($needExtension) {
+                $mediaData['extension'][$mediaId] = (string) $media->extension();
+            }
+        }
+
+        // Do the order.
+        if (!$subOrder || !count(array_filter($mediaData[$subOrder], 'strlen'))) {
+            // Manage order with a list.
+            if (($mainOrder === 'mediatype' && $mediaTypes)
+                || ($mainOrder === 'extension' && $extensions)
+            ) {
+                $newOrder = $this->orderWithList($mediaData, $mainOrder, $mediaTypes, $extensions);
+            }
+            // Simple one column order.
+            else {
+                $newOrder = $mediaData[$mainOrder];
+                natcasesort($newOrder);
+            }
+        }
+        // Do the order with two criterias.
+        else {
+            $firstOrder = $mediaData[$mainOrder];
+            $secondOrder = $mediaData[$subOrder];
+
+            // Remove extension first when needed.
+            if ($removeExtension) {
+                $cleanSub = $mainOrder === 'mediatype' || $mainOrder === 'extension';
+                $cleanOrder = $cleanSub ? $secondOrder : $firstOrder;
+                if (($cleanSub ? $subOrder : $mainOrder) === 'source') {
+                    foreach ($cleanOrder as &$string) {
+                        $extension = pathinfo($string, PATHINFO_EXTENSION);
+                        $length = mb_strlen($extension);
+                        if ($length) {
+                            $string = mb_substr($string, 0, -$length - 1);
+                        }
+                    }
+                } elseif (($cleanSub ? $subOrder : $mainOrder) === 'basename') {
+                    foreach ($cleanOrder as &$string) {
+                        $string = pathinfo($string, PATHINFO_FILENAME);
+                    }
+                }
+                unset($string);
+                $cleanSub ? ($secondOrder = $cleanOrder) : ($firstOrder = $cleanOrder);
+            }
+
+            // Create a single array to order.
+            $toOrder = [];
+            foreach ($firstOrder as $mediaId => $value) {
+                $toOrder[$mediaId] = [
+                    $value,
+                    $secondOrder[$mediaId],
+                    $mediaData['mainmediatype'][$mediaId],
+                    // TODO Use media id to be consistent before php 8.0.
+                    // $mediaId,
+                ];
+            }
+
+            if (($mainOrder === 'mediatype' && !$mediaTypes)
+                || ($mainOrder === 'extension' && !$extensions)
+                || ($subOrder === 'mediatype' && !$mediaTypes)
+                || ($subOrder === 'extension' && !$extensions)
+            ) {
+                $newOrder = $this->orderWithTwoCriteria($toOrder);
+            } elseif ($mainOrder === 'mediatype' || $mainOrder === 'extension') {
+                $newOrder = $this->orderWithListThenField($toOrder, $mainOrder, $subOrder, $mediaTypes, $extensions);
+            } else {
+                $newOrder = $this->orderWithFieldThenList($toOrder, $mainOrder, $subOrder, $mediaTypes, $extensions);
+            }
+        }
+
+        // The media ids are the keys.
+        // Keep only the position, starting from 1.
+        $newOrder = array_keys($newOrder);
+        array_unshift($newOrder, null);
+        unset($newOrder[0]);
+        $newOrder = array_flip($newOrder);
+
+        if ($mediaData['position'] === $newOrder) {
+            return;
+        }
+
+        $oMedias = [];
+        foreach ($data['o:media'] as $oMedia) {
+            $oMedias[$oMedia['o:id']] = $oMedia;
+        }
+        $data['o:media'] = array_values(array_replace($newOrder, $oMedias));
+    }
+
+    /**
+     * Explode an item by media.
+     *
+     * This process cannot be done via a pre-process because the media are
+     * reattached to another item. Furthermore, with standard api, items and
+     * media may be resaved later. So doctrine may not be in sync.
+     */
+    protected function explodeItemByMedia(
+        ItemAdapter $adapter,
+        array $resourceIds,
+        array $params
+    ): void {
+        $mode = $params['mode'];
+        if (!in_array($mode, [
+            'append',
+            'update',
+            'replace',
+            'none',
+        ])) {
+            return;
+        }
+
+        /** @var \Omeka\Api\Manager $api */
+        $api = $this->getServiceLocator()->get('Omeka\ApiManager');
+        $logger = $this->getServiceLocator()->get('Omeka\Logger');
+        $properties = $this->getPropertyIds();
+        $isOldOmeka = version_compare(\Omeka\Module::VERSION, '4', '<');
+
+        /** @var \Doctrine\DBAL\Connection $connection */
+        $connection = $this->getServiceLocator()->get('Omeka\Connection');
+
+        $sqlMedia = <<<'SQL'
+UPDATE media SET item_id = %1$d, position = 1 WHERE id = %2$d;
+SQL;
+        if (!$isOldOmeka) {
+            $sqlMedia .= PHP_EOL . <<<'SQL'
+UPDATE item SET primary_media_id = %2$d WHERE id = %1$d;
+SQL;
+        }
+
+        foreach ($resourceIds as $resourceId) {
+            try {
+                /** @var \Omeka\Api\Representation\ItemRepresentation $item */
+                $item = $api->read('items', ['id' => $resourceId], [], ['initialize' => false])->getContent();
+            } catch (\Exception $e) {
+                continue;
+            }
+
+            $medias = $item->media();
+            // The process is done for metadata, even with only one media.
+            if (!count($medias)) {
+                continue;
+            }
+
+            $itemsAndMedias = [];
+
+            // Keep current data as fully serialized data.
+            // All data are copied for new items, included template, class, etc.
+            // $currentItemData = $item->jsonSerialize();
+            $currentItemData = json_decode(json_encode($item), true);
+
+            $isFirstMedia = true;
+            foreach ($medias as $media) {
+                $itemData = $currentItemData;
+                switch ($mode) {
+                    default:
+                    case 'append':
+                        foreach ($media->values() as $term => $propertyData) {
+                            /** @var \Omeka\Api\Representation\ValueRepresentation $value */
+                            foreach ($propertyData['values'] as $value) {
+                                // $itemData[$term][] = $value->jsonSerialize();
+                                $itemData[$term][] = json_decode(json_encode($value), true);
+                            }
+                        }
+                        break;
+                    case 'update':
+                        foreach ($media->values() as $term => $propertyData) {
+                            if (!empty($propertyData['values'])) {
+                                $itemData[$term] = [];
+                                foreach ($propertyData['values'] as $value) {
+                                    // $itemData[$term][] = $value->jsonSerialize();
+                                    $itemData[$term][] = json_decode(json_encode($value), true);
+                                }
+                            }
+                        }
+                        break;
+                    case 'replace':
+                        $itemData = array_diff_key($itemData, $properties);
+                        foreach ($media->values() as $term => $propertyData) {
+                            if (!empty($propertyData['values'])) {
+                                $itemData[$term] = [];
+                                foreach ($propertyData['values'] as $value) {
+                                    // $itemData[$term][] = $value->jsonSerialize();
+                                    $itemData[$term][] = json_decode(json_encode($value), true);
+                                }
+                            }
+                        }
+                        break;
+                    case 'none':
+                        break;
+                }
+
+                // The current item uses the first media.
+                // The media are removed only when all other items are created.
+                if ($isFirstMedia) {
+                    $isFirstMedia = false;
+                    // Store data for first item.
+                    try {
+                        $newItem = $api->update('items', ['id' => $resourceId], $itemData, [], ['initialize' => false, 'finalize' => false, 'isPartial' => true])->getContent();
+                    } catch (\Exception $e) {
+                        $logger->err(new Message(
+                            'Item #%1$d cannot be exploded: %2$s', // @translate
+                            $resourceId, $e->getMessage())
+                        );
+                        continue 2;
+                    }
+                    $itemsAndMedias[$newItem->getId()] = $media->id();
+                }
+                // Next ones are new items.
+                else {
+                    try {
+                        $itemData['o:id'] = null;
+                        $newItem = $api->create('items', $itemData, [], ['initialize' => false, 'finalize' => false, 'isPartial' => true])->getContent();
+                    } catch (\Exception $e) {
+                        $logger->err(new Message(
+                            'Item #%1$d cannot be exploded: %2$s', // @translate
+                            $resourceId, $e->getMessage())
+                        );
+                        continue 2;
+                    }
+                    $itemsAndMedias[$newItem->getId()] = $media->id();
+                }
+            }
+
+            $sqls = '';
+            foreach ($itemsAndMedias as $newItemId => $mediaId) {
+                $sqls .= sprintf($sqlMedia, $newItemId, $mediaId) . PHP_EOL;
+            }
+            $connection->executeStatement($sqls);
+        }
+    }
+
+    /**
+     * Explode an pdf into images.
+     *
+     * This process cannot be done via a pre-process because the media are
+     * reattached to another item. Furthermore, with standard api, items and
+     * media may be resaved later. So doctrine may not be in sync.
+     *
+     * @see https://ghostscript.readthedocs.io/en/latest/Use.html#parameter-switches-d-and-s
+     */
+    protected function explodePdf(
+        ItemAdapter $adapter,
+        array $resourceIds,
+        array $params
+    ): void {
+        /**
+         * @var \Omeka\Stdlib\Cli $cli
+         * @var \Omeka\Api\Manager $api
+         * @var \Laminas\Log\Logger $logger
+         * @var \Omeka\File\TempFileFactory $tempFileFactory
+         */
+        $services = $this->getServiceLocator();
+        $cli = $services->get('Omeka\Cli');
+        $api = $services->get('Omeka\ApiManager');
+        $logger = $services->get('Omeka\Logger');
+        $tempFileFactory = $services->get('Omeka\File\TempFileFactory');
+
+        $commandPath = $cli->validateCommand('/usr/bin', 'gs');
+        if (!$commandPath) {
+            $logger->err('Ghostscript is not available.'); // @translate
+            return;
+        }
+
+        $tmpDir = $services->get('Config')['temp_dir'];
+        $basePath = $services->get('Config')['file_store']['local']['base_path'] ?: (OMEKA_PATH . '/files');
+
+        /**@see \ExtractOcr\Job\ExtractOcr::extractOcrForMedia() */
+        // It's not possible to save a local file via the "upload" ingester. So
+        // the ingester "url" can be used, but it requires the file to be in the
+        // omeka files directory.
+        // Else, use module FileSideload or inject sql.
+
+        $this->basePath = $basePath;
+
+        if (!$this->checkDir($tmpDir . '/bulkedit')) {
+            $logger->err(new Message(
+                'Unable to create temp directory "%s".', // @translate
+                '/bulkedit'
+            ));
+            return;
+        }
+
+        $baseDestination = '/temp/bulkedit';
+        if (!$this->checkDir($basePath . $baseDestination)) {
+            $logger->err(new Message(
+                'Unable to create temp directory "%s" inside "/files".', // @translate
+                $baseDestination
+            ));
+            return;
+        }
+
+        $mode = $params['mode'] ?? 'all';
+        $process = $params['process'] ?? 'all';
+
+        $baseUri = empty($params['base_uri']) ? $this->getBaseUri() : $params['base_uri'];
+
+        // Default is 72 in ghostscript, but it has bad output for native pdf.
+        $resolution = empty($params['resolution']) ? 400 : (int) $params['resolution'];
+
+        foreach ($resourceIds as $resourceId) {
+            try {
+                /** @var \Omeka\Api\Representation\ItemRepresentation $item */
+                $item = $api->read('items', ['id' => $resourceId], [], ['initialize' => false])->getContent();
+            } catch (\Exception $e) {
+                continue;
+            }
+
+            $medias = $item->media();
+            if (!count($medias)) {
+                continue;
+            }
+
+            // To avoid issues with multiple pdf, get the list of pdf first.
+            $pdfMedias = [];
+            $imageJpegSourceNames = [];
+            foreach ($medias as $media) {
+                $mediaId = $media->id();
+                $mediaType = $media->mediaType();
+                if ($mediaType === 'application/pdf') {
+                    $pdfMedias[$mediaId] = $media;
+                } elseif ($mediaType === 'image/jpeg') {
+                    $imageJpegSourceNames[$mediaId] = $media->source();
+                }
+            }
+            if (!count($pdfMedias)) {
+                continue;
+            }
+
+            if ($mode === 'first' && count($pdfMedias) > 1) {
+                $pdfMedia = reset($pdfMedias);
+                $pdfMedias = [$pdfMedia->id() => $pdfMedia];
+            } elseif ($mode === 'last' && count($pdfMedias) > 1) {
+                $pdfMedia = array_pop($pdfMedias);
+                $pdfMedias = [$pdfMedia->id() => $pdfMedia];
+            }
+
+            $currentPosition = count($medias);
+
+            $tmpDirResource = $tmpDir . '/bulkedit/' . $resourceId;
+            $baseDestinationResource = '/temp/bulkedit/' . $resourceId;
+            $filesTempDirResource = $basePath . $baseDestinationResource;
+
+            foreach ($pdfMedias as $pdfMedia) {
+                // To avoid space issue, files are removed after each loop.
+                if (!$this->checkDir($tmpDirResource)) {
+                    $logger->err(new Message(
+                        'Unable to create temp directory "%1$s" for item #%2$d.', // @translate
+                        '/bulkedit/' . $resourceId, $resourceId
+                    ));
+                    return;
+                }
+
+                if (!$this->checkDir($filesTempDirResource)) {
+                    $logger->err(new Message(
+                        'Unable to create temp directory "%1$s" inside "/files" for resource #%2$d.', // @translate
+                        $baseDestinationResource, $resourceId
+                    ));
+                    return;
+                }
+
+                $filepath = $basePath . '/original/' . $pdfMedia->filename();
+                $ready = file_exists($filepath) && is_readable($filepath) && filesize($filepath);
+                if (!$ready) {
+                    $logger->err(new Message(
+                        'Unable to read pdf #%d.', // @translate
+                        $pdfMedia->id()
+                    ));
+                    continue;
+                }
+
+                /** @see \Omeka\File\TempFile::getStorageId() */
+                $storage = bin2hex(Rand::getBytes(16));
+
+                // Sanitize source name, since it's reused as source for images.
+                $sourceBasename = basename($pdfMedia->source(), '.pdf');
+                $sourceBasename = $this->sanitizeName($sourceBasename);
+                $sourceBasename = $this->convertNameToAscii($sourceBasename);
+
+                $logger->info(new Message(
+                    'Step 1/2 for item #%1$d, pdf #%2$d: Extracting pages as image.', // @translate
+                    $resourceId, $pdfMedia->id()
+                ));
+
+                // Manage windows, that escapes argument differently (quote or
+                // double quote).
+                $tmpPath = escapeshellarg($tmpDirResource . '/' . $storage);
+                $wrap = mb_substr($tmpPath, -1);
+                $command = sprintf(
+                    'gs -sDEVICE=jpeg -sOutputFile=%s -r%s -dNOTRANSPARENCY -dNOPAUSE -dQUIET -dBATCH %s',
+                    $wrap . mb_substr($tmpPath, 1, -1) . '%04d.jpg' . $wrap,
+                    (int) $resolution,
+                    escapeshellarg($filepath)
+                );
+                $result = $cli->execute($command);
+                if ($result === false) {
+                    $logger->err(new Message(
+                        'Unable to extract images from item #%1$d pdf #%2$d.', // @translate
+                        $resourceId, $pdfMedia->id()
+                    ));
+                    continue;
+                }
+
+                $index = 0;
+                $totalImages = 0;
+                while (++$index) {
+                    $source = sprintf('%s/%s%04d.jpg', $tmpDirResource, $storage, $index);
+                    if (!file_exists($source)) {
+                        break;
+                    }
+                    ++$totalImages;
+                }
+
+                if (!$totalImages) {
+                    $logger->warn(new Message(
+                        'For item #%1$d, pdf #%2$d cannot be exploded into images.', // @translate
+                        $resourceId, $pdfMedia->id()
+                    ));
+                    continue;
+                }
+
+                // Create media from files and append them to item.
+                $logger->info(new Message(
+                    'Step 2/2 for item #%1$d, pdf #%2$d: Creating %3$d media.', // @translate
+                    $resourceId, $pdfMedia->id(), $totalImages
+                ));
+
+                $index = 0;
+                // $hasError = false;
+                while (++$index) {
+                    $source = sprintf('%s/%s%04d.jpg', $tmpDirResource, $storage, $index);
+                    if (!file_exists($source)) {
+                        break;
+                    }
+
+                    $destination = sprintf('%s/%s.%04d.jpg', $filesTempDirResource, $sourceBasename, $index);
+                    $storageId = basename($source);
+                    $sourceFilename = basename($destination);
+
+                    if ($process === 'skip' && in_array($sourceFilename, $imageJpegSourceNames)) {
+                        ++$currentPosition;
+                        continue;
+                    }
+
+                    $result = @copy($source, $destination);
+                    if (!$result) {
+                        // $hasError = true;
+                        $logger->err(new Message(
+                            'File cannot be saved in temporary directory "%1$s" (temp file: "%2$s")', // @translate
+                            basename($destination), $source
+                        ));
+                        break;
+                    }
+
+                    $fileImage = [
+                        'filepath' => $destination,
+                        'filename' => $sourceFilename,
+                        'url' => $baseUri . $baseDestinationResource . '/' . $sourceFilename,
+                        'url_file' => $baseDestinationResource . '/' . $sourceFilename,
+                        'storageId' => $storageId,
+                    ];
+
+                    $data = [
+                        'o:ingester' => 'url',
+                        'o:item' => [
+                            'o:id' => $resourceId,
+                        ],
+                        'o:source' => $sourceFilename,
+                        'ingest_url' => $fileImage['url'],
+                        'file_index' => 0,
+                        'values_json' => '{}',
+                        'o:lang' => null,
+                        'position' => ++$currentPosition,
+                    ];
+
+                    // TODO Extract ocr into extracted text. See ExtractOcr.
+                    // TODO Extract Alto.
+
+                    try {
+                        $media = $api->create('media', $data, [])->getContent();
+                    } catch (\Omeka\Api\Exception\ExceptionInterface $e) {
+                        // Generally a bad or missing pdf file.
+                        // $hasError = true;
+                        $logger->err($e->getMessage() ?: $e);
+                        break;
+                    } catch (\Exception $e) {
+                        // $hasError = true;
+                        $logger->err($e);
+                        break;
+                    }
+                }
+
+                // Delete temp files in all cases.
+                $this->rmDir($tmpDirResource);
+                $this->rmDir($baseDestinationResource);
             }
         }
     }
@@ -1981,10 +2694,11 @@ class Module extends AbstractModule
             switch ($mode) {
                 case 'regex':
                     // Check the validity of the regex.
-                    // TODO Add the check of the validity of the regex in the form.
                     $isValidRegex = @preg_match($from, '') !== false;
                     if (!$isValidRegex) {
-                        $from = '';
+                        $this->getServiceLocator()->get('Omeka\Logger')
+                            ->err('Update media html: Invalid regex.'); // @translate
+                        return;
                     }
                     break;
                 case 'html':
@@ -2090,6 +2804,9 @@ class Module extends AbstractModule
             $medias = $repository->findBy([
                 $keyResourceId => $resourceId,
                 'mediaType' => $from,
+            ], [
+                'position' => 'ASC',
+                'id' => 'ASC',
             ]);
             /** @var \Omeka\Entity\Media $media */
             foreach ($medias as $media) {
@@ -2183,15 +2900,16 @@ class Module extends AbstractModule
             return $filleds[$url];
         }
 
-        $doc = $this->fetchUrlXml($url);
-        if (!$doc) {
+        $dom = $this->fetchUrlXml($url);
+        if (!$dom) {
             return null;
         }
 
-        $xpath = new \DOMXPath($doc);
+        $xpath = new \DOMXPath($dom);
 
         switch ($datatype) {
             case 'valuesuggest:geonames:geonames':
+                // Probably useless.
                 $xpath->registerNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#');
                 $xpath->registerNamespace('gn', 'http://www.geonames.org/ontology#');
                 break;
@@ -2200,7 +2918,7 @@ class Module extends AbstractModule
         }
 
         $queries = (array) $endpointData['path'];
-        foreach ($queries as $query) {
+        foreach (array_filter($queries) as $query) {
             $nodeList = $xpath->query($query);
             if (!$nodeList || !$nodeList->length) {
                 continue;
@@ -2292,9 +3010,13 @@ class Module extends AbstractModule
                     'sws.geonames.org/',
                 ],
                 'path' => [
-                    '/rdf:RDF/gn:Feature/gn:officialName[@xml:lang="' . $language . '"][1]',
+                    // If there is a language, use it first, else use name.
+                    $language ? '/rdf:RDF/gn:Feature/gn:officialName[@xml:lang="' . $language . '"][1]' : null,
+                    $language ? '/rdf:RDF/gn:Feature/gn:alternateName[@xml:lang="' . $language . '"][1]' : null,
                     '/rdf:RDF/gn:Feature/gn:name[1]',
                     '/rdf:RDF/gn:Feature/gn:shortName[1]',
+                    '/rdf:RDF/gn:Feature/gn:officialName[1]',
+                    '/rdf:RDF/gn:Feature/gn:alternateName[1]',
                 ],
             ],
             'valuesuggest:idref:all' => null,
@@ -2407,12 +3129,20 @@ class Module extends AbstractModule
         return $url;
     }
 
-    protected function fetchUrlXml(string $url): ?\DOMDocument
+    protected function fetchUrl(string $url): ?string
     {
-        static $logger = null;
+        /**
+         * @var \Laminas\Log\Logger $logger
+         * @var \Laminas\Http\Client $httpClient
+         */
+        static $logger;
+        static $httpClient;
 
         if (!$logger) {
-            $logger = $this->getServiceLocator()->get('Omeka\Logger');
+            $services = $this->getServiceLocator();
+            $logger = $services->get('Omeka\Logger');
+            // Use omeka http client instead of the simple static client.
+            $httpClient = $services->get('Omeka\HttpClient');
         }
 
         $headers = [
@@ -2421,8 +3151,14 @@ class Module extends AbstractModule
             'Accept-Encoding' => 'gzip, deflate',
         ];
 
+        // TODO Should we reset cookies each time?
+        $httpClient
+            ->reset()
+            ->setUri($url)
+            ->setHeaders($headers);
+
         try {
-            $response = \Laminas\Http\ClientStatic::get($url, [], $headers);
+            $response = $httpClient->send();
         } catch (\Laminas\Http\Client\Exception\ExceptionInterface $e) {
             $logger->err(new Message(
                 'Connection error when fetching url "%1$s": %2$s', // @translate
@@ -2438,12 +3174,27 @@ class Module extends AbstractModule
             return null;
         }
 
-        $xml = $response->getBody();
-        if (!$xml) {
-            $logger->err(new Message(
-                'Output is not xml for url "%s".', // @translate
+        $string = $response->getBody();
+        if (!strlen($string)) {
+            $logger->warn(new Message(
+                'Output is empty for url "%s".', // @translate
                 $url
             ));
+        }
+
+        return $string;
+    }
+
+    protected function fetchUrlXml(string $url): ?\DOMDocument
+    {
+        static $logger = null;
+
+        if (!$logger) {
+            $logger = $this->getServiceLocator()->get('Omeka\Logger');
+        }
+
+        $xml = $this->fetchUrl($url);
+        if (!$xml) {
             return null;
         }
 
@@ -2464,13 +3215,317 @@ class Module extends AbstractModule
 
         if (!$doc) {
             $logger->err(new Message(
-                'Output is not xml for url "%s".', // @translate
+                'Output is not a valid xml for url "%s".', // @translate
                 $url
             ));
             return null;
         }
 
         return $doc;
+    }
+
+    protected function orderWithTwoCriteria($toOrder): array
+    {
+        $cmp = function($a, $b) {
+            return strcasecmp($a[0], $b[0])
+                ?: strcasecmp($a[1], $b[1]);
+        };
+        uasort($toOrder, $cmp);
+        return $toOrder;
+    }
+
+    protected function orderWithList($data, $mainOrder, $mediaTypes, $extensions): array
+    {
+        $newOrder = [];
+
+        if ($mainOrder === 'mediatype') {
+            // Order each media type separately.
+            foreach ($mediaTypes as $mediaType) {
+                // Get all medias with the specified media type and not
+                // already filtered.
+                $mainOrderType = strpos($mediaType, '/') ? 'mediatype' : 'mainmediatype';
+                foreach ($data[$mainOrderType] as $mediaId => $mediaMediaType) {
+                    if ($mediaMediaType === $mediaType && !isset($newOrder[$mediaId])) {
+                        $newOrder[$mediaId] = $mediaId;
+                    }
+                }
+            }
+        } else {
+            // Order each extensions separately.
+            foreach ($extensions as $extension) {
+                foreach ($data['extension'] as $mediaId => $mediaExtension) {
+                    if ($mediaExtension === $extension && !isset($newOrder[$mediaId])) {
+                        $newOrder[$mediaId] = $mediaId;
+                    }
+                }
+            }
+        }
+
+        // Other media are ordered alphabetically.
+        $remainingOrder = array_diff_key($data[$mainOrder], $newOrder);
+        if (count($remainingOrder)) {
+            natcasesort($remainingOrder);
+            $newOrder += $remainingOrder;
+        }
+
+        return $newOrder;
+    }
+
+    protected function orderWithListThenField($toOrder, $mainOrder, $subOrder, $mediaTypes, $extensions): array
+    {
+        if (($mainOrder === 'mediatype' && !$mediaTypes)
+            || ($mainOrder === 'extension' && !$extensions)
+        ) {
+            return $this->orderWithTwoCriteria($toOrder);
+        }
+
+        $newOrder = [];
+
+        if ($mainOrder === 'mediatype') {
+            // Order each media type separately.
+            foreach ($mediaTypes as $mediaType) {
+                // Get all medias with the specified media type and not
+                // already filtered.
+                $partialOrder = [];
+                $mainOrderType = strpos($mediaType, '/') ? 0 : 2;
+                foreach ($toOrder as $mediaId => $mediaData) {
+                    if ($mediaData[$mainOrderType] === $mediaType && !isset($newOrder[$mediaId])) {
+                        $partialOrder[$mediaId] = $mediaData[1];
+                    }
+                }
+                // Order the partial order with the second field.
+                uasort($partialOrder, 'strcasecmp');
+                $newOrder += $partialOrder;
+            }
+        } else {
+            // Order each media type separately.
+            foreach ($extensions as $extension) {
+                // Get all medias with the specified media type and not
+                // already filtered.
+                $partialOrder = [];
+                foreach ($toOrder as $mediaId => $mediaData) {
+                    if ($mediaData[0] === $extension && !isset($newOrder[$mediaId])) {
+                        $partialOrder[$mediaId] = $mediaData[1];
+                    }
+                }
+                // Order the partial order with the second field.
+                uasort($partialOrder, 'strcasecmp');
+                $newOrder += $partialOrder;
+            }
+        }
+
+        // Other media are ordered alphabetically.
+        $remainingOrder = array_diff_key($toOrder, $newOrder);
+        if (count($remainingOrder)) {
+            $newOrder += $this->orderWithTwoCriteria($remainingOrder);
+        }
+
+        return $newOrder;
+    }
+
+    protected function orderWithFieldThenList($toOrder, $mainOrder, $subOrder, $mediaTypes, $extensions): array
+    {
+        if (($subOrder === 'mediatype' && !$mediaTypes)
+            || ($subOrder === 'extension' && !$extensions)
+        ) {
+            return $this->orderWithTwoCriteria($toOrder);
+        }
+
+        if ($subOrder === 'mediatype') {
+            $cmp = function ($a, $b) use ($mediaTypes) {
+                $result = strcasecmp($a[0], $b[0]);
+                if ($result) {
+                    return $result;
+                }
+                foreach ($mediaTypes as $mediaType) {
+                    $mainOrderType = strpos($mediaType, '/') ? 1 : 2;
+                    $aa = $a[$mainOrderType];
+                    $bb = $b[$mainOrderType];
+                    if ($aa === $mediaType && $bb !== $mediaType) {
+                        return -1;
+                    } elseif ($aa !== $mediaType && $bb === $mediaType) {
+                        return 1;
+                    }
+                }
+                return strcasecmp($a[1], $b[1]);
+            };
+
+        } else {
+            $cmp = function ($a, $b) use ($extensions) {
+                $result = strcasecmp($a[0], $b[0]);
+                if ($result) {
+                    return $result;
+                }
+                foreach ($extensions as $extension) {
+                    if ($a[1] === $extension && $b[1] !== $extension) {
+                        return -1;
+                    } elseif ($a[1] !== $extension && $b[1] === $extension) {
+                        return 1;
+                    }
+                }
+                return strcasecmp($a[1], $b[1]);
+            };
+        }
+
+        uasort($toOrder, $cmp);
+
+        return $toOrder;
+    }
+
+    /**
+     * Save a temp file into the files/temp directory.
+     *
+     * @see \DerivativeMedia\Module::makeTempFileDownloadable()
+     * @see \Ebook\Mvc\Controller\Plugin\Ebook::saveFile()
+     * @see \ExtractOcr\Job\ExtractOcr::makeTempFileDownloadable()
+     */
+    protected function makeTempFileDownloadable(TempFile $tempFile, $base = '')
+    {
+        $baseDestination = '/temp';
+$destinationDir = $this->basePath . $baseDestination . $base;
+        if (!$this->checkDir($destinationDir)) {
+            return null;
+        }
+
+        $source = $tempFile->getTempPath();
+
+        // Find a unique meaningful filename instead of a hash.
+        $name = date('Ymd_His') . '_pdf2jpg';
+        $extension = 'jpg';
+        $i = 0;
+        do {
+            $filename = $name . ($i ? '-' . $i : '') . '.' . $extension;
+            $destination = $destinationDir . '/' . $filename;
+            if (!file_exists($destination)) {
+                $result = @copy($source, $destination);
+                if (!$result) {
+                        $this->getServiceLocator()->get('Omeka\Logger')->err(new Message('File cannot be saved in temporary directory "%1$s" (temp file: "%2$s")', // @translate
+                        $destination, $source
+                    ));
+                    return null;
+                }
+                $storageId = $base . $name . ($i ? '-' . $i : '');
+                break;
+            }
+        } while (++$i);
+
+        return [
+            'filepath' => $destination,
+            'filename' => $filename,
+            'url' => $this->baseUri . $baseDestination . $base . '/' . $filename,
+            'url_file' => $baseDestination . $base . '/' . $filename,
+            'storageId' => $storageId,
+        ];
+    }
+
+    /**
+     * @todo To get the base uri is useless now, since base uri is passed as job argument.
+     */
+    protected function getBaseUri()
+    {
+        $services = $this->getServiceLocator();
+        $config = $services->get('Config');
+        $baseUri = $config['file_store']['local']['base_uri'];
+        if (!$baseUri) {
+            $helpers = $services->get('ViewHelperManager');
+            $serverUrlHelper = $helpers->get('serverUrl');
+            $basePathHelper = $helpers->get('basePath');
+            $baseUri = $serverUrlHelper($basePathHelper('files'));
+            if ($baseUri === 'http:///files' || $baseUri === 'https:///files') {
+                $t = $services->get('MvcTranslator');
+                throw new \Omeka\Mvc\Exception\RuntimeException(
+                    sprintf(
+                        $t->translate('The base uri is not set (key [file_store][local][base_uri]) in the config file of Omeka "config/local.config.php". It must be set for now (key [file_store][local][base_uri]) in order to process background jobs.'), //@translate
+                        $baseUri
+                    )
+                );
+            }
+        }
+        return $baseUri;
+    }
+
+    /**
+     * Check or create the destination folder.
+     *
+     * @param string $dirPath
+     * @return bool
+     */
+    protected function checkDir($dirPath)
+    {
+        if (!file_exists($dirPath)) {
+            if (!is_writeable($this->basePath)) {
+                return false;
+            }
+            @mkdir($dirPath, 0755, true);
+        } elseif (!is_dir($dirPath) || !is_writeable($dirPath)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Remove a dir from filesystem.
+     *
+     * @param string $dirpath Absolute path.
+     */
+    private function rmDir(string $dirPath): bool
+    {
+        if (!file_exists($dirPath)) {
+            return true;
+        }
+        if (strpos($dirPath, '/..') !== false || substr($dirPath, 0, 1) !== '/') {
+            return false;
+        }
+        $files = array_diff(scandir($dirPath), ['.', '..']);
+        foreach ($files as $file) {
+            $path = $dirPath . '/' . $file;
+            if (is_dir($path)) {
+                $this->rmDir($path);
+            } else {
+                unlink($path);
+            }
+        }
+        return rmdir($dirPath);
+    }
+
+    /**
+     * Returns a sanitized string for folder or file path.
+     *
+     * The string should be a simple name, not a full path or url, because "/",
+     * "\" and ":" are removed (so a path should be sanitized by part).
+     *
+     * @param string $string The string to sanitize.
+     * @return string The sanitized string.
+     */
+    protected function sanitizeName($string): string
+    {
+        $string = strip_tags((string) $string);
+        // The first character is a space and the last one is a no-break space.
+        $string = trim($string, ' /\\?<>:*%|"\'`&; ');
+        $string = str_replace(['(', '{'], '[', $string);
+        $string = str_replace([')', '}'], ']', $string);
+        $string = preg_replace('/[[:cntrl:]\/\\\?<>:\*\%\|\"\'`\&\;#+\^\$\s]/', ' ', $string);
+        return substr(preg_replace('/\s+/', ' ', $string), -180);
+    }
+
+    /**
+     * Returns an unaccentued string for folder or file name.
+     *
+     * Note: The string should be already sanitized.
+     *
+     * See \ArchiveRepertoryPlugin::convertFilenameTo()
+     *
+     * @param string $string The string to convert to ascii.
+     * @return string The converted string to use as a folder or a file name.
+     */
+    protected function convertNameToAscii($string): string
+    {
+        $string = htmlentities($string, ENT_NOQUOTES, 'utf-8');
+        $string = preg_replace('#\&([A-Za-z])(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml|caron)\;#', '\1', $string);
+        $string = preg_replace('#\&([A-Za-z]{2})(?:lig)\;#', '\1', $string);
+        $string = preg_replace('#\&[^;]+\;#', '_', $string);
+        $string = preg_replace('/[^[:alnum:]\[\]_\-\.#~@+:]/', '_', $string);
+        return substr(preg_replace('/_+/', '_', $string), -180);
     }
 
     /**

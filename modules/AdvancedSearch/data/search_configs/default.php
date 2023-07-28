@@ -171,10 +171,14 @@ return [
                 ],
                 */
             ],
+            'button_reset' => true,
+            'button_submit' => true,
         ],
 
         'display' => [
             'search_filters' => 'header',
+            'active_facets' => 'none',
+            'total_results' => 'header',
             'paginator' => 'header',
             'per_pages' => 'header',
             'sort' => 'header',
@@ -216,6 +220,7 @@ return [
         ],
 
         'facet' => [
+            'label' => 'Facets', // @translate
             'facets' => [
                 'item_set_id' => [
                     'name' => 'item_set_id',
@@ -250,7 +255,9 @@ return [
             'mode' => 'button',
             'limit' => 10,
             'order' => '',
-            'display_button' => 'above',
+            'display_list' => 'available',
+            'display_submit' => 'above',
+            'display_reset' => 'above',
             'display_active' => true,
             'display_count' => true,
         ],

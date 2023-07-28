@@ -9,18 +9,42 @@ use Omeka\Form\Element as OmekaElement;
 
 class BulkEditFieldset extends Fieldset
 {
+    /**
+     * @var array
+     */
     protected $dataTypesMain = [];
 
+    /**
+     * @var array
+     */
     protected $dataTypesLabels = [];
 
+    /**
+     * @var array
+     */
     protected $mediaTypes = [];
 
+    /**
+     * @var array
+     */
     protected $ingesters = [];
 
+    /**
+     * @var array
+     */
     protected $renderers = [];
 
+    /**
+     * Warning: Update bulk-edit.js for empty values to fix batch update selected resource.
+     * Fixed in Omeka S v4.0.2 (#609dbbb30).
+     *
+     * {@inheritDoc}
+     * @see \Laminas\Form\Element::init()
+     */
     public function init(): void
     {
+        $resourceType = $this->getOption('resource_type');
+
         $this
             ->setName('bulkedit')
             ->setAttribute('id', 'bulk-edit')
@@ -37,10 +61,30 @@ class BulkEditFieldset extends Fieldset
             ->appendFieldsetFillData()
             ->appendFieldsetFillValues()
             ->appendFieldsetRemove()
-            ->appendFieldsetMediaHtml()
-            ->appendFieldsetMediaType()
-            ->appendFieldsetMediaVisibility()
         ;
+
+        switch ($resourceType) {
+            case 'items':
+            case 'item':
+                $this
+                    ->appendFieldsetExplodeItem()
+                    ->appendFieldsetExplodePdf()
+                    ->appendFieldsetMediaOrder()
+                ;
+                // no break.
+            case 'media':
+                $this
+                    ->appendFieldsetMediaHtml()
+                    ->appendFieldsetMediaType()
+                    ->appendFieldsetMediaVisibility()
+                ;
+                break;
+            case 'item_sets':
+            case 'item-set':
+            case 'itemSet':
+            default:
+                break;
+        }
 
         // Omeka doesn't display fieldsets, so add them via a hidden input
         // managed by js.
@@ -83,10 +127,11 @@ class BulkEditFieldset extends Fieldset
         $fieldset
             ->add([
                 'name' => 'trim_values',
-                'type' => Element\Checkbox::class,
+                'type' => BulkEditElement\OptionalCheckbox::class,
                 'options' => [
                     'label' => 'Trim property values', // @translate
                     'info' => 'Remove initial and trailing whitespace of all values of all properties', // @translate
+                    'use_hidden_element' => false,
                 ],
                 'attributes' => [
                     'id' => 'cleaning_trim_values',
@@ -96,10 +141,11 @@ class BulkEditFieldset extends Fieldset
             ])
             ->add([
                 'name' => 'specify_datatypes',
-                'type' => Element\Checkbox::class,
+                'type' => BulkEditElement\OptionalCheckbox::class,
                 'options' => [
                     'label' => 'Specify data type "resource" for linked resources', // @translate
                     'info' => 'In some cases, linked resources are saved in the database with the generic data type "resource", not with the specific "resource:item", "resource:media, etc.', // @translate
+                    'use_hidden_element' => false,
                 ],
                 'attributes' => [
                     'id' => 'cleaning_specify_datatypes',
@@ -109,9 +155,10 @@ class BulkEditFieldset extends Fieldset
             ])
             ->add([
                 'name' => 'clean_languages',
-                'type' => Element\Checkbox::class,
+                'type' => BulkEditElement\OptionalCheckbox::class,
                 'options' => [
                     'label' => 'Clean languages (set null when language is empty)', // @translate
+                    'use_hidden_element' => false,
                 ],
                 'attributes' => [
                     'id' => 'cleaning_clean_languages',
@@ -121,10 +168,11 @@ class BulkEditFieldset extends Fieldset
             ])
             ->add([
                 'name' => 'clean_language_codes',
-                'type' => Element\Checkbox::class,
+                'type' => BulkEditElement\OptionalCheckbox::class,
                 'options' => [
                     'label' => 'Normalize or modify language codes', // @translate
                     'info' => 'Normalize language codes from a code to another one, for example "fr" to "fra" or vice-versa. It allows to add or remove a code too.', // @translate
+                    'use_hidden_element' => false,
                 ],
                 'attributes' => [
                     'id' => 'cleaning_clean_language_codes',
@@ -182,10 +230,11 @@ class BulkEditFieldset extends Fieldset
             ])
             ->add([
                 'name' => 'deduplicate_values',
-                'type' => Element\Checkbox::class,
+                'type' => BulkEditElement\OptionalCheckbox::class,
                 'options' => [
                     'label' => 'Deduplicate property values case insensitively', // @translate
                     'info' => 'Deduplicate values of all properties, case INsensitively. Trimming values before is recommended, because values are checked strictly.', // @translate
+                    'use_hidden_element' => false,
                 ],
                 'attributes' => [
                     'id' => 'cleaning_clean_deduplicate_values',
@@ -260,9 +309,10 @@ class BulkEditFieldset extends Fieldset
             ])
             ->add([
                 'name' => 'remove',
-                'type' => Element\Checkbox::class,
+                'type' => BulkEditElement\OptionalCheckbox::class,
                 'options' => [
                     'label' => 'Remove string', // @translate
+                    'use_hidden_element' => false,
                 ],
                 'attributes' => [
                     'id' => 'replace_remove',
@@ -309,9 +359,10 @@ class BulkEditFieldset extends Fieldset
             ])
             ->add([
                 'name' => 'language_clear',
-                'type' => Element\Checkbox::class,
+                'type' => BulkEditElement\OptionalCheckbox::class,
                 'options' => [
                     'label' => 'Remove language', // @translate
+                    'use_hidden_element' => false,
                 ],
                 'attributes' => [
                     'id' => 'replace_language_clear',
@@ -662,9 +713,10 @@ class BulkEditFieldset extends Fieldset
             ])
             ->add([
                 'name' => 'literal_extract_html_text',
-                'type' => Element\Checkbox::class,
+                'type' => BulkEditElement\OptionalCheckbox::class,
                 'options' => [
                     'label' => 'Convert to literal: keep only text from html/xml', // @translate
+                    'use_hidden_element' => false,
                 ],
                 'attributes' => [
                     'id' => 'convert_literal_extract_html_text',
@@ -675,9 +727,10 @@ class BulkEditFieldset extends Fieldset
             ])
             ->add([
                 'name' => 'literal_html_only_tagged_string',
-                'type' => Element\Checkbox::class,
+                'type' => BulkEditElement\OptionalCheckbox::class,
                 'options' => [
                     'label' => 'Convert to html/xml: only html/xml-looking strings', // @translate
+                    'use_hidden_element' => false,
                 ],
                 'attributes' => [
                     'id' => 'convert_literal_html_only_tagged_string',
@@ -710,9 +763,10 @@ class BulkEditFieldset extends Fieldset
             ])
             ->add([
                 'name' => 'uri_extract_label',
-                'type' => Element\Checkbox::class,
+                'type' => BulkEditElement\OptionalCheckbox::class,
                 'options' => [
                     'label' => 'Convert to uri: extract label after uri', // @translate
+                    'use_hidden_element' => false,
                 ],
                 'attributes' => [
                     'id' => 'convert_uri_extract_label',
@@ -736,7 +790,7 @@ class BulkEditFieldset extends Fieldset
             ])
             ->add([
                 'name' => 'uri_base_site',
-                'type' => OmekaElement\SiteSelect::class,
+                'type' => BulkEditElement\OptionalSiteSelect::class,
                 'options' => [
                     'label' => 'Convert to uri: Site to use as base url', // @translate
                     // 'disable_group_by_owner' => true,
@@ -971,7 +1025,7 @@ class BulkEditFieldset extends Fieldset
     protected function appendFieldsetFillValues()
     {
         $managedDatatypes = [
-            // 'valuesuggest:geonames:geonames' => 'Geonames',
+            'valuesuggest:geonames:geonames' => 'Geonames',
             'valuesuggest:idref:person' => 'IdRef Personnes',
             'valuesuggest:idref:corporation' => 'IdRef Organisations',
             'valuesuggest:idref:conference' => 'IdRef Congrès',
@@ -1159,7 +1213,7 @@ class BulkEditFieldset extends Fieldset
             ])
             ->add([
                 'name' => 'update_language',
-                'type' => Element\Radio::class,
+                'type' => BulkEditElement\OptionalRadio::class,
                 'options' => [
                     'label' => 'Update language in value', // @translate
                     'value_options' => [
@@ -1177,9 +1231,10 @@ class BulkEditFieldset extends Fieldset
             ])
             ->add([
                 'name' => 'featured_subject',
-                'type' => Element\Checkbox::class,
+                'type' => BulkEditElement\OptionalCheckbox::class,
                 'options' => [
                     'label' => 'Use featured subject (Rameau)', // @translate
+                    'use_hidden_element' => false,
                 ],
                 'attributes' => [
                     'id' => 'fill_featured_subject',
@@ -1198,7 +1253,7 @@ class BulkEditFieldset extends Fieldset
                 'name' => 'remove',
                 'type' => Fieldset::class,
                 'options' => [
-                    'label' => 'Remove values from a property', // @translate
+                    'label' => 'Remove values, linked resources, or uris from a property', // @translate
                 ],
                 'attributes' => [
                     'id' => 'remove',
@@ -1278,13 +1333,280 @@ class BulkEditFieldset extends Fieldset
                 ],
             ])
             ->add([
+                'name' => 'equal',
+                'type' => Element\Text::class,
+                'options' => [
+                    'label' => 'Only equal to', // @translate
+                ],
+                'attributes' => [
+                    'id' => 'remove_equal',
+                    // This attribute is required to make "batch edit all" working.
+                    'data-collection-action' => 'replace',
+                ],
+            ])
+            ->add([
                 'name' => 'contains',
                 'type' => Element\Text::class,
                 'options' => [
-                    'label' => 'Only containing', // @translate
+                    'label' => 'Only containing string (text or uri)', // @translate
                 ],
                 'attributes' => [
                     'id' => 'remove_contains',
+                    // This attribute is required to make "batch edit all" working.
+                    'data-collection-action' => 'replace',
+                ],
+            ]);
+
+        return $this;
+    }
+
+    protected function appendFieldsetExplodeItem()
+    {
+        $this
+            ->add([
+                'name' => 'explode_item',
+                'type' => Fieldset::class,
+                'options' => [
+                    'label' => 'Explode item by media', // @translate
+                ],
+                'attributes' => [
+                    'id' => 'explode_item',
+                    'class' => 'field-container',
+                    // This attribute is required to make "batch edit all" working.
+                    'data-collection-action' => 'replace',
+                ],
+            ]);
+        $fieldset = $this->get('explode_item');
+        $fieldset
+            ->add([
+                'name' => 'note_process',
+                'type' => BulkEditElement\Note::class,
+                'options' => [
+                    'content' => 'Check first in jobs and logs that there is no background process working on medias, for example data extraction or indexation.', // @translate
+                    // TODO For compatibility with other modules, the content is passed as text too. Will be removed in Omeka S v4.
+                    'text' => 'Check first in jobs and logs that there is no background process working on medias, for example data extraction or indexation.', // @translate
+                ],
+                'attributes' => [
+                    'id' => 'explode_item_note_process',
+                    'class' => 'field',
+                    'style' => 'display_block',
+                ],
+            ])
+            ->add([
+                'name' => 'mode',
+                'type' => BulkEditElement\OptionalRadio::class,
+                'options' => [
+                    'label' => 'What to do with media metadata', // @translate
+                    'value_options' => [
+                        '' => 'No process', // @translate
+                        'append' => 'Append media metadata to item metadata', // @translate
+                        'update' => 'Replace item metadata by media metadata when set', // @translate
+                        'replace' => 'Remove all item metadata and replace them by media ones', // @translate
+                        'none' => 'Do not copy media metadata and keep them in media', // @translate
+                    ],
+                ],
+                'attributes' => [
+                    'id' => 'explode_item_mode',
+                    'value' => '',
+                    // This attribute is required to make "batch edit all" working.
+                    'data-collection-action' => 'replace',
+                ],
+            ]);
+
+        return $this;
+    }
+
+    protected function appendFieldsetExplodePdf()
+    {
+        $this
+            ->add([
+                'name' => 'explode_pdf',
+                'type' => Fieldset::class,
+                'options' => [
+                    'label' => 'Explode pdf into jpeg for iiif viewers', // @translate
+                ],
+                'attributes' => [
+                    'id' => 'explode_pdf',
+                    'class' => 'field-container',
+                    // This attribute is required to make "batch edit all" working.
+                    'data-collection-action' => 'replace',
+                ],
+            ]);
+            $fieldset = $this->get('explode_pdf');
+        $fieldset
+            ->add([
+                'name' => 'note_process',
+                'type' => BulkEditElement\Note::class,
+                'options' => [
+                    'content' => 'Check first in jobs and logs that there is no background process working on medias, for example data extraction or indexation.', // @translate
+                    // TODO For compatibility with other modules, the content is passed as text too. Will be removed in Omeka S v4.
+                    'text' => 'Check first in jobs and logs that there is no background process working on medias, for example data extraction or indexation.', // @translate
+                ],
+                'attributes' => [
+                    'id' => 'explode_pdf_note_process',
+                    'class' => 'field',
+                    'style' => 'display_block',
+                ],
+            ])
+            ->add([
+                'name' => 'mode',
+                'type' => BulkEditElement\OptionalRadio::class,
+                'options' => [
+                    'label' => 'Process mode', // @translate
+                    'value_options' => [
+                        '' => 'No process', // @translate
+                        'all' => 'All pdf of each item', // @translate
+                        'first' => 'First pdf only', // @translate
+                        'last' => 'Last pdf only', // @translate
+                    ],
+                ],
+                'attributes' => [
+                    'id' => 'explode_pdf_mode',
+                    'value' => '',
+                    // This attribute is required to make "batch edit all" working.
+                    'data-collection-action' => 'replace',
+                ],
+            ])
+            ->add([
+                'name' => 'process',
+                'type' => BulkEditElement\OptionalRadio::class,
+                'options' => [
+                    'label' => 'Creation process', // @translate
+                    'value_options' => [
+                        'all' => 'All pages', // @translate
+                        'skip' => 'Skip existing pages (same created file name)', // @translate
+                    ],
+                ],
+                'attributes' => [
+                    'id' => 'explode_pdf_process',
+                    'value' => 'all',
+                    // This attribute is required to make "batch edit all" working.
+                    'data-collection-action' => 'replace',
+                ],
+            ])
+            ->add([
+                'name' => 'resolution',
+                'type' => BulkEditElement\OptionalNumber::class,
+                'options' => [
+                    'label' => 'Resolution, generally 72, 96, 150, 300, 400 (default), 600 or more', // @translate
+                ],
+                'attributes' => [
+                    'id' => 'explode_pdf_resolution',
+                    'min' => '0',
+                    // This attribute is required to make "batch edit all" working.
+                    'data-collection-action' => 'replace',
+                ],
+            ]);
+
+        return $this;
+    }
+
+    protected function appendFieldsetMediaOrder()
+    {
+        $this
+            ->add([
+                'name' => 'media_order',
+                'type' => Fieldset::class,
+                'options' => [
+                    'label' => 'Media order', // @translate
+                ],
+                'attributes' => [
+                    'id' => 'media_order',
+                    'class' => 'field-container',
+                    // This attribute is required to make "batch edit all" working.
+                    'data-collection-action' => 'replace',
+                ],
+            ]);
+        $fieldset = $this->get('media_order');
+        $fieldset
+            ->add([
+                'name' => 'order',
+                'type' => BulkEditElement\OptionalSelect::class,
+                'options' => [
+                    'label' => 'Media order', // @translate
+                    'value_options' => [
+                        'simple' => [
+                            'label' => 'Simple',
+                            'options' => [
+                                'title' => 'By title', // @translate
+                                'source' => 'By original source full name', // @translate
+                                'basename' => 'By original source basename', // @translate
+                                'mediatype' => 'By media type', // @translate
+                                'extension' => 'By extension', // @translate
+                            ],
+                        ],
+                        'mediatype_first' => [
+                            'label' => 'Sort by media type first',
+                            'options' => [
+                                'mediatype/title' => 'By media type then title', // @translate
+                                'mediatype/source' => 'By media type then source', // @translate
+                                'mediatype/basename' => 'By media type then source basename', // @translate
+                            ],
+                        ],
+                        'mediatype_after' => [
+                            'label' => 'Sort by media type last',
+                            'options' => [
+                                'title/mediatype' => 'By title then media type', // @translate
+                                'source/mediatype' => 'By source then media type', // @translate
+                                'basename/mediatype' => 'By source basename then media type', // @translate
+                            ],
+                        ],
+                        'extension_first' => [
+                            'label' => 'Sort by extension first',
+                            'options' => [
+                                'extension/title' => 'By extension then title', // @translate
+                                'extension/source' => 'By extension then source', // @translate
+                                'extension/basename' => 'By extension then source basename', // @translate
+                            ],
+                        ],
+                        'extension_after' => [
+                            'label' => 'Sort by extension last',
+                            'options' => [
+                                'title/extension' => 'By title then extension', // @translate
+                                'source/extension' => 'By source then extension', // @translate
+                                'basename/extension' => 'By source basename then extension', // @translate
+                            ],
+                        ],
+                    ],
+                    'empty_option' => '',
+                ],
+                'attributes' => [
+                    'id' => 'mediaorder_order',
+                    'class' => 'chosen-select',
+                    'multiple' => false,
+                    'data-info-datatype' => 'literal',
+                    'data-placeholder' => 'Select option', // @translate
+                    // This attribute is required to make "batch edit all" working.
+                    'data-collection-action' => 'replace',
+                ],
+            ])
+            ->add([
+                'name' => 'mediatypes',
+                'type' => BulkEditElement\ArrayText::class,
+                'options' => [
+                    'label' => 'List of media types to order first', // @translate
+                    'value_separator' => ' ', // @translate
+                ],
+                'attributes' => [
+                    'id' => 'mediaorder_mediatypes',
+                    'value' => [
+                        'video',
+                        'audio',
+                        'image',
+                        'application/pdf',
+                    ],
+                    // This attribute is required to make "batch edit all" working.
+                    'data-collection-action' => 'replace',
+                ],
+            ])
+            ->add([
+                'name' => 'extensions',
+                'type' => BulkEditElement\ArrayText::class,
+                'options' => [
+                    'label' => 'List of extensions to order first', // @translate
+                ],
+                'attributes' => [
+                    'id' => 'mediaorder_extensions',
                     // This attribute is required to make "batch edit all" working.
                     'data-collection-action' => 'replace',
                 ],
@@ -1356,9 +1678,10 @@ class BulkEditFieldset extends Fieldset
             ])
             ->add([
                 'name' => 'remove',
-                'type' => Element\Checkbox::class,
+                'type' => BulkEditElement\OptionalCheckbox::class,
                 'options' => [
                     'label' => 'Remove string', // @translate
+                    'use_hidden_element' => false,
                 ],
                 'attributes' => [
                     'id' => 'mediahtml_remove',
@@ -1404,7 +1727,7 @@ class BulkEditFieldset extends Fieldset
                     'label' => 'Media type (mime-type)', // @translate
                 ],
                 'attributes' => [
-                    'id' => 'media_html',
+                    'id' => 'media_type',
                     'class' => 'field-container',
                     // This attribute is required to make "batch edit all" working.
                     'data-collection-action' => 'replace',
