@@ -131,7 +131,7 @@ if (version_compare($oldVersion, '3.3.8', '<')) {
             'Maintenance'
         );
     } else {
-        $message = new Message('It’s now possible to set the site in maintenance mode for public or users.', // @translate
+        $message = new Message('It’s now possible to set the site in %1$smaintenance mode%2$s for public or users.', // @translate
             sprintf('<a href="%s">', $url('admin/default', ['controller' => 'setting'], ['fragment' => 'easy-admin'])),
             '</a>'
         );
@@ -142,7 +142,7 @@ if (version_compare($oldVersion, '3.3.8', '<')) {
 
 if (version_compare($oldVersion, '3.4.8', '<')) {
     $settings->set('easyadmin_interface', ['resource_public_view']);
-    $message = new Message('An option allows to display a link from the resource admin page to the public page.', // @translate
+    $message = new Message('An %1$soption%2$s allows to display a link from the resource admin page to the public page.', // @translate
         sprintf('<a href="%s">', $url('admin/default', ['controller' => 'setting'], ['fragment' => 'easyadmin_interface'])),
         '</a>'
     );
@@ -158,24 +158,36 @@ if (version_compare($oldVersion, '3.4.9.2', '<')) {
     ];
     $moduleManager = $services->get('Omeka\ModuleManager');
     foreach ($modules as $moduleName) {
-        $module = $moduleManager->getModule('BulkCheck');
-        if (!$module || in_array($module->getState(), [
-            \Omeka\Module\Manager::STATE_NOT_FOUND,
-            \Omeka\Module\Manager::STATE_NOT_INSTALLED,
-        ])) {
-            continue;
+        $module = $moduleManager->getModule($moduleName);
+        $sql = 'DELETE FROM `module` WHERE `id` = "' . $moduleName . '";';
+        $connection->executeStatement($sql);
+        $sql = 'DELETE FROM `setting` WHERE `id` LIKE "' . strtolower($moduleName) . '_%";';
+        $connection->executeStatement($sql);
+        $sql = 'DELETE FROM `site_setting` WHERE `id` LIKE "' . strtolower($moduleName) . '_%";';
+        $connection->executeStatement($sql);
+        if ($module) {
+            $message = new \Omeka\Stdlib\Message(
+                'The module "%1$s" was upgraded by module "%2$s" and uninstalled.', // @translate
+                $module, 'Easy Admin'
+            );
+            $messenger->addWarning($message);
         }
-        $module = $moduleName;
-        $sql = 'DELETE FROM `module` WHERE `id` = "' . $module . '";';
-        $connection->executeStatement($sql);
-        $sql = 'DELETE FROM `setting` WHERE `id` LIKE "' . strtolower($module) . '_%";';
-        $connection->executeStatement($sql);
-        $sql = 'DELETE FROM `site_setting` WHERE `id` LIKE "' . strtolower($module) . '_%";';
-        $connection->executeStatement($sql);
-        $message = new \Omeka\Stdlib\Message(
-            'The module "%s" was upgraded by module "%s" and uninstalled.', // @translate
-            $module, 'Easy Admin'
-        );
-        $messenger->addWarning($message);
     }
+}
+
+if (version_compare($oldVersion, '3.4.11', '<')) {
+    $settings->set('easyadmin_interface', ['resource_public_view']);
+    $message = new Message('An %1$soption%2$s allows to display links to previous and next resources.', // @translate
+        sprintf('<a href="%s">', $url('admin/default', ['controller' => 'setting'], ['fragment' => 'easyadmin_interface'])),
+        '</a>'
+    );
+    $message->setEscapeHtml(false);
+    $messenger->addSuccess($message);
+}
+
+if (version_compare($oldVersion, '3.4.12', '<')) {
+    // Reset the session for browse page, managed differently.
+    $session = new \Laminas\Session\Container('EasyAdmin');
+    $session->lastBrowsePage = [];
+    $session->lastQuery = [];
 }

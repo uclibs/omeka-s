@@ -29,7 +29,10 @@ return [
     ],
     'form_elements' => [
         'invokables' => [
+            Form\Element\ArrayText::class => Form\Element\ArrayText::class,
             Form\Element\Note::class => Form\Element\Note::class,
+            Form\Element\OptionalCheckbox::class => Form\Element\OptionalCheckbox::class,
+            Form\Element\OptionalNumber::class => Form\Element\OptionalNumber::class,
             Form\Element\OptionalRadio::class => Form\Element\OptionalRadio::class,
             Form\Element\OptionalSelect::class => Form\Element\OptionalSelect::class,
             Form\SettingsFieldset::class => Form\SettingsFieldset::class,
@@ -38,6 +41,7 @@ return [
             Form\BulkEditFieldset::class => Service\Form\BulkEditFieldsetFactory::class,
             Form\Element\DataTypeSelect::class => Service\Form\Element\DataTypeSelectFactory::class,
             Form\Element\OptionalPropertySelect::class => Service\Form\Element\OptionalPropertySelectFactory::class,
+            Form\Element\OptionalSiteSelect::class => Service\Form\Element\OptionalSiteSelectFactory::class,
             Form\Element\OptionalUserSelect::class => Service\Form\Element\OptionalUserSelectFactory::class,
         ],
         'aliases' => [
@@ -57,12 +61,12 @@ return [
     ],
     'js_translate_strings' => [
         'Batch edit', // @translate
-        'Advanced bulk edit', // @translate
+        'Advanced', // @translate
         'Expand', // @translate
         'Collapse', // @translate
         'The actions are processed in the order of the form. Be careful when mixing them.', // @translate
         'To convert values to/from mapping markers, use module DataTypeGeometry.', // @translate
-        'Fill a value from remote data can be slow, so it is recommended to process it in background with "batch edit all", not "batch edit selected".', // @translate
+        'Processes that manage files and remote data can be slow, so it is recommended to process it in background with "batch edit all", not "batch edit selected".', // @translate
     ],
     'bulkedit' => [
         'settings' => [

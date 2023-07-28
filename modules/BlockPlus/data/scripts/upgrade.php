@@ -399,6 +399,15 @@ SET
 WHERE `id` = $id;
 SQL;
         $connection->executeStatement($sql);
+        $pageId = (int) $block['page_id'];
+        if (!isset($pages[$pageId])) {
+            try {
+                /** @var \Omeka\Api\Representation\SitePageRepresentation $page */
+                $page = $api->read('site_pages', ['id' => $pageId])->getContent();
+                $pages[$pageId] = $hyperlink->raw($page->title(), $page->siteUrl());
+            } catch (\Omeka\Api\Exception\NotFoundException $e) {
+            }
+        }
     }
 
     $message = new Message(
@@ -408,10 +417,60 @@ SQL;
 
     if ($pages) {
         $message = new Message(
-            'The key "url" of attachments of block "Asset" was removed. The block template should be updated if you customized it in pages %s.', // @translate
+            'The key "url" of attachments of block "Asset" was removed. The block template should be updated if you customized it in pages: %s', // @translate
             '<ul><li>' . implode('</li><li>', $pages) . '</li></ul>'
         );
         $message->setEscapeHtml(false);
         $messenger->addWarning($message);
     }
+}
+
+if (version_compare($oldVersion, '3.4.16', '<')) {
+    if ($this->isModuleActive('Menu')) {
+        $settings->set('blockplus_property_itemset', $settings->get('menu_property_itemset', null));
+
+        $siteSettings = $services->get('Omeka\Settings\Site');
+        $siteIds = $api->search('sites', [], ['returnScalar' => 'id'])->getContent();
+        foreach ($siteIds as $siteId) {
+            $siteSettings->setTargetId($siteId);
+            $siteSettings->set('blockplus_breadcrumbs_crumbs', $siteSettings->get('menu_breadcrumbs_crumbs', ['home','collections', 'itemset', 'itemsetstree', 'current']));
+            $siteSettings->set('blockplus_breadcrumbs_prepend', $siteSettings->get('menu_breadcrumbs_prepend', []));
+            $siteSettings->set('blockplus_breadcrumbs_collections_url', $siteSettings->get('menu_breadcrumbs_collections_url', ''));
+            $siteSettings->set('blockplus_breadcrumbs_separator', $siteSettings->get('menu_breadcrumbs_separator', ''));
+            $siteSettings->set('blockplus_breadcrumbs_homepage', $siteSettings->get('menu_breadcrumbs_homepage', false));
+        }
+
+        $message = new Message(
+            'The feature "Breadcrumbs" was moved from module "Menu" into this module. Upgrade is automatic. Check your options if you use it.' // @translate
+        );
+        $messenger->addWarning($message);
+    } else {
+        $message = new Message(
+            'it is now possible to define a breadcrumbs (may need to be added inside theme).' // @translate
+        );
+        $messenger->addWarning($message);
+    }
+
+    $sql = <<<SQL
+UPDATE `site_page_block`
+SET
+    `data` = CONCAT(SUBSTRING(`data`, 1, LENGTH(`data`) - 1), ',"searchConfig":null}')
+WHERE `layout` = 'searchForm'
+    AND `data` IS NOT NULL
+    AND `data` != ''
+;
+SQL;
+    $connection->executeStatement($sql);
+}
+
+if (version_compare($oldVersion, '3.4.17', '<')) {
+    $message = new Message('Two new resource page blocks has been added, in particular to display buttons to previous and next resource (require module Easy Admin).'); // @translate
+    $messenger->addSuccess($message);
+}
+
+if (version_compare($oldVersion, '3.4.18', '<')) {
+    // Reset the session for browse page, managed differently.
+    $session = new \Laminas\Session\Container('EasyAdmin');
+    $session->lastBrowsePage = [];
+    $session->lastQuery = [];
 }

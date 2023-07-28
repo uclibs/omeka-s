@@ -292,3 +292,50 @@ SQL;
     $message->setEscapeHtml(false);
     $messenger->addSuccess($message);
 }
+
+if (version_compare($oldVersion, '3.4.7', '<')) {
+    $message = new Message(
+        'Some new options were added to manage facets.' // @translate
+    );
+    $messenger->addSuccess($message);
+}
+
+if (version_compare($oldVersion, '3.4.10', '<')) {
+    $sql = <<<'SQL'
+UPDATE `search_config`
+SET
+    `settings` = REPLACE(`settings`, '"display_button"', '"display_submit"')
+;
+SQL;
+    $connection->executeStatement($sql);
+}
+
+if (version_compare($oldVersion, '3.4.11', '<')) {
+    $sql = <<<'SQL'
+ALTER TABLE `search_config` CHANGE `created` `created` datetime NOT NULL DEFAULT NOW() AFTER `settings`;
+ALTER TABLE `search_engine` CHANGE `created` `created` datetime NOT NULL DEFAULT NOW() AFTER `settings`;
+ALTER TABLE `search_suggester` CHANGE `created` `created` datetime NOT NULL DEFAULT NOW() AFTER `settings`;
+SQL;
+    $connection->executeStatement($sql);
+
+    /** @var \Omeka\Module\Manager $moduleManager */
+    $moduleManager = $services->get('Omeka\ModuleManager');
+    $module = $moduleManager->getModule('Reference');
+    $hasReference = $module
+        && version_compare($module->getIni('version'), '3.4.43', '<');
+    if ($hasReference) {
+        $message = new Message(
+            'It is recommended to upgrade the module "Reference" to improve performance.' // @translate
+        );
+        $messenger->addWarning($message);
+    }
+}
+
+if (version_compare($oldVersion, '3.4.12', '<')) {
+    $sql = <<<'SQL'
+ALTER TABLE `search_config` CHANGE `created` `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `settings`;
+ALTER TABLE `search_engine` CHANGE `created` `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `settings`;
+ALTER TABLE `search_suggester` CHANGE `created` `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `settings`;
+SQL;
+    $connection->executeStatement($sql);
+}

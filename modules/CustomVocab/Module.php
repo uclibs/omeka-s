@@ -23,7 +23,7 @@ class Module extends AbstractModule
         $acl = $this->getServiceLocator()->get('Omeka\Acl');
         $acl->allow(
             null,
-            \CustomVocab\Controller\IndexController::class,
+            'CustomVocab\Controller\Admin\Index',
             ['browse', 'show-details']
         );
         $acl->allow(
@@ -38,7 +38,7 @@ class Module extends AbstractModule
         );
         $acl->allow(
             'editor',
-            \CustomVocab\Controller\IndexController::class,
+            'CustomVocab\Controller\Admin\Index',
             ['add', 'edit', 'delete']
         );
         $acl->allow(
@@ -123,6 +123,38 @@ class Module extends AbstractModule
             }
             $conn->executeStatement('ALTER TABLE custom_vocab CHANGE terms terms LONGTEXT DEFAULT NULL COMMENT "(DC2Type:json)", CHANGE uris uris LONGTEXT DEFAULT NULL COMMENT "(DC2Type:json)";');
         }
+        if (Comparator::lessThan($oldVersion, '2.0.1')) {
+            // Terms and URIs may not have been converted to arrays in the previous
+            // migration. Here we iterate through every row, find unconverted terms
+            // and URIs, and convert them to arrays.
+            $sql = 'SELECT * FROM custom_vocab';
+            $vocabs = $conn->executeQuery($sql)->fetchAll();
+            foreach ($vocabs as $vocab) {
+                if (!is_null($vocab['terms'])) {
+                    if (!is_array(json_decode($vocab['terms'], true))) {
+                        $terms = array_filter(array_map('trim', explode("\n", $vocab['terms'])), 'strlen') ?: null;
+                        empty($terms)
+                            ? $conn->executeStatement('UPDATE custom_vocab SET terms = NULL WHERE id = :id;', ['id' => $vocab['id']])
+                            : $conn->executeStatement('UPDATE custom_vocab SET terms = :terms WHERE id = :id;', ['id' => $vocab['id'], 'terms' => json_encode($terms)]);
+                    }
+                }
+                if (!is_null($vocab['uris'])) {
+                    if (!is_array(json_decode($vocab['uris'], true))) {
+                        $result = [];
+                        foreach (array_filter(array_map('trim', explode("\n", $vocab['uris'])), 'strlen') as $uri) {
+                            if (preg_match('/^(\S+) \s*(.+)\s*$/', $uri, $matches)) {
+                                $result[$matches[1]] = ($matches[1] === $matches[2]) ? '' : $matches[2];
+                            } elseif (preg_match('/^\s*(.+)\s*/', $uri, $matches)) {
+                                $result[$matches[1]] = '';
+                            }
+                        }
+                        empty($result)
+                            ? $conn->executeStatement('UPDATE custom_vocab SET uris = NULL WHERE id = :id;', ['id' => $vocab['id']])
+                            : $conn->executeStatement('UPDATE custom_vocab SET uris = :uris WHERE id = :id;', ['id' => $vocab['id'], 'uris' => json_encode($result)]);
+                    }
+                }
+            }
+        }
     }
 
     public function attachListeners(SharedEventManagerInterface $sharedEventManager)
@@ -199,7 +231,7 @@ class Module extends AbstractModule
             $name = sprintf('customvocab:%s', $vocab->id());
             // Set the CSV Import data type "adapter" according to the type of
             // vocabulary, which is determined heuristically.
-            $adapter = $vocab->typeValues() ?? 'literal';
+            $adapter = $vocab->type() ?? 'literal';
             $config['data_types'][$name] = [
                 'label' => $vocab->label(),
                 'adapter' => $adapter,

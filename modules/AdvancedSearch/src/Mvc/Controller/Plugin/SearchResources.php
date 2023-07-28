@@ -406,7 +406,7 @@ class SearchResources extends AbstractPlugin
                             unset($query['property'][$k]);
                             continue;
                         }
-                        $queryRowProp = isset($queryRow['property']) ? $queryRow['property'] : null;
+                        $queryRowProp = $queryRow['property'] ?? null;
                         if (is_array($queryRowProp)) {
                             $query['property'][$k]['property'] = array_unique($query['property'][$k]['property']);
                         }
@@ -854,6 +854,9 @@ class SearchResources extends AbstractPlugin
      * Pseudo-override buildPropertyQuery() via the api manager delegator.
      * @see \Omeka\Api\Adapter\AbstractResourceEntityAdapter::buildPropertyQuery()
      *
+     * @see \AdvancedSearch\Mvc\Controller\Plugin\SearchResources::buildPropertyQuery()
+     * @see \Annotate\Api\Adapter\QueryPropertiesTrait::buildPropertyQuery()
+     *
      * Query format:
      *
      * - property[{index}][joiner]: "and" OR "or" OR "not" joiner with previous query
@@ -919,11 +922,14 @@ class SearchResources extends AbstractPlugin
         $valuesJoin = 'omeka_root.values';
         $where = '';
 
-        // @see \Doctrine\ORM\QueryBuilder::expr().
+        /**
+         * @see \Doctrine\ORM\QueryBuilder::expr().
+         * @var \Doctrine\ORM\EntityManager $entityManager
+         */
         $expr = $qb->expr();
         $entityManager = $this->adapter->getEntityManager();
 
-        $escapeSql = function ($string) {
+        $escapeSqlLike = function ($string) {
             return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], (string) $string);
         };
 
@@ -1018,7 +1024,7 @@ class SearchResources extends AbstractPlugin
                     $positive = false;
                     // no break.
                 case 'in':
-                    $param = $this->adapter->createNamedParameter($qb, '%' . $escapeSql($value) . '%');
+                    $param = $this->adapter->createNamedParameter($qb, '%' . $escapeSqlLike($value) . '%');
                     $subqueryAlias = $this->adapter->createAlias();
                     $subquery = $entityManager
                         ->createQueryBuilder()
@@ -1055,7 +1061,7 @@ class SearchResources extends AbstractPlugin
                     $positive = false;
                     // no break.
                 case 'sw':
-                    $param = $this->adapter->createNamedParameter($qb, $escapeSql($value) . '%');
+                    $param = $this->adapter->createNamedParameter($qb, $escapeSqlLike($value) . '%');
                     $subqueryAlias = $this->adapter->createAlias();
                     $subquery = $entityManager
                         ->createQueryBuilder()
@@ -1073,7 +1079,7 @@ class SearchResources extends AbstractPlugin
                     $positive = false;
                     // no break.
                 case 'ew':
-                    $param = $this->adapter->createNamedParameter($qb, '%' . $escapeSql($value));
+                    $param = $this->adapter->createNamedParameter($qb, '%' . $escapeSqlLike($value));
                     $subqueryAlias = $this->adapter->createAlias();
                     $subquery = $entityManager
                         ->createQueryBuilder()
@@ -1209,7 +1215,7 @@ class SearchResources extends AbstractPlugin
                     } else {
                         $dataTypeAlias = $this->adapter->createAlias();
                         $qb->setParameter($dataTypeAlias, $value, Connection::PARAM_STR_ARRAY);
-                        $predicateExpr = $expr->in("$valuesAlias.type", $dataTypeAlias);
+                        $predicateExpr = $expr->in("$valuesAlias.type", ":$dataTypeAlias");
                     }
                     break;
 
@@ -1297,7 +1303,7 @@ class SearchResources extends AbstractPlugin
             // TODO What if a property is ""?
             $excludePropertyIds = $propertyIds || empty($queryRow['except'])
                 ? false
-                :  array_values(array_unique($this->getPropertyIds($queryRow['except'])));
+                : array_values(array_unique($this->getPropertyIds($queryRow['except'])));
             if ($propertyIds) {
                 $propertyIds = array_values(array_unique($this->getPropertyIds($propertyIds)));
                 if ($propertyIds) {
@@ -1659,7 +1665,7 @@ class SearchResources extends AbstractPlugin
                 ->andWhere($expr->orX(
                     $expr->isNull($mediaAlias . '.id'),
                     $expr->eq($mediaAlias . '.' . $fields[$field], 0)
-            ));
+                ));
         }
     }
 

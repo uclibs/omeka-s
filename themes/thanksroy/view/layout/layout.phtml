@@ -8,7 +8,7 @@ $this->headTitle($siteTitle)->setSeparator(' · ');
 $this->headTitle()->append($this->setting('installation_title', 'Omeka S'));
 $this->headLink()->appendStylesheet($this->assetUrl('css/style.css'));
 $this->headLink()->prependStylesheet($this->assetUrl('css/iconfonts.css', 'Omeka'));
-$this->headLink()->prependStylesheet('//fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic,700italic,700');
+$this->headLink()->prependStylesheet('//fonts.googleapis.com/css?family=PT+Serif:400,700,400italic,700italic');
 $this->headScript()->prependFile($this->assetUrl('js/thanksroy.js'));
 $this->headScript()->prependFile($this->assetUrl('js/jquery-accessibleMegaMenu.js'));
 $this->headScript()->prependFile($this->assetUrl('js/modernizr.js'));
@@ -32,7 +32,7 @@ $userBar = $this->userBar();
             ($backgroundColor = $this->themeSetting('background_color')) || ($backgroundColor = "#FFFFFF");
             ($textColor = $this->themeSetting('text_color')) || ($textColor = "#444444");
             ($linkColor = $this->themeSetting('link_color')) || ($linkColor = "#4f6780");
-            ($visitedLinkColor = $this->themeSetting('visited_link_color')) || ($visitedLinkColor = "#888888");
+            ($visitedLinkColor = $this->themeSetting('visited_link_color')) || ($visitedLinkColor = "#4f6780");
             ($activeLinkColor = $this->themeSetting('active_link_color')) || ($activeLinkColor = "#3763a6");
             ($buttonColor = $this->themeSetting('button_bg_color')) || ($buttonColor = "#000000");
             ($buttonTextColor = $this->themeSetting('button_text_color')) || ($buttonTextColor = "#FFFFFF");
@@ -104,11 +104,7 @@ $userBar = $this->userBar();
         <div id="wrap">
             <nav id="primary-nav">
                 <div class="menu-button button">Menu</div>
-                <?php
-                echo $site->publicNav()->menu()->renderMenu(null, [
-                    'maxDepth' => $this->themeSetting('nav_depth') - 1
-                ]);
-                ?>
+                <?php echo $site->publicNav()->menu()->setPartial('common/accessible-mega-menu.phtml')->renderPartial(); ?>
                 <div id="search">
                     <?php echo $this->partial('common/search-form'); ?>
                 </div>

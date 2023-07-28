@@ -8,6 +8,7 @@ Easy Admin (module for Omeka S)
 [Easy Admin] is a module for [Omeka S] that allows to manage Omeka from the
 admin interface:
 
+- buttons to public view and previous/next resources in admin resource show page;
 - content lock to avoid concurrent edition;
 - install modules;
 - update modules (in a future version);
@@ -62,8 +63,22 @@ Then install it like any other Omeka module and follow the config instructions.
 
 See general end user documentation for [installing a module].
 
-In some cases, your may need to add credentials in your config (omeka file "config/local.config.php"),
-depending on your linux distribution:
+In some cases, in particular when the server is behind a proxy, a firewall or a
+specific infrastructure, your may need to add credentials in your config (omeka
+file "config/local.config.php"), depending on your linux distribution:
+
+```php
+    'http_client' => [
+        // 'adapter' => \Laminas\Http\Client\Adapter\Curl::class,
+        'sslcapath' => '/usr/local/etc/ssl/certs/',
+        'sslcafile' => 'ca.crt',
+        // 'sslcapath' => '/etc/pki/tls/certs/',
+        // 'sslcafile' => 'ca-bundle.crt',
+    ],
+```
+
+In some cases, the path should be absolute:
+
 ```php
     'http_client' => [
         // 'adapter' => \Laminas\Http\Client\Adapter\Curl::class,
@@ -79,6 +94,20 @@ You can find more information on the params in [Laminas help].
 
 Usage
 -----
+
+### Buttons in resource page
+
+The option can be enabled in main settings.
+
+#### Button "Public view"
+
+Display a button "Public view" in resource show pages. The link is the resource
+page of  the default user site or the default site.
+
+#### Buttons to previous next resources
+
+Allow to get the previous or the next resources, that simplifies browsing like
+in Omeka Classic.
 
 ### Checks and fixes
 
@@ -241,7 +270,7 @@ of the CeCILL license and that you accept its terms.
 Copyright
 ---------
 
-* Copyright Daniel Berthereau, 2017-2022 (see [Daniel-KM] on GitLab)
+* Copyright Daniel Berthereau, 2017-2023 (see [Daniel-KM] on GitLab)
 
 This module is a merge and improvement of previous modules [Easy Install], [Next],
 [Maintenance] and [Bulk Check].

@@ -1,6 +1,6 @@
 {
   "name": "thanksroy",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Thanks Roy theme for Omeka S.",
   "main": "gulpfile.js",
   "scripts": {

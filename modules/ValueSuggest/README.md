@@ -8,19 +8,26 @@ See the [Omeka S user manual](http://omeka.org/s/docs/user-manual/modules/values
 
 See general end user documentation for [Installing a module](http://omeka.org/s/docs/user-manual/modules/#installing-modules)
 
+## Upgrades
+
+### Version 1.15.0
+
+In version 1.15.0, we have removed the [Dutch Digital Heritage Network of Terms](https://termennetwerk.netwerkdigitaalerfgoed.nl/) vocabularies. These are the resource template data types beginning with "NDE: ". If you are currently using these vocabularies, or want to use them in the future, please download and install the [NdeTermennetwerk](https://omeka.org/s/modules/NdeTermennetwerk/) module.
+
 ## Vocabularies
 
 This module includes the following vocabularies:
 
 - Dublin Core
-- Dutch Digital Heritage Network of Terms
 - GeoNames
 - The Getty Vocabularies
 - Homosaurus
 - IdRef
 - Library of Congress Linked Data Service
+- Nomenclature
 - OCLC Metadata Services
 - Omeka
+- ORCID
 - PACTOLS of Frantiq
 - PeriodO
 - RDA Value Vocabularies
@@ -35,37 +42,6 @@ This module includes the following vocabularies:
 - Terms
 - Types
 
-### [Dutch Digital Heritage Network of Terms: NDE Termennetwerk](https://termennetwerk.netwerkdigitaalerfgoed.nl/)
-
-- Art & Architecture Thesaurus - materialen
-- Art & Architecture Thesaurus - processen en technieken
-- Art & Architecture Thesaurus - stijlen en periodes
-- Archeologisch Basisregister
-- Adamlink: straten in Amsterdam
-- Brinkman trefwoordenthesaurus
-- Cultuurhistorische Thesaurus
-- Cultuurhistorische Thesaurus - Materialen
-- Cultuurhistorische Thesaurus - Stijlen en periodes
-- EuroVoc - thesaurus van de Europese Unie
-- GeoNames: geografische namen in Nederland, België en Duitsland
-- GTAA: genres
-- GTAA: onderwerpen
-- Homosaurus
-- Iconclass
-- Indisch Erfgoed Thesaurus
-- Muziek: genres en stijlen
-- Muziek: personen en groepen
-- Muziekschatten: onderwerpen
-- Nederlandse Thesaurus van Auteursnamen
-- RKDartists
-- STCN: drukkers
-- Thesaurus Nationaal Museum van Wereldculturen
-- Thesaurus Tweede Wereldoorlog Nederland
-- Wikidata: alle entiteiten
-- Wikidata: personen
-- Wikidata: plaatsen in Nederland en België
-- Wikidata: straten in Nederland
-
 ### [Gemeinsame Normdatei (GND)](http://lobid.org/gnd)
 
 - The GND contains standardized entries for persons, corporations, congresses, geographical areas, key words and work titles.
@@ -77,9 +53,11 @@ This module includes the following vocabularies:
 
 ### [The Getty Vocabularies](http://vocab.getty.edu/)
 
-- The Art & Architecture Thesaurus (AAT)
-- The Getty Thesaurus of Geographic Names (TGN)
-- The Union List of Artist Names (ULAN)
+- Art & Architecture Thesaurus (AAT)
+- Thesaurus of Geographic Names (TGN)
+- Union List of Artist Names (ULAN)
+- Cultural Objects Name Authority (CONA)
+- Getty Iconography Authority (IA)
 
 ### [Homosaurus](http://homosaurus.org/)
 
@@ -124,6 +102,20 @@ This module includes the following vocabularies:
 - Subject Headings
 - Thesaurus for Graphic Materials
 
+### [Nomenclature for Museum Cataloging](https://page.nomenclature.info/apropos-about.app?lang=en)
+
+- All
+- Category 01: Built Environment Objects
+- Category 02: Furnishings
+- Category 03: Personal Objects
+- Category 04: Tools & Equipment for Materials
+- Category 05: Tools & Equipment for Science & Technology
+- Category 06: Tools & Equipment for Communication
+- Category 07: Distribution & Transportation Objects
+- Category 08: Communication Objects
+- Category 09: Recreational Objects
+- Category 10: Unclassifiable Objects
+
 ### [Nuovo Soggettario](https://thes.bncf.firenze.sbn.it/)
 
 - Agenti: Organismi
@@ -149,10 +141,13 @@ This module includes the following vocabularies:
 
 Suggest values that already exist in the working Omeka installation.
 
-- Omeka: Property: suggest values using the current value's property
-- Omeka: Property / Resource template: suggest values using the current value's property and current resource's template
-- Omeka: Property / Resource class: suggest values using the current value's property and current resource's class
+- Omeka: Property: suggest values using the current property's values
+- Omeka: Property / Resource template: suggest values using the current property's values and current resource's template
+- Omeka: Property / Resource class: suggest values using the current property's values and current resource's class
 
+### [ORCID](https://info.orcid.org/)
+
+- Open Researcher and Contributor ID
 
 ### [PACTOLS of Frantiq](https://pactols.frantiq.fr/)
 
@@ -241,6 +236,10 @@ Suggest values that already exist in the working Omeka installation.
 ### [RightsStatements.org](https://rightsstatements.org/)
 
 - Provides a set of standardized rights statements for cultural heritage institutions that can be used to communicate the copyright and re-use status of digital objects to the public
+
+### [ROR](https://ror.org/)
+
+- Research Organization Registry
 
 ### [Tesauros del patrimonio cultural de España](http://tesauros.mecd.es/tesauros)
 

@@ -8,6 +8,11 @@ use Laminas\Form\Fieldset;
 
 class SearchFormFieldset extends Fieldset
 {
+    /**
+     * @var array
+     */
+    protected $searchConfigs = [];
+
     public function init(): void
     {
         $this
@@ -34,6 +39,17 @@ class SearchFormFieldset extends Fieldset
                 ],
             ])
             ->add([
+                'name' => 'o:block[__blockIndex__][o:data][link]',
+                'type' => Element\Text::class,
+                'options' => [
+                    'label' => 'Link to display', // @translate
+                    'info' => 'Formatted as "/url/full/path Label of the link".', // @translate
+                ],
+                'attributes' => [
+                    'id' => 'search-form-link',
+                ],
+            ])
+            ->add([
                 'name' => 'o:block[__blockIndex__][o:data][selector]',
                 'type' => BlockPlusElement\OptionalRadio::class,
                 'options' => [
@@ -50,6 +66,24 @@ class SearchFormFieldset extends Fieldset
                 ],
             ])
             ->add([
+                'name' => 'o:block[__blockIndex__][o:data][search_config]',
+                'type' => BlockPlusElement\OptionalSelect::class,
+                'options' => [
+                    'label' => 'Search config page (module Advanced Search)', // @translate
+                    'value_options' => [
+                        'default' => 'Search config of the site', // @translate
+                        'omeka' => 'Omeka search engine',
+                    ] + $this->searchConfigs,
+                    'empty_option' => '',
+                ],
+                'attributes' => [
+                    'id' => 'searching-form-search-config',
+                    'class' => 'chosen-select',
+                    'required' => false,
+                    'data-placeholder' => 'Select a search engine…', // @translate
+                ],
+            ])
+            ->add([
                 'name' => 'o:block[__blockIndex__][o:data][template]',
                 'type' => BlockPlusElement\TemplateSelect::class,
                 'options' => [
@@ -62,5 +96,11 @@ class SearchFormFieldset extends Fieldset
                     'class' => 'chosen-select',
                 ],
             ]);
+    }
+
+    public function setSearchConfigs(array $searchConfigs): self
+    {
+        $this->searchConfigs = $searchConfigs;
+        return $this;
     }
 }

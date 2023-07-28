@@ -3,7 +3,7 @@
 namespace Sharing;
 
 use Omeka\Module\AbstractModule;
-use Laminas\Form\Fieldset;
+use Laminas\EventManager\Event;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -12,85 +12,87 @@ class Module extends AbstractModule
 {
     public function getConfig()
     {
-        return include __DIR__ . '/config/module.config.php';
+        return include sprintf('%s/config/module.config.php', __DIR__);
     }
 
     public function onBootstrap(MvcEvent $event)
     {
         parent::onBootstrap($event);
+
         $acl = $this->getServiceLocator()->get('Omeka\Acl');
-        $acl->allow(null, 'Sharing\Controller\Index');
+        $acl->allow(null, ['Sharing\Controller\Index', 'Sharing\Controller\Oembed']);
     }
 
     public function install(ServiceLocatorInterface $serviceLocator)
     {
-        $controllerPluginManager = $serviceLocator->get('ControllerPluginManager');
-        $messenger = $controllerPluginManager->get('messenger');
+        $messenger = $serviceLocator->get('ControllerPluginManager')->get('messenger');
         $messenger->addSuccess('Sharing options are site-specific. Site owners will need to set the options for their sites.'); // @translate
     }
 
     public function attachListeners(SharedEventManagerInterface $sharedEventManager)
     {
+        // Add site settings.
         $sharedEventManager->attach(
             'Omeka\Form\SiteSettingsForm',
             'form.add_elements',
-            [$this, 'addSiteEnableCheckbox']
+            [$this, 'addSiteSettingsForm']
         );
-
         $sharedEventManager->attach(
             'Omeka\Form\SiteSettingsForm',
             'form.add_input_filters',
-            [$this, 'addSiteSettingsFilters']
+            [$this, 'addSiteSettingsFormFilters']
         );
 
-        $controllers = [
+        // Add sharing methods to public pages.
+        $resources = [
             'Omeka\Controller\Site\Item',
+            'Omeka\Controller\Site\Media',
             'Omeka\Controller\Site\Page',
         ];
-
-        foreach ($controllers as $controller) {
+        foreach ($resources as $resource) {
             $sharedEventManager->attach(
-                $controller,
+                $resource,
                 'view.show.before',
-                [$this, 'viewShow']
-                );
-
+                [$this, 'addSharingMethods']
+            );
             $sharedEventManager->attach(
-                $controller,
+                $resource,
                 'view.show.after',
-                [$this, 'viewShow']
-                );
+                [$this, 'addSharingMethods']
+            );
         }
 
-        $sharedEventManager->attach(
-                'Omeka\Controller\Site\Item',
+        // Add Open Graph head meta to public pages.
+        $resources = [
+            'Omeka\Controller\Site\Item',
+            'Omeka\Controller\Site\Media',
+            'Omeka\Controller\Site\Index',
+            'Omeka\Controller\Site\Page',
+        ];
+        foreach ($resources as $resource) {
+            $sharedEventManager->attach(
+                $resource,
                 'view.show.after',
-                [$this, 'insertOpenGraphData']
-                );
+                [$this, 'addOpenGraphHeadMeta']
+            );
+        }
 
-        $sharedEventManager->attach(
-                'Omeka\Controller\Site\Index',
+        // Add discoverable oEmbed head links to public pages.
+        $resources = [
+            'Omeka\Controller\Site\Item',
+            'Omeka\Controller\Site\Media',
+            'Omeka\Controller\Site\Page',
+        ];
+        foreach ($resources as $resource) {
+            $sharedEventManager->attach(
+                $resource,
                 'view.show.after',
-                [$this, 'insertOpenGraphData']
-                );
-
-        $sharedEventManager->attach(
-               'Omeka\Controller\Site\Page',
-                'view.show.after',
-                [$this, 'insertOpenGraphData']
-                );
+                [$this, 'addOembedHeadLink']
+            );
+        }
     }
 
-    public function addSiteSettingsFilters($event)
-    {
-        $inputFilter = $event->getParam('inputFilter');
-        $inputFilter->add([
-            'name' => 'sharing_methods',
-            'required' => false,
-        ]);
-    }
-
-    public function addSiteEnableCheckbox($event)
+    public function addSiteSettingsForm(Event $event)
     {
         $siteSettings = $this->getServiceLocator()->get('Omeka\Settings\Site');
         $form = $event->getTarget();
@@ -109,35 +111,35 @@ class Module extends AbstractModule
                 'label' => 'Enable Sharing module for these methods', // @translate
                 'value_options' => [
                     'fb' => [
-                                    'label' => 'Facebook', // @translate
-                                    'value' => 'fb',
-                                    'selected' => in_array('fb', $enabledMethods),
-                                    ],
+                        'label' => 'Facebook', // @translate
+                        'value' => 'fb',
+                        'selected' => in_array('fb', $enabledMethods),
+                    ],
                     'twitter' => [
-                                    'label' => 'Twitter', // @translate
-                                    'value' => 'twitter',
-                                    'selected' => in_array('twitter', $enabledMethods),
-                                   ],
+                        'label' => 'Twitter', // @translate
+                        'value' => 'twitter',
+                        'selected' => in_array('twitter', $enabledMethods),
+                    ],
                     'tumblr' => [
-                                    'label' => 'Tumblr', // @translate
-                                    'value' => 'tumblr',
-                                    'selected' => in_array('tumblr', $enabledMethods),
-                                   ],
+                        'label' => 'Tumblr', // @translate
+                        'value' => 'tumblr',
+                        'selected' => in_array('tumblr', $enabledMethods),
+                    ],
                     'pinterest' => [
-                                    'label' => 'Pinterest', // @translate
-                                    'value' => 'pinterest',
-                                    'selected' => in_array('pinterest', $enabledMethods),
-                                   ],
+                        'label' => 'Pinterest', // @translate
+                        'value' => 'pinterest',
+                        'selected' => in_array('pinterest', $enabledMethods),
+                    ],
                     'email' => [
-                                    'label' => 'Email', // @translate
-                                    'value' => 'email',
-                                    'selected' => in_array('email', $enabledMethods),
-                                   ],
+                        'label' => 'Email', // @translate
+                        'value' => 'email',
+                        'selected' => in_array('email', $enabledMethods),
+                    ],
                     'embed' => [
-                                    'label' => 'Embed codes', // @translate
-                                    'value' => 'embed',
-                                    'selected' => in_array('embed', $enabledMethods),
-                                   ],
+                        'label' => 'Embed codes', // @translate
+                        'value' => 'embed',
+                        'selected' => in_array('embed', $enabledMethods),
+                    ],
                 ],
             ],
             'attributes' => [
@@ -156,7 +158,6 @@ class Module extends AbstractModule
                         'label' => 'Top', // @translate
                         'value' => 'view.show.before',
                     ],
-
                     'bottom' => [
                         'label' => 'Bottom', //@translate
                         'value' => 'view.show.after',
@@ -171,55 +172,16 @@ class Module extends AbstractModule
         ]);
     }
 
-    public function insertOpenGraphData($event)
+    public function addSiteSettingsFormFilters(Event $event)
     {
-        $siteSettings = $this->getServiceLocator()->get('Omeka\Settings\Site');
-        $routeMatch = $this->getServiceLocator()->get('Application')
-                            ->getMvcEvent()->getRouteMatch();
-        $controller = $routeMatch->getParam('controller');
-        $view = $event->getTarget();
-        $escape = $view->plugin('escapeHtml');
-        $description = false;
-        $image = false;
-        switch ($controller) {
-                case 'Omeka\Controller\Site\Item':
-                    $description = $escape($view->item->displayDescription());
-                    $view->headMeta()->appendProperty('og:description', $description);
-                    if ($primaryMedia = $view->item->primaryMedia()) {
-                        $image = $escape($primaryMedia->thumbnailUrl('large'));
-                        $view->headMeta()->appendProperty('og:image', $image);
-                    }
-                break;
-
-                case 'Omeka\Controller\Site\Page':
-                    $blocks = $view->page->blocks();
-                    foreach ($blocks as $block) {
-                        $attachments = $block->attachments();
-                        foreach ($attachments as $attachment) {
-                            $item = $attachment->item();
-                            if ($item && ($primaryMedia = $item->primaryMedia())) {
-                                $image = $escape($primaryMedia->thumbnailUrl('large'));
-                                break 2;
-                            }
-                        }
-                    }
-                break;
-            }
-        $view->headTitle()->setSeparator(' · ');
-        $pageTitle = $view->headTitle()->renderTitle() . ' · ' . $view->setting('installation_title', 'Omeka S');
-        $view->headMeta()->appendProperty('og:title', $pageTitle);
-        $view->headMeta()->appendProperty('og:type', 'website');
-        $view->headMeta()->appendProperty('og:url', $view->serverUrl(true));
-        if ($description) {
-            $view->headMeta()->appendProperty('og:description', $description);
-        }
-
-        if ($image) {
-            $view->headMeta()->appendProperty('og:image', $image);
-        }
+        $inputFilter = $event->getParam('inputFilter');
+        $inputFilter->add([
+            'name' => 'sharing_methods',
+            'required' => false,
+        ]);
     }
 
-    public function viewShow($event)
+    public function addSharingMethods(Event $event)
     {
         $siteSettings = $this->getServiceLocator()->get('Omeka\Settings\Site');
         $enabledMethods = $siteSettings->get('sharing_methods');
@@ -230,21 +192,15 @@ class Module extends AbstractModule
             $view->headScript()->appendFile('https://platform.twitter.com/widgets.js');
             $view->headScript()->appendFile($view->assetUrl('js/sharing.js', 'Sharing'));
             $view->headLink()->appendStylesheet($view->assetUrl('css/sharing.css', 'Sharing'));
-            $escape = $view->plugin('escapeHtml');
-            $translator = $this->getServiceLocator()->get('MvcTranslator');
             $siteSlug = $this->getServiceLocator()->get('Application')
                 ->getMvcEvent()->getRouteMatch()->getParam('site-slug');
-
-            echo $view->partial('share-buttons',
-                    ['escape' => $escape,
-                          'translator' => $translator,
-                          'enabledMethods' => $enabledMethods,
-                          'itemId' => isset($view->item) ? $view->item->id() : false,
-                          'pageId' => isset($view->page) ? $view->page->id() : false,
-                          'siteSlug' => $siteSlug,
-                            ]
-                    );
-
+            echo $view->partial('share-buttons', [
+                'enabledMethods' => $enabledMethods,
+                'itemId' => isset($view->item) ? $view->item->id() : false,
+                'mediaId' => isset($view->media) ? $view->media->id() : false,
+                'pageId' => isset($view->page) ? $view->page->id() : false,
+                'siteSlug' => $siteSlug,
+            ]);
             $fbJavascript = "
             <script>
               window.fbAsyncInit = function() {
@@ -253,7 +209,6 @@ class Module extends AbstractModule
                   version    : 'v2.5'
                 });
               };
-
               (function(d, s, id){
                  var js, fjs = d.getElementsByTagName(s)[0];
                  if (d.getElementById(id)) {return;}
@@ -263,7 +218,6 @@ class Module extends AbstractModule
                }(document, 'script', 'facebook-jssdk'));
             </script>
             ";
-
             $pinterestJavascript = '
                 <script
                     type="text/javascript"
@@ -271,11 +225,9 @@ class Module extends AbstractModule
                     src="//assets.pinterest.com/js/pinit.js"
                 ></script>
             ';
-
             $tumblrJavascript = '
                 <script id="tumblr-js" async src="https://assets.tumblr.com/share-button.js"></script>
             ';
-
             foreach ($enabledMethods as $method) {
                 $js = $method . 'Javascript';
                 if (isset($$js)) {
@@ -283,5 +235,80 @@ class Module extends AbstractModule
                 }
             }
         }
+    }
+
+    /**
+     * Add Open Graph head meta.
+     *
+     * @see https://ogp.me/
+     * @param Event $event
+     */
+    public function addOpenGraphHeadMeta(Event $event)
+    {
+        $status = $this->getServiceLocator()->get('Omeka\Status');
+        $view = $event->getTarget();
+        $controller = $status->getRouteMatch()->getParam('controller');
+
+        $metaProperties = [
+            'og:type' => 'website',
+            'og:site_name' => $view->site->title(),
+            'og:title' => $view->headTitle()->renderTitle(),
+            'og:url' => $view->serverUrl(true),
+        ];
+        switch ($controller) {
+            case 'Omeka\Controller\Site\Item':
+            case 'Omeka\Controller\Site\Media':
+                $metaProperties['og:description'] = $view->resource->displayDescription();
+                if ($primaryMedia = $view->resource->primaryMedia()) {
+                    $metaProperties['og:image'] = $primaryMedia->thumbnailUrl('large');
+                    $mediaType = strstr($primaryMedia->mediaType(), '/', true);
+                    switch ($mediaType) {
+                        case 'audio':
+                            $metaProperties['og:audio'] = $primaryMedia->originalUrl();
+                            break;
+                        case 'video':
+                            $metaProperties['og:video'] = $primaryMedia->originalUrl();
+                            break;
+                    }
+                }
+                break;
+            case 'Omeka\Controller\Site\Page':
+                foreach ($view->page->blocks() as $block) {
+                    foreach ($block->attachments() as $attachment) {
+                        $item = $attachment->item();
+                        if ($item && ($primaryMedia = $item->primaryMedia())) {
+                            $metaProperties['og:image'] = $primaryMedia->thumbnailUrl('large');
+                            break 2;
+                        }
+                    }
+                }
+                break;
+        }
+        foreach ($metaProperties as $metaProperty => $metaContent) {
+            if ($metaContent) {
+                $view->headMeta()->appendProperty($metaProperty, $metaContent);
+            }
+        }
+    }
+
+    /**
+     * Add oEmbed head link.
+     *
+     * @see https://oembed.com/
+     * @param Event $event
+     */
+    public function addOembedHeadLink(Event $event)
+    {
+        $status = $this->getServiceLocator()->get('Omeka\Status');
+        $view = $event->getTarget();
+        $controller = $status->getRouteMatch()->getParam('controller');
+
+        $href = $view->url('oembed', [], ['force_canonical' => true, 'query' => ['url' => $view->serverUrl(true)]]);
+        $view->headLink([
+            'rel' => 'alternate',
+            'type' => 'application/json+oembed',
+            'title' => $view->headTitle()->renderTitle(),
+            'href' => $href,
+        ]);
     }
 }
