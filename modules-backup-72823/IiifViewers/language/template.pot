@@ -1,2 +1,0 @@
-msgid "IIIF Manifest"
-msgstr ""
