@@ -56,6 +56,11 @@ if (!Omeka) {
             childMenu.addClass('sub-nav').before(subnavToggle);
         });
 
+        if ($('.sub-nav .active').length > 0) {
+            var parentToggle = $('.sub-nav .active').parents('.parent').find('.sub-nav-toggle');
+            parentToggle.click();
+        }
+
         $('.menu-button').click( function(e) {
             e.preventDefault();
             $('#primary-nav ul.navigation').toggleClass('open');

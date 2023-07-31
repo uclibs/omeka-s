@@ -67,10 +67,6 @@ header {
     ul.navigation ul li a {
         padding-left: $spacing-unit;
     }
-    
-    a:link {
-        color: inherit;
-    }
 
     a:hover {
         position: relative;
@@ -80,6 +76,7 @@ header {
         content: "\f0da";
         font-family: "Font Awesome 5 Free";
         position: absolute;
+        font-weight: 900;
         left: 0;
         top: 50%;
         transform: translateY(-50%);

@@ -47,8 +47,35 @@ class SearchForm extends AbstractBlockLayout
 
     public function render(PhpRenderer $view, SitePageBlockRepresentation $block)
     {
-        $vars = $block->data();
-        $vars['block'] = $block;
+        $data = $block->data();
+        $vars = ['block' => $block] + $data;
+
+        $searchConfig = $vars['search_config'] ?? '';
+        if ($searchConfig === 'omeka') {
+            $searchConfig = null;
+        } else {
+            $searchConfigId = empty($searchConfig) || $searchConfig === 'default' ? null : (int) $searchConfig;
+            /** @var \AdvancedSearch\Api\Representation\SearchConfigRepresentation $searchConfig */
+            $searchConfig = $view->getSearchConfig($searchConfigId);
+            if ($searchConfig && !$searchConfig->form()) {
+                $message = new \Omeka\Stdlib\Message(
+                    'The search config "%s" has no form associated.', // @translate
+                    $searchConfig->path()
+                );
+                $view->logger()->err($message);
+                return '';
+            }
+        }
+        $vars['searchConfig'] = $searchConfig;
+        unset($vars['search_config']);
+
+        if (empty($data['link'])) {
+            $link = [];
+        } else {
+            $link = explode(' ', $data['link'], 2);
+            $vars['link'] = ['url' => trim($link[0]), 'label' => trim($link[1] ?? '')];
+        }
+
         $template = $vars['template'] ?: self::PARTIAL_NAME;
         unset($vars['template']);
         return $template !== self::PARTIAL_NAME && $view->resolver($template)

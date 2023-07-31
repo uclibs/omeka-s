@@ -267,13 +267,13 @@ class CheckAndFixForm extends Form
                     ],
                 ])
                 ->add([
-                    'name' => 'files_derivative-media_ids',
+                    'name' => 'media_ids',
                     'type' => Element\Text::class,
                     'options' => [
                         'label' => 'Media ids', // @translate
                     ],
                     'attributes' => [
-                        'id' => 'media_ids',
+                        'id' => 'files_derivative-media_ids',
                         'placeholder' => '2-6 8 38-52 80-', // @ translate
                     ],
                 ])
@@ -326,7 +326,7 @@ class CheckAndFixForm extends Form
                         'files_dimension_check' => 'Check files dimensions (modules IIIF Server / Image Server)', // @translate
                         'files_dimension_fix' => 'Fix files dimensions (modules IIIF Server / Image Server)', // @translate
                         'files_media_type_check' => 'Check generic media type of files, mainly for xml', // @translate
-                        'files_media_type_fix' => 'Fix generic media type of files', // @translate
+                        'files_media_type_fix' => 'Fix generic media type of files, mainly for xml', // @translate
                         'media_position_check' => 'Check positions of media (start from 1, without missing number)', // @translate
                         'media_position_fix' => 'Fix wrong positions of media', // @translate
                     ],
@@ -448,6 +448,7 @@ class CheckAndFixForm extends Form
                         'db_job_fix_all' => 'Fix status as above for all jobs (when check cannot be done after a reboot)', // @translate
                         'db_session_check' => 'Check the size of the table of sessions in database', // @translate
                         'db_session_clean' => 'Remove old sessions (specify age below)', // @translate
+                        'db_session_recreate' => 'Remove all sessions (when table is too big)', // @translate
                         'db_log_check' => 'Check the size of the table of logs in database (module Log)', // @translate
                         'db_log_clean' => 'Remove old logs', // @translate
                     ],
