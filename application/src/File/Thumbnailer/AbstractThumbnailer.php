@@ -43,7 +43,7 @@ abstract class AbstractThumbnailer implements ThumbnailerInterface
      */
     public function getOption($option, $default = null)
     {
-        return $this->options[$option] ?? $default;
+        return isset($this->options[$option]) ? $this->options[$option] : $default;
     }
 
     /**

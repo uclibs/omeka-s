@@ -8,7 +8,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class DeduplicateValuesFactory implements FactoryInterface
 {
-    public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $services, $requestedNamed, array $options = null)
     {
         return new DeduplicateValues(
             $services->get('Omeka\EntityManager'),
@@ -28,7 +28,7 @@ class DeduplicateValuesFactory implements FactoryInterface
         // bypassed by Any_value().
         $sql = 'SELECT ANY_VALUE(id) FROM user LIMIT 1;';
         try {
-            $connection->executeQuery($sql)->fetchOne();
+            $connection->query($sql)->fetchColumn();
             return true;
         } catch (\Exception $e) {
             return false;

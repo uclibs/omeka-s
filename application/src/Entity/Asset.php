@@ -39,11 +39,6 @@ class Asset extends AbstractEntity
      */
     protected $extension;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $altText;
-
     public function getId()
     {
         return $this->id;
@@ -106,15 +101,5 @@ class Asset extends AbstractEntity
     public function getExtension()
     {
         return $this->extension;
-    }
-
-    public function setAltText($altText)
-    {
-        $this->altText = $altText;
-    }
-
-    public function getAltText()
-    {
-        return $this->altText;
     }
 }

@@ -10,7 +10,6 @@ class ItemSetSelect extends AbstractGroupByOwnerSelect
 
     public function getValueLabel($resource)
     {
-        $lang = ($this->options['lang'] ?? null);
-        return $resource->displayTitle(null, $lang);
+        return $resource->displayTitle();
     }
 }

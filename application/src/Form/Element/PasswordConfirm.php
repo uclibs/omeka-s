@@ -12,11 +12,6 @@ class PasswordConfirm extends Fieldset implements InputFilterProviderInterface
      */
     protected $passwordConfig = [];
 
-    /**
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
     public function init()
     {
         $config = $this->getPasswordConfig();

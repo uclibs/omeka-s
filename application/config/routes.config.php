@@ -344,16 +344,6 @@ return [
                     ],
                 ],
             ],
-            'iiif-viewer' => [
-                'type' => \Laminas\Router\Http\Literal::class,
-                'options' => [
-                    'route' => '/iiif-viewer',
-                    'defaults' => [
-                        'controller' => 'Omeka\Controller\IiifViewer',
-                        'action' => 'index',
-                    ],
-                ],
-            ],
         ],
     ],
 ];

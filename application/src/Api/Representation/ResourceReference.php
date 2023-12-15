@@ -45,7 +45,7 @@ class ResourceReference extends AbstractRepresentation
         );
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize()
     {
         return [
             '@id' => $this->apiUrl(),

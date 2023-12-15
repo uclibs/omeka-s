@@ -10,8 +10,3 @@
     border-bottom: 1px solid $border-gray;
     padding-bottom: ($spacing-medium - 1px);
 }
-
-@mixin font-awesome {
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-}

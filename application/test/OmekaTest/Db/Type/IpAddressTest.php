@@ -11,12 +11,14 @@ class IpAddressTest extends TestCase
     protected $ipAddress;
     protected $platform;
 
-    public function setUp(): void
+    public function setUp()
     {
         // Type is a singleton.
-        if (!Type::hasType(self::TYPE_NAME)) {
-            Type::addType(self::TYPE_NAME, 'Omeka\Db\Type\IpAddress');
+        if (Type::hasType(self::TYPE_NAME)) {
+            // Remove the type so it can be re-instantiated.
+            Type::overrideType(self::TYPE_NAME, null);
         }
+        Type::addType(self::TYPE_NAME, 'Omeka\Db\Type\IpAddress');
 
         $this->ipAddress = Type::getType(self::TYPE_NAME);
         $this->platform = $this->getMockForAbstractClass(

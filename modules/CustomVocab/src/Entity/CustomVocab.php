@@ -34,14 +34,9 @@ class CustomVocab extends AbstractEntity
     protected $itemSet;
 
     /**
-     * @Column(nullable=true, type="json")
+     * @Column(nullable=true, type="text")
      */
     protected $terms;
-
-    /**
-     * @Column(nullable=true, type="json")
-     */
-    protected $uris;
 
     /**
      * @ManyToOne(targetEntity="Omeka\Entity\User")
@@ -92,16 +87,6 @@ class CustomVocab extends AbstractEntity
     public function getTerms()
     {
         return $this->terms;
-    }
-
-    public function setUris($uris)
-    {
-        $this->uris = $uris;
-    }
-
-    public function getUris()
-    {
-        return $this->uris;
     }
 
     public function setOwner(User $owner = null)

@@ -16,13 +16,21 @@ class SettingController extends AbstractActionController
             $form->setData($this->params()->fromPost());
             if ($form->isValid()) {
                 $data = $form->getData();
-                if ($data['index_fulltext_search']) {
+                $fieldsets = $form->getFieldsets();
+                if ($data['general']['index_fulltext_search']) {
                     $this->jobDispatcher()->dispatch('Omeka\Job\IndexFulltextSearch');
                 }
-                unset($data['index_fulltext_search']);
+                unset($data['general']['index_fulltext_search']);
                 unset($data['csrf']);
                 foreach ($data as $id => $value) {
-                    $this->settings()->set($id, $value);
+                    if (array_key_exists($id, $fieldsets) && is_array($value)) {
+                        // De-nest fieldsets.
+                        foreach ($value as $fieldsetId => $fieldsetValue) {
+                            $this->settings()->set($fieldsetId, $fieldsetValue);
+                        }
+                    } else {
+                        $this->settings()->set($id, $value);
+                    }
                 }
                 $this->messenger()->addSuccess('Settings successfully updated'); // @translate
                 return $this->redirect()->toRoute(null, ['action' => 'browse'], true);

@@ -35,7 +35,7 @@ class UserController extends AbstractActionController
 
     public function browseAction()
     {
-        $this->browse()->setDefaults('users');
+        $this->setBrowseDefaults('email', 'asc');
         $response = $this->api()->search('users', $this->params()->fromQuery());
         $this->paginator($response->getTotalResults());
 
@@ -100,8 +100,6 @@ class UserController extends AbstractActionController
             'include_admin_roles' => $changeRoleAdmin,
             'include_is_active' => $activateUser,
         ]);
-        $form->remove('user-settings');
-        $form->getInputFilter()->remove('user-settings');
 
         if ($this->getRequest()->isPost()) {
             $form->setData($this->params()->fromPost());
@@ -439,9 +437,9 @@ class UserController extends AbstractActionController
                 $job = $this->jobDispatcher()->dispatch('Omeka\Job\BatchUpdate', [
                     'resource' => 'users',
                     'query' => $query,
-                    'data' => $data['replace'] ?? [],
-                    'data_remove' => $data['remove'] ?? [],
-                    'data_append' => $data['append'] ?? [],
+                    'data' => isset($data['replace']) ? $data['replace'] : [],
+                    'data_remove' => isset($data['remove']) ? $data['remove'] : [],
+                    'data_append' => isset($data['append']) ? $data['append'] : [],
                 ]);
 
                 $this->messenger()->addSuccess('Editing users. This may take a while.'); // @translate

@@ -11,7 +11,7 @@ class Media extends AbstractBlockLayout
 {
     public function getLabel()
     {
-        return 'Media embed'; // @translate
+        return 'Media Embed'; // @translate
     }
 
     public function form(PhpRenderer $view, SiteRepresentation $site,

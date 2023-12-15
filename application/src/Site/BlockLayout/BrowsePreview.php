@@ -4,7 +4,6 @@ namespace Omeka\Site\BlockLayout;
 use Omeka\Api\Representation\SiteRepresentation;
 use Omeka\Api\Representation\SitePageRepresentation;
 use Omeka\Api\Representation\SitePageBlockRepresentation;
-use Omeka\Form\Element as OmekaElement;
 use Laminas\Form\Element;
 use Laminas\Form\Form;
 use Laminas\View\Renderer\PhpRenderer;
@@ -16,14 +15,6 @@ class BrowsePreview extends AbstractBlockLayout
         return 'Browse preview'; // @translate
     }
 
-    public function prepareForm(PhpRenderer $view)
-    {
-        $view->headLink()->prependStylesheet($view->assetUrl('css/advanced-search.css', 'Omeka'));
-        $view->headScript()->appendFile($view->assetUrl('js/advanced-search.js', 'Omeka'));
-        $view->headScript()->appendFile($view->assetUrl('js/query-form.js', 'Omeka'));
-        $view->headScript()->appendFile($view->assetUrl('js/browse-preview-block-layout.js', 'Omeka'));
-    }
-
     public function form(PhpRenderer $view, SiteRepresentation $site,
         SitePageRepresentation $page = null, SitePageBlockRepresentation $block = null
     ) {
@@ -32,7 +23,6 @@ class BrowsePreview extends AbstractBlockLayout
             'query' => '',
             'heading' => '',
             'limit' => 12,
-            'components' => ['resource-heading', 'resource-body', 'thumbnail'],
             'link-text' => 'Browse all', // @translate
         ];
 
@@ -50,18 +40,14 @@ class BrowsePreview extends AbstractBlockLayout
                     'media' => 'Media',  // @translate
                 ],
             ],
-            'attributes' => [
-                'class' => 'browse-preview-resource-type',
-            ],
         ]);
         $form->add([
             'name' => 'o:block[__blockIndex__][o:data][query]',
-            'type' => OmekaElement\Query::class,
+            'type' => Element\Text::class,
             'options' => [
-                'label' => 'Search query', // @translate
+                'label' => 'Query', // @translate
                 'info' => 'Display resources using this search query', // @translate
-                'query_resource_type' => $data['resource_type'],
-                'query_partial_excludelist' => ['common/advanced-search/site'],
+                'documentation' => 'https://omeka.org/s/docs/user-manual/sites/site_pages/#browse-preview',
             ],
         ]);
         $form->add([
@@ -70,28 +56,6 @@ class BrowsePreview extends AbstractBlockLayout
             'options' => [
                 'label' => 'Limit', // @translate
                 'info' => 'Maximum number of resources to display in the preview.', // @translate
-            ],
-        ]);
-        $form->add([
-            'name' => 'o:block[__blockIndex__][o:data][components]',
-            'type' => Element\MultiCheckbox::class,
-            'options' => [
-                'label' => 'Components', // @translate
-                'info' => 'Components to display for each resource. If not set in Site Settings, Heading defaults to resource Title and Body to resource Description', // @translate
-                'value_options' => [
-                    [
-                        'value' => 'resource-heading',
-                        'label' => 'Heading', // @translate
-                    ],
-                    [
-                        'value' => 'resource-body',
-                        'label' => 'Body', // @translate
-                    ],
-                    [
-                        'value' => 'thumbnail',
-                        'label' => 'Thumbnail', // @translate
-                    ],
-                ],
             ],
         ]);
         $form->add([
@@ -116,7 +80,6 @@ class BrowsePreview extends AbstractBlockLayout
             'o:block[__blockIndex__][o:data][query]' => $data['query'],
             'o:block[__blockIndex__][o:data][heading]' => $data['heading'],
             'o:block[__blockIndex__][o:data][limit]' => $data['limit'],
-            'o:block[__blockIndex__][o:data][components]' => $data['components'],
             'o:block[__blockIndex__][o:data][link-text]' => $data['link-text'],
         ]);
 
@@ -145,13 +108,6 @@ class BrowsePreview extends AbstractBlockLayout
             $query['sort_order'] = 'desc';
         }
 
-        //Show all resource components if none set
-        if (empty($block->dataValue('components'))) {
-            $components = ['resource-heading', 'resource-body', 'thumbnail'];
-        } else {
-            $components = $block->dataValue('components');
-        }
-
         $response = $view->api()->search($resourceType, $query);
         $resources = $response->getContent();
 
@@ -166,7 +122,6 @@ class BrowsePreview extends AbstractBlockLayout
             'resources' => $resources,
             'heading' => $block->dataValue('heading'),
             'linkText' => $block->dataValue('link-text'),
-            'components' => $components,
             'query' => $originalQuery,
         ]);
     }

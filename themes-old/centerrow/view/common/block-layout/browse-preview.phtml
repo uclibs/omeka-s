@@ -1,0 +1,69 @@
+<?php
+$this->headScript()->appendFile($this->assetUrl('js/browse.js'));
+$translate = $this->plugin('translate');
+$escape = $this->plugin('escapeHtml');
+$layoutSetting = $this->themeSetting('browse_layout', 'grid');
+$gridState = ($layoutSetting == 'togglegrid') ? 'disabled' : '';
+$listState = ($layoutSetting == 'togglelist') ? 'disabled': '';
+$currentLayout = (strpos($layoutSetting, 'grid') !== false) ? 'grid' : 'list';
+?>
+<div class="preview-block browse">
+
+<?php if ($this->heading): ?>
+<h2><?php echo $this->heading; ?></h2>
+<?php endif; ?>
+
+<?php if (strpos($layoutSetting, 'toggle') !== false): ?>
+<div class="browse-controls">
+    <div class="layout-toggle">
+        <button type="button" aria-label="<?php echo $translate('Grid'); ?>" class="grid o-icon-grid" <?php echo $gridState; ?>></button>
+        <button type="button" aria-label="<?php echo $translate('List'); ?>" class="list o-icon-list" <?php echo $listState; ?>></button>
+    </div>
+</div>
+<?php endif; ?>
+
+
+<ul class="resource-list preview <?php echo $currentLayout; ?>">
+<?php
+$showThumbnail = in_array('thumbnail', $this->components);
+$showHeading = in_array('resource-heading', $this->components);
+$showBody = in_array('resource-body', $this->components);
+$headingTerm = $this->siteSetting('browse_heading_property_term');
+$bodyTerm = $this->siteSetting('browse_body_property_term');
+
+$filterLocale = (bool) $this->siteSetting('filter_locale_values');
+$lang = $this->lang();
+
+foreach ($this->resources as $resource):
+$heading = $headingTerm ? $resource->value($headingTerm, ['default' => $translate('[Untitled]')]) : $resource->displayTitle(null, ($filterLocale ? $lang : null));
+$body = $bodyTerm ? $resource->value($bodyTerm) : $resource->displayDescription(null, ($filterLocale ? $lang : null));
+?>
+    <li class="<?php echo $this->resourceType; ?> resource">
+        <?php
+        if ($showThumbnail):
+            echo $resource->linkRaw($this->thumbnail($resource, 'medium', ['title' => $heading]), null, ['class' => 'thumbnail']);
+        endif;?>
+        <?php if ($showHeading || $showBody): ?>
+        <div class="resource-meta">
+        <?php
+        if ($showHeading):
+            echo '<h4>' . $resource->link($heading) . '</h4>';
+        endif;?>
+        <?php if ($showBody && $body): ?>
+        <div class="description"><?php echo $escape($body); ?></div>
+        <?php endif; ?>
+        </div>
+        <?php endif; ?>
+    </li>
+<?php endforeach; ?>
+</ul>
+
+<?php
+if ($this->linkText):
+    echo $this->hyperlink($this->linkText, $this->url(
+        'site/resource', ['controller' => $this->resourceType, 'action' => 'browse'], ['query' => $this->query], true
+    ));
+endif;
+?>
+
+</div>

@@ -62,11 +62,6 @@ class ResourceTemplateProperty extends AbstractEntity
      */
     protected $isPrivate = false;
 
-    /**
-     * @Column(nullable=true)
-     */
-    protected $defaultLang;
-
     public function getId()
     {
         return $this->id;
@@ -160,15 +155,5 @@ class ResourceTemplateProperty extends AbstractEntity
     public function isPrivate()
     {
         return $this->getIsPrivate();
-    }
-
-    public function setDefaultLang($defaultLang)
-    {
-        $this->defaultLang = $defaultLang;
-    }
-
-    public function getDefaultLang()
-    {
-        return $this->defaultLang;
     }
 }

@@ -63,7 +63,7 @@ AND `v`.`resource_id` IN ($idsString)
 SQL;
         }
 
-        $processed = $connection->executeStatement($sql);
+        $processed = $connection->exec($sql);
         if ($processed) {
             $this->logger->info(sprintf('Updated data type of %d values.', $processed));
         }

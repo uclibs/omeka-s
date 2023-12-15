@@ -9,7 +9,7 @@ class ValueTest extends TestCase
 {
     protected $value;
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->value = new Value;
     }

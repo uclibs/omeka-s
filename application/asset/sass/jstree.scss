@@ -39,17 +39,12 @@
     line-height: 1.5 * $base-line-height;
     font-weight: bold;
 
-    & > label > input,
-    & > label > textarea,
-    & > label > select,
-    .query-form-element {
+    input,
+    textarea,
+    select{
         float: right;
         width: span(7 of 10);
         font-weight: normal;
-    }
-
-    .query-form-element input {
-        width: 100%;
     }
 
     label {
@@ -75,7 +70,6 @@ i.jstree-icon {
 
 .jstree-icon:before {
     font-family: "Font Awesome 5 Free";
-    font-weight: 900;
 }
 
 .jstree-open,
@@ -88,8 +82,7 @@ i.jstree-icon {
 .jstree-removenode-remove,
 .jstree-removenode-undo,
 .jstree-editlink-edit,
-.jstree-displaylink,
-.jstree-private {
+.jstree-displaylink {
     width: $base-line-height;
     height: 1.5 * $base-line-height;
     line-height: 1.5 * $base-line-height;
@@ -120,21 +113,12 @@ i.jstree-icon.jstree-er {
 .jstree-removenode-remove,
 .jstree-removenode-undo,
 .jstree-editlink-edit,
-.jstree-displaylink,
-.jstree-private {
+.jstree-displaylink {
     background-color: transparent;
     opacity: .5;
 
     &:hover {
         opacity: 1;
-    }
-}
-
-.jstree-private {
-    color: $copy-gray;
-
-    &:hover {
-        opacity: .5;
     }
 }
 
@@ -154,15 +138,6 @@ i.jstree-editlink-edit {
     right: 1.5 * $base-line-height;
 }
 
-i.jstree-private {
-    background-color: transparent;
-    position: static;
-    display: inline-block;
-    margin-right: $spacing-small;
-    height: $base-font-size;
-    line-height: 1;
-}
-
 .jstree-open > .jstree-anchor .jstree-displaylink,
 .jstree-closed > .jstree-anchor .jstree-displaylink {
     right: 4 * $base-line-height;
@@ -170,15 +145,6 @@ i.jstree-private {
 
 i.jstree-displaylink {
     right: 2.5 * $base-line-height;
-}
-
-.block-pagelist-tree .jstree-open > .jstree-anchor .jstree-displaylink,
-.block-pagelist-tree .jstree-closed > .jstree-anchor .jstree-displaylink {
-    right: 3 * $base-line-height;
-}
-
-.block-pagelist-tree i.jstree-displaylink {
-    right: 1.5 * $base-line-height;
 }
 
 .jstree-anchor:hover > .jstree-removenode-remove {
@@ -215,10 +181,6 @@ i.jstree-displaylink {
 
 .jstree-displaylink:before {
     content: fa-content($fa-var-external-link-alt);
-}
-
-.jstree-private:before {
-    content: fa-content($fa-var-eye-slash);
 }
 
 .jstree-removenode-removed .jstree-anchor {

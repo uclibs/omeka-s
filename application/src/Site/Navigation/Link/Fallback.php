@@ -21,7 +21,7 @@ class Fallback implements LinkInterface
 
     public function getName()
     {
-        return '[Missing Page]';
+        return 'Fallback';
     }
 
     public function getFormTemplate()

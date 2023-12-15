@@ -120,10 +120,9 @@ class Media extends AbstractHelper
         $params = compact('media', 'options');
         $params = $triggerHelper('view_helper.media.render_options', $params, true);
         $options = $params['options'];
-        $renderer = $media->renderer();
 
         $renderedMedia = $this->rendererManager->get($media->renderer())
             ->render($this->getView(), $media, $options);
-        return sprintf('<div class="media-render %s">%s</div>', $renderer, $renderedMedia);
+        return sprintf('<div class="media-render">%s</div>', $renderedMedia);
     }
 }

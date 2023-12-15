@@ -19,7 +19,7 @@ if ($owner = $itemSet->owner()) {
 
 $sectionNavs = [
     'item-set-metadata' => $translate('Metadata'),
-    'resources-linked' => $translate('Linked resources'),
+    'item-set-linked' => $translate('Linked resources'),
 ];
 ?>
 
@@ -35,24 +35,20 @@ $sectionNavs = [
 <?php echo $this->sectionNav($sectionNavs, 'view.show.section_nav', $itemSet); ?>
 
 <div id="item-set-metadata" class="active section">
-    <?php if ($itemSet->resourceClass()): ?>
-    <dl>
+    <?php if ( $itemSet->resourceClass()): ?>
         <div class="meta-group">
-            <dt><?php echo $translate('Class'); ?></dt>
-            <dd class="value"><?php echo $escape($itemSet->resourceClass()->label()); ?></dd>
+            <h4><?php echo $translate('Class'); ?></h4>
+            <div class="value"><?php echo $escape($itemSet->resourceClass()->label()); ?></div>
         </div>
-    </dl>
     <?php endif; ?>
     <?php echo $itemSet->displayValues(); ?>
 </div>
 
-<div id="resources-linked" class="section">
+<div id="item-set-linked" class="section">
     <?php
-    $subjectValues = $itemSet->displaySubjectValues([
-        'page' => $this->params()->fromQuery('page', 1),
-        'perPage' => 25,
-        'resourceProperty' => $this->params()->fromQuery('resource_property'),
-    ]);
+    $page = $this->params()->fromQuery('page', 1);
+    $property = $this->params()->fromQuery('property');
+    $subjectValues = $itemSet->displaySubjectValues($page, 25);
     ?>
     <?php if ($subjectValues): ?>
         <p><?php echo $translate('The following resources link to this item set:'); ?></p>
@@ -64,11 +60,8 @@ $sectionNavs = [
     <?php endif; ?>
 </div>
 
+
 <div class="active sidebar">
-    <div class="meta-group">
-        <h4><?php echo $translate('ID'); ?></h4>
-        <div class="value"><?php echo $escape($itemSet->id()); ?></div>
-    </div>
     <div class="meta-group">
         <h4><?php echo $translate('Created'); ?></h4>
         <div class="value"><?php echo $escape($this->i18n()->dateFormat($itemSet->created())); ?></div>

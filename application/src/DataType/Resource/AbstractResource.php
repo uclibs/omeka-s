@@ -4,27 +4,16 @@ namespace Omeka\DataType\Resource;
 use Omeka\Api\Adapter\AbstractEntityAdapter;
 use Omeka\Api\Exception;
 use Omeka\Api\Representation\ValueRepresentation;
-use Omeka\DataType\DataTypeWithOptionsInterface;
-use Omeka\Entity;
+use Omeka\DataType\AbstractDataType;
+use Omeka\Entity\Value;
 use Laminas\View\Renderer\PhpRenderer;
 use Omeka\Stdlib\Message;
 
-abstract class AbstractResource implements DataTypeWithOptionsInterface
+abstract class AbstractResource extends AbstractDataType
 {
-    /**
-     * Get the class names of valid value resources.
-     *
-     * @return array
-     */
-    abstract public function getValidValueResources();
-
     public function getOptgroupLabel()
     {
         return 'Resource'; // @translate
-    }
-
-    public function prepareForm(PhpRenderer $view)
-    {
     }
 
     public function form(PhpRenderer $view)
@@ -45,7 +34,7 @@ abstract class AbstractResource implements DataTypeWithOptionsInterface
         return false;
     }
 
-    public function hydrate(array $valueObject, Entity\Value $value, AbstractEntityAdapter $adapter)
+    public function hydrate(array $valueObject, Value $value, AbstractEntityAdapter $adapter)
     {
         $serviceLocator = $adapter->getServiceLocator();
 
@@ -64,30 +53,22 @@ abstract class AbstractResource implements DataTypeWithOptionsInterface
                 )
             );
         }
-        // Limit value resources to those that are valid for the data type.
-        $isValid = false;
-        foreach ($this->getValidValueResources() as $validValueResource) {
-            if ($valueResource instanceof $validValueResource) {
-                $isValid = true;
-                break;
-            }
-        }
-        if (!$isValid) {
-            $message = new Message(sprintf(
-                'Invalid value resource %s for type %s', // @translate
-                get_class($valueResource),
-                $valueObject['type']
-            ));
+        if ($valueResource instanceof Media) {
             $exception = new Exception\ValidationException;
-            $exception->getErrorStore()->addError('value', $message);
+            $message = new Message(
+                'A value resource cannot be Media.' // @translate
+                );
+            $exception->getErrorStore()->addError(
+                'value', $message
+            );
             throw $exception;
         }
         $value->setValueResource($valueResource);
     }
 
-    public function render(PhpRenderer $view, ValueRepresentation $value, $options = [])
+    public function render(PhpRenderer $view, ValueRepresentation $value)
     {
-        return $value->valueResource()->linkPretty('square', null, null, null, is_array($options) ? $options['lang'] ?? [] : $options);
+        return $value->valueResource()->linkPretty();
     }
 
     public function toString(ValueRepresentation $value)

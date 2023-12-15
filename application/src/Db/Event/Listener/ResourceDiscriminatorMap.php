@@ -1,7 +1,7 @@
 <?php
 namespace Omeka\Db\Event\Listener;
 
-use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs;
 
 /**
  * Load the resource discriminator map dynamically.

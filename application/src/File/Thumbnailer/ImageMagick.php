@@ -47,12 +47,12 @@ class ImageMagick extends AbstractThumbnailer
         $mediaType = $this->sourceFile->getMediaType();
         $origPath = sprintf('%s[%s]', $this->source, $this->getOption('page', 0));
         if (strpos($mediaType, 'video/') === 0) {
-            $origPath = 'mp4:' . $origPath;
+            $origPath = 'mpeg:' . $origPath;
         }
 
         switch ($strategy) {
             case 'square':
-                $gravity = $options['gravity'] ?? 'center';
+                $gravity = isset($options['gravity']) ? $options['gravity'] : 'center';
                 $args = [
                     '-background white',
                     '+repage',

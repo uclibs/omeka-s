@@ -24,7 +24,7 @@ class SiteBlockAttachmentRepresentation extends AbstractRepresentation
         $this->attachment = $attachment;
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize()
     {
         $item = $this->item();
         $media = $this->media();

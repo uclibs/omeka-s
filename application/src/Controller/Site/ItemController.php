@@ -14,7 +14,7 @@ class ItemController extends AbstractActionController
     {
         $site = $this->currentSite();
 
-        $this->browse()->setDefaults('items');
+        $this->setBrowseDefaults('created');
 
         $view = new ViewModel;
 

@@ -49,11 +49,6 @@ return [
             'csvimport_imports' => Api\Adapter\ImportAdapter::class,
         ],
     ],
-    'service_manager' => [
-        'factories' => [
-            'CSVImport\Config' => Service\ConfigFactory::class,
-        ],
-    ],
     'router' => [
         'routes' => [
             'admin' => [
@@ -144,7 +139,6 @@ return [
         'sources' => [
             'application/vnd.oasis.opendocument.spreadsheet' => Source\OpenDocumentSpreadsheet::class,
             'text/csv' => Source\CsvFile::class,
-            'application/csv' => Source\CsvFile::class,
             'text/tab-separated-values' => Source\TsvFile::class,
         ],
         'mappings' => [
@@ -189,7 +183,6 @@ return [
             'url' => MediaIngesterAdapter\UrlMediaIngesterAdapter::class,
             'html' => MediaIngesterAdapter\HtmlMediaIngesterAdapter::class,
             'iiif' => null,
-            'iiif_presentation' => null,
             'oembed' => null,
             'youtube' => null,
         ],

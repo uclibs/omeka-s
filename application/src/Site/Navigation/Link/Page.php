@@ -61,12 +61,9 @@ class Page implements LinkInterface
 
     public function toJstree(array $data, SiteRepresentation $site)
     {
-        $pages = $site->pages();
-        $isPublic = (isset($pages[$data['id']])) ? $pages[$data['id']]->isPublic() : null;
         return [
             'label' => $data['label'],
             'id' => $data['id'],
-            'is_public' => $isPublic,
         ];
     }
 }

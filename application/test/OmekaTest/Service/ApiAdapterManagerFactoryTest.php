@@ -24,7 +24,6 @@ class ApiAdapterManagerFactoryTest extends TestCase
         $serviceManager = $this->getServiceManager([
             'Config' => $config,
             'EventManager' => $this->getMockForAbstractClass('Laminas\EventManager\EventManagerInterface'),
-            'MvcTranslator' => $this->getMockForAbstractClass('Laminas\I18n\Translator\TranslatorInterface'),
         ]);
         $factory = new ApiAdapterManagerFactory;
         $service = $factory($serviceManager, 'Foo');

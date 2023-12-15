@@ -12,41 +12,39 @@ class CustomVocab extends \CustomVocab\Entity\CustomVocab implements \Doctrine\O
      *      three parameters, being respectively the proxy object to be initialized, the method that triggered the
      *      initialization process and an array of ordered parameters that were passed to that method.
      *
-     * @see \Doctrine\Common\Proxy\Proxy::__setInitializer
+     * @see \Doctrine\Common\Persistence\Proxy::__setInitializer
      */
     public $__initializer__;
 
     /**
      * @var \Closure the callback responsible of loading properties that need to be copied in the cloned object
      *
-     * @see \Doctrine\Common\Proxy\Proxy::__setCloner
+     * @see \Doctrine\Common\Persistence\Proxy::__setCloner
      */
     public $__cloner__;
 
     /**
      * @var boolean flag indicating if this object was already initialized
      *
-     * @see \Doctrine\Persistence\Proxy::__isInitialized
+     * @see \Doctrine\Common\Persistence\Proxy::__isInitialized
      */
     public $__isInitialized__ = false;
 
     /**
-     * @var array<string, null> properties to be lazy loaded, indexed by property name
+     * @var array properties to be lazy loaded, with keys being the property
+     *            names and values being their default values
+     *
+     * @see \Doctrine\Common\Persistence\Proxy::__getLazyProperties
      */
-    public static $lazyPropertiesNames = array (
-);
+    public static $lazyPropertiesDefaults = [];
+
+
 
     /**
-     * @var array<string, mixed> default values of properties to be lazy loaded, with keys being the property names
-     *
-     * @see \Doctrine\Common\Proxy\Proxy::__getLazyProperties
+     * @param \Closure $initializer
+     * @param \Closure $cloner
      */
-    public static $lazyPropertiesDefaults = array (
-);
-
-
-
-    public function __construct(?\Closure $initializer = null, ?\Closure $cloner = null)
+    public function __construct($initializer = null, $cloner = null)
     {
 
         $this->__initializer__ = $initializer;
@@ -66,10 +64,10 @@ class CustomVocab extends \CustomVocab\Entity\CustomVocab implements \Doctrine\O
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'label', 'lang', 'itemSet', 'terms', 'uris', 'owner'];
+            return ['__isInitialized__', 'id', 'label', 'lang', 'itemSet', 'terms', 'owner'];
         }
 
-        return ['__isInitialized__', 'id', 'label', 'lang', 'itemSet', 'terms', 'uris', 'owner'];
+        return ['__isInitialized__', 'id', 'label', 'lang', 'itemSet', 'terms', 'owner'];
     }
 
     /**
@@ -84,7 +82,7 @@ class CustomVocab extends \CustomVocab\Entity\CustomVocab implements \Doctrine\O
 
                 $existingProperties = get_object_vars($proxy);
 
-                foreach ($proxy::$lazyPropertiesDefaults as $property => $defaultValue) {
+                foreach ($proxy->__getLazyProperties() as $property => $defaultValue) {
                     if ( ! array_key_exists($property, $existingProperties)) {
                         $proxy->$property = $defaultValue;
                     }
@@ -167,7 +165,6 @@ class CustomVocab extends \CustomVocab\Entity\CustomVocab implements \Doctrine\O
     /**
      * {@inheritDoc}
      * @internal generated method: use only when explicitly handling proxy specific loading logic
-     * @deprecated no longer in use - generated code now relies on internal components rather than generated public API
      * @static
      */
     public function __getLazyProperties()
@@ -277,28 +274,6 @@ class CustomVocab extends \CustomVocab\Entity\CustomVocab implements \Doctrine\O
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getTerms', []);
 
         return parent::getTerms();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setUris($uris)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setUris', [$uris]);
-
-        return parent::setUris($uris);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getUris()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUris', []);
-
-        return parent::getUris();
     }
 
     /**

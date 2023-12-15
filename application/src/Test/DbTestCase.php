@@ -25,7 +25,7 @@ class DbTestCase extends TestCase
      * Set the test application and begin a transaction during setUp.
      * Child classes should call parent::setUp() in their own setUp.
      */
-    public function setUp(): void
+    public function setUp()
     {
         self::getApplication()->getServiceManager()->get('Omeka\EntityManager')
             ->getConnection()->beginTransaction();
@@ -34,7 +34,7 @@ class DbTestCase extends TestCase
     /**
      * Rollback the transaction during tear down.
      */
-    public function tearDown(): void
+    public function tearDown()
     {
         self::getApplication()->getServiceManager()->get('Omeka\EntityManager')
             ->getConnection()->rollback();
@@ -57,6 +57,7 @@ class DbTestCase extends TestCase
             'connection' => $reader->fromFile(OMEKA_PATH . '/application/test/config/database.ini'),
         ];
         $config = array_merge($config, $testConfig);
+        \Laminas\Console\Console::overrideIsConsole(false);
         self::$application = Application::init($config);
         return self::$application;
     }

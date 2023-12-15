@@ -19,7 +19,7 @@ class Application
      */
     public static function init($configuration = [])
     {
-        $smConfig = $configuration['service_manager'] ?? [];
+        $smConfig = isset($configuration['service_manager']) ? $configuration['service_manager'] : [];
         $smConfig = new Service\ServiceManagerConfig($smConfig);
 
         $serviceManager = new ServiceManager;
@@ -33,9 +33,9 @@ class Application
         $moduleManager->setModules(array_merge($configuration['modules'], array_keys($activeModules)));
         $moduleManager->loadModules();
 
-        $listenersFromAppConfig = $configuration['listeners'] ?? [];
+        $listenersFromAppConfig = isset($configuration['listeners']) ? $configuration['listeners'] : [];
         $config = $serviceManager->get('Config');
-        $listenersFromConfigService = $config['listeners'] ?? [];
+        $listenersFromConfigService = isset($config['listeners']) ? $config['listeners'] : [];
         $listeners = array_unique(array_merge($listenersFromConfigService, $listenersFromAppConfig));
         return $serviceManager->get('Application')->bootstrap($listeners);
     }

@@ -26,6 +26,7 @@ return [
             'anycloud_digital_ocean' => [],
             'anycloud_scaleway'      => [],
             'anycloud_azure'         => [],
+            'anycloud_rackspace'     => [],
             'anycloud_dropbox'       => [],
             'anycloud_google'        => [
                 'google_credentials_path' => '/src/Service/File/Adapter/Google/{CONFIG}.json',

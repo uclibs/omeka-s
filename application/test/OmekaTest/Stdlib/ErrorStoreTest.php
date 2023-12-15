@@ -1,14 +1,11 @@
 <?php
-namespace OmekaTest\Stdlib;
+namespace Omeka\Stdlib;
 
-use Omeka\Stdlib\ErrorStore;
 use Omeka\Test\TestCase;
 
 class ErrorStoreTest extends TestCase
 {
-    private $errorStore;
-
-    public function setUp(): void
+    public function setUp()
     {
         $this->errorStore = new ErrorStore;
     }

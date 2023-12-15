@@ -20,26 +20,6 @@ class MediaAdapter extends AbstractResourceEntityAdapter
         'modified' => 'modified',
         'title' => 'title',
         'media_type' => 'mediaType',
-        'size' => 'size',
-    ];
-
-    protected $scalarFields = [
-        'id' => 'id',
-        'title' => 'title',
-        'created' => 'created',
-        'modified' => 'modified',
-        'is_public' => 'isPublic',
-        'thumbnail' => 'thumbnail',
-        'ingester' => 'ingester',
-        'renderer' => 'renderer',
-        'data' => 'data',
-        'source' => 'source',
-        'media_type' => 'mediaType',
-        'sha256' => 'sha256',
-        'size' => 'size',
-        'item' => 'item',
-        'lang' => 'lang',
-        'alt_text' => 'altText',
     ];
 
     public function getResourceName()
@@ -92,14 +72,32 @@ class MediaAdapter extends AbstractResourceEntityAdapter
         if (isset($query['site_id']) && is_numeric($query['site_id'])) {
             $itemAlias = $this->createAlias();
             $qb->innerJoin(
-                'omeka_root.item', $itemAlias
+                'omeka_root.item',
+                $itemAlias
+            );
+            $siteBlockAttachmentsAlias = $this->createAlias();
+            $qb->innerJoin(
+                "$itemAlias.siteBlockAttachments",
+                $siteBlockAttachmentsAlias
+            );
+            $sitePageBlockAlias = $this->createAlias();
+            $qb->innerJoin(
+                "$siteBlockAttachmentsAlias.block",
+                $sitePageBlockAlias
+            );
+            $sitePageAlias = $this->createAlias();
+            $qb->innerJoin(
+                "$sitePageBlockAlias.page",
+                $sitePageAlias
             );
             $siteAlias = $this->createAlias();
             $qb->innerJoin(
-                "$itemAlias.sites", $siteAlias, 'WITH', $qb->expr()->eq(
-                    "$siteAlias.id",
-                    $this->createNamedParameter($qb, $query['site_id'])
-                )
+                "$sitePageAlias.site",
+                $siteAlias
+            );
+            $qb->andWhere($qb->expr()->eq(
+                "$siteAlias.id",
+                $this->createNamedParameter($qb, $query['site_id']))
             );
         }
     }
@@ -153,16 +151,8 @@ class MediaAdapter extends AbstractResourceEntityAdapter
 
         parent::hydrate($request, $entity, $errorStore);
 
-        if (isset($data['position']) && is_numeric($data['position'])) {
-            $entity->setPosition($data['position']);
-        }
-
         if ($this->shouldHydrate($request, 'o:lang')) {
             $entity->setLang($request->getValue('o:lang', null));
-        }
-
-        if ($this->shouldHydrate($request, 'o:alt_text')) {
-            $entity->setAltText($request->getValue('o:alt_text'));
         }
 
         if (Request::CREATE === $request->getOperation()) {
@@ -183,10 +173,9 @@ class MediaAdapter extends AbstractResourceEntityAdapter
 
     public function hydrateOwner(Request $request, EntityInterface $entity)
     {
-        if (Request::CREATE === $request->getOperation() && $entity->getItem() instanceof Item) {
+        if ($entity->getItem() instanceof Item) {
             $entity->setOwner($entity->getItem()->getOwner());
         }
-        parent::hydrateOwner($request, $entity);
     }
 
     public function preprocessBatchUpdate(array $data, Request $request)

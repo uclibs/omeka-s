@@ -9,7 +9,6 @@ use Omeka\Form\SiteSettingsForm;
 use Omeka\Mvc\Exception;
 use Omeka\Site\Navigation\Link\Manager as LinkManager;
 use Omeka\Site\Navigation\Translator;
-use Omeka\Site\ResourcePageBlockLayout\Manager as ResourcePageBlockLayoutManager;
 use Omeka\Site\Theme\Manager as ThemeManager;
 use Laminas\Form\Form;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -32,23 +31,17 @@ class IndexController extends AbstractActionController
      */
     protected $navTranslator;
 
-    /**
-     * @var ResourcePageBlockLayoutManager
-     */
-    protected $resourcePageBlockLayoutManager;
-
     public function __construct(ThemeManager $themes, LinkManager $navLinks,
-        Translator $navTranslator, ResourcePageBlockLayoutManager $resourcePageBlockLayoutManager
+        Translator $navTranslator
     ) {
         $this->themes = $themes;
         $this->navLinks = $navLinks;
         $this->navTranslator = $navTranslator;
-        $this->resourcePageBlockLayoutManager = $resourcePageBlockLayoutManager;
     }
 
     public function indexAction()
     {
-        $this->browse()->setDefaults('sites');
+        $this->setBrowseDefaults('title', 'asc');
         $response = $this->api()->search('sites', $this->params()->fromQuery());
         $this->paginator($response->getTotalResults());
 
@@ -101,16 +94,23 @@ class IndexController extends AbstractActionController
                 // Prepare site form data.
                 $formData = $form->getData();
                 unset($formData['csrf']);
-                $formData['o:assign_new_items'] = $postData['o:assign_new_items'];
+                $formData['o:assign_new_items'] = $postData['general']['o:assign_new_items'];
                 $formData['o:is_public'] = $postData['o:is_public'];
-                $formData['o:thumbnail'] = ['o:id' => $postData['thumbnail_id']];
                 // Prepare settings form data.
                 $settingsFormData = $settingsForm->getData();
                 unset($settingsFormData['csrf']);
-                unset($settingsFormData['o:assign_new_items']);
+                unset($settingsFormData['general']['o:assign_new_items']);
                 // Update settings.
+                $settingsFormFieldsets = $settingsForm->getFieldsets();
                 foreach ($settingsFormData as $id => $value) {
-                    $this->siteSettings()->set($id, $value);
+                    if (array_key_exists($id, $settingsFormFieldsets) && is_array($value)) {
+                        // De-nest fieldsets.
+                        foreach ($value as $fieldsetId => $fieldsetValue) {
+                            $this->siteSettings()->set($fieldsetId, $fieldsetValue);
+                        }
+                    } else {
+                        $this->siteSettings()->set($id, $value);
+                    }
                 }
                 // Update site.
                 $response = $this->api($form)->update('sites', $site->id(), $formData, [], ['isPartial' => true]);
@@ -125,10 +125,7 @@ class IndexController extends AbstractActionController
         } else {
             // Prepare form data on first load.
             $form->setData($site->jsonSerialize());
-            $settingsForm->get('o:assign_new_items')->setValue($site->assignNewItems());
-            if ($site->thumbnail()) {
-                $form->get('thumbnail_id')->setValue($site->thumbnail()->id());
-            }
+            $settingsForm->get('general')->get('o:assign_new_items')->setValue($site->assignNewItems());
         }
 
         $view = new ViewModel;
@@ -243,7 +240,13 @@ class IndexController extends AbstractActionController
                 $updateData = [
                     'o:site_item_set' => $formData['o:site_item_set'] ?? [],
                 ];
-                parse_str($formData['item_pool'], $itemPool);
+                $itemPool = $formData;
+                unset(
+                    $itemPool['siteresourcesform_csrf'],
+                    $itemPool['item_assignment_action'],
+                    $itemPool['save_search'],
+                    $itemPool['o:site_item_set']
+                );
                 $updateData['o:item_pool'] = $formData['save_search'] ? $itemPool : $site->itemPool();
                 if ($formData['item_assignment_action'] && $formData['item_assignment_action'] !== 'no_action') {
                     $this->jobDispatcher()->dispatch('Omeka\Job\UpdateSiteItems', [
@@ -260,8 +263,6 @@ class IndexController extends AbstractActionController
             } else {
                 $this->messenger()->addFormErrors($form);
             }
-        } else {
-            $form->setData(['item_pool' => http_build_query($site->itemPool())]);
         }
 
         $itemCount = $this->api()
@@ -367,27 +368,26 @@ class IndexController extends AbstractActionController
 
         /** @var Form $form */
         $form = $this->getForm(Form::class)->setAttribute('id', 'site-form');
-        $form->setOption('element_groups', $config['element_groups'] ?? []);
 
         foreach ($config['elements'] as $elementSpec) {
             $form->add($elementSpec);
         }
 
-        // Set backend required flag according to client-side attr
-        // (also, handle elements that otherwise default to required)
+        // Fix to manage empty values for selects and multicheckboxes.
         $inputFilter = $form->getInputFilter();
         foreach ($form->getElements() as $element) {
-            $inputFilter->add([
-                'name' => $element->getName(),
-                'required' => (bool) $element->getAttribute('required'),
-            ]);
+            if ($element instanceof \Laminas\Form\Element\MultiCheckbox
+                || ($element instanceof \Laminas\Form\Element\Select
+                    && $element->getOption('empty_option') !== null)
+            ) {
+                $inputFilter->add([
+                    'name' => $element->getName(),
+                    'allow_empty' => true,
+                ]);
+            }
         }
 
         $oldSettings = $this->siteSettings()->get($theme->getSettingsKey());
-        if (!is_array($oldSettings)) {
-            $oldSettings = [];
-        }
-
         if ($oldSettings) {
             $form->setData($oldSettings);
         }
@@ -401,7 +401,7 @@ class IndexController extends AbstractActionController
         $postData = $this->params()->fromPost();
         $form->setData($postData);
         if ($form->isValid()) {
-            $data = array_merge($oldSettings, $form->getData());
+            $data = $form->getData();
             unset($data['form_csrf']);
             $this->siteSettings()->set($theme->getSettingsKey(), $data);
             $this->messenger()->addSuccess('Theme settings successfully updated'); // @translate
@@ -410,52 +410,6 @@ class IndexController extends AbstractActionController
 
         $this->messenger()->addFormErrors($form);
 
-        return $view;
-    }
-
-    public function themeResourcePagesAction()
-    {
-        $site = $this->currentSite();
-        if (!$site->userIsAllowed('update')) {
-            throw new Exception\PermissionDeniedException('User does not have permission to configure theme resource pages');
-        }
-
-        $theme = $this->themes->getTheme($site->theme());
-        $blockLayoutManager = $this->resourcePageBlockLayoutManager;
-        $resourcePageBlocks = $blockLayoutManager->getResourcePageBlocks($theme);
-        $resourcePageRegions = $blockLayoutManager->getResourcePageRegions($theme);
-
-        // Translate the block layout labels.
-        $allLabels = [];
-        foreach ($blockLayoutManager->getAllLabels() as $blockLayoutName => $blockLayoutLabel) {
-            $allLabels[$blockLayoutName] = $this->translate($blockLayoutLabel);
-        }
-
-        $form = $this->getForm(Form::class);
-        $form->setAttribute('id', 'resource-page-config-form');
-        $form->setAttribute('data-resource-page-blocks', json_encode($resourcePageBlocks));
-        $form->setAttribute('data-resource-page-regions', json_encode($resourcePageRegions));
-        $form->setAttribute('data-block-layout-labels', json_encode($allLabels));
-
-        if ($this->getRequest()->isPost()) {
-            $postData = $this->params()->fromPost();
-            $form->setData($postData);
-            if ($form->isValid()) {
-                $themeSettings = $this->siteSettings()->get($theme->getSettingsKey());
-                $themeSettings['resource_page_blocks'] = $blockLayoutManager->standardizeResourcePageBlocks($postData['resource_page_blocks']);
-                $this->siteSettings()->set($theme->getSettingsKey(), $themeSettings);
-                $this->messenger()->addSuccess('Theme resource pages successfully updated'); // @translate
-                return $this->redirect()->refresh();
-            } else {
-                $this->messenger()->addFormErrors($form);
-            }
-        }
-
-        $view = new ViewModel;
-        $view->setVariable('theme', $theme);
-        $view->setVariable('form', $form);
-        $view->setVariable('resourcePageRegions', $resourcePageRegions);
-        $view->setVariable('blockLayoutManager', $blockLayoutManager);
         return $view;
     }
 

@@ -5,8 +5,6 @@ use Omeka\Test\TestCase;
 
 class AbstractJobTest extends TestCase
 {
-    protected $abstractJob;
-
     public function testGetArg()
     {
         $args = ['foo' => 'bar', 'baz' => 'bat'];

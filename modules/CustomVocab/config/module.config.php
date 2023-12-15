@@ -15,14 +15,9 @@ return [
             dirname(__DIR__) . '/data/doctrine-proxies',
         ],
     ],
-    'service_manager' => [
-        'factories' => [
-            'CustomVocab\ImportExport' => Service\Stdlib\ImportExportFactory::class,
-        ],
-    ],
     'data_types' => [
         'abstract_factories' => [
-            Service\DataType\CustomVocabFactory::class,
+            Service\CustomVocabFactory::class,
         ],
     ],
     'view_manager' => [
@@ -30,19 +25,9 @@ return [
             dirname(__DIR__) . '/view',
         ],
     ],
-    'form_elements' => [
-        'factories' => [
-            Form\Element\CustomVocabSelect::class => Service\Form\Element\CustomVocabSelectFactory::class,
-        ],
-    ],
     'controllers' => [
-        'factories' => [
-            'CustomVocab\Controller\Admin\Index' => Service\Controller\Admin\IndexControllerFactory::class,
-        ],
-    ],
-    'datascribe_data_types' => [
-        'factories' => [
-            'custom_vocab_select' => Service\DatascribeDataType\CustomVocabSelectFactory::class,
+        'invokables' => [
+            Controller\IndexController::class => Controller\IndexController::class,
         ],
     ],
     'navigation' => [
@@ -50,11 +35,11 @@ return [
             [
                 'label' => 'Custom Vocab', // @translate
                 'route' => 'admin/custom-vocab',
-                'resource' => 'CustomVocab\Controller\Admin\Index',
+                'resource' => Controller\IndexController::class,
                 'privilege' => 'browse',
                 'pages' => [
                     [
-                        'route' => 'admin/custom-vocab/default',
+                        'route' => 'admin/custom-vocab/add',
                         'visible' => false,
                     ],
                     [
@@ -74,20 +59,17 @@ return [
                         'options' => [
                             'route' => '/custom-vocab',
                             'defaults' => [
-                                '__NAMESPACE__' => 'CustomVocab\Controller\Admin',
-                                'controller' => 'index',
+                                '__NAMESPACE__' => 'CustomVocab\Controller',
+                                'controller' => Controller\IndexController::class,
                                 'action' => 'browse',
                             ],
                         ],
                         'may_terminate' => true,
                         'child_routes' => [
-                            'default' => [
-                                'type' => \Laminas\Router\Http\Segment::class,
+                            'add' => [
+                                'type' => \Laminas\Router\Http\Literal::class,
                                 'options' => [
-                                    'route' => '/:action',
-                                    'constraints' => [
-                                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                                    ],
+                                    'route' => '/add',
                                     'defaults' => [
                                         'action' => 'add',
                                     ],

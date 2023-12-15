@@ -60,7 +60,6 @@ abstract class AbstractSettings implements SettingsInterface
             $this->cache();
         }
 
-        $id = strtolower($id);
         if ($this->isCached($id) && $value === $this->cache[$id]) {
             // An equal setting already set, do nothing
             return;
@@ -96,7 +95,6 @@ abstract class AbstractSettings implements SettingsInterface
             $this->cache();
         }
 
-        $id = strtolower($id);
         if (!$this->isCached($id)) {
             // Setting does not exist, return default
             return $default;
@@ -117,7 +115,6 @@ abstract class AbstractSettings implements SettingsInterface
             $this->cache();
         }
 
-        $id = strtolower($id);
         if (!$this->isCached($id)) {
             // Setting does not exist, do nothing
             return;
@@ -157,8 +154,7 @@ abstract class AbstractSettings implements SettingsInterface
         $sql = sprintf('SELECT * FROM %s', $this->getTableName());
         $settings = $this->connection->fetchAll($sql);
         foreach ($settings as $setting) {
-            $id = strtolower($setting['id']);
-            $this->cache[$id] = $this->connection->convertToPHPValue($setting['value'], 'json_array');
+            $this->cache[$setting['id']] = $this->connection->convertToPHPValue($setting['value'], 'json_array');
         }
     }
 

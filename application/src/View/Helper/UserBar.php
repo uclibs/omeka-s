@@ -90,7 +90,7 @@ class UserBar extends AbstractHelper
 
         // There is no default label for resources, so get it from the controller (sometime upper-cased).
         $params = $view->params();
-        $controller = strtolower((string) $params->fromRoute('__CONTROLLER__'));
+        $controller = strtolower($params->fromRoute('__CONTROLLER__'));
         $mapPluralLabels = [
             'item' => 'Items', // @translate
             'item-set' => 'Item sets', // @translate
@@ -141,7 +141,7 @@ class UserBar extends AbstractHelper
                 'resource' => $controller,
                 'action' => 'browse',
                 'text' => $translate($mapPluralLabels[$controller]),
-                'url' => $url('admin/default', ['controller' => $controller], ['query' => ['site_id' => $site->id()]]),
+                'url' => $url('admin/default', ['controller' => $controller]),
             ];
 
             if ($id) {

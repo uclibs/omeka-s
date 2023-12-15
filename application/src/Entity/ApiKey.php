@@ -2,6 +2,7 @@
 namespace Omeka\Entity;
 
 use DateTime;
+use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Math\Rand;
 
 /**
@@ -105,7 +106,8 @@ class ApiKey extends AbstractEntity
     public function setCredential()
     {
         $credential = $this->getString();
-        $this->credentialHash = password_hash($credential, PASSWORD_BCRYPT);
+        $bcrypt = new Bcrypt;
+        $this->credentialHash = $bcrypt->create($credential);
         return $credential;
     }
 
@@ -116,10 +118,8 @@ class ApiKey extends AbstractEntity
      */
     public function verifyCredential($credential)
     {
-        if ($this->credentialHash === null) {
-            return false;
-        }
-        return password_verify($credential, $this->credentialHash);
+        $bcrypt = new Bcrypt;
+        return $bcrypt->verify($credential, $this->credentialHash);
     }
 
     public function setLastIp($lastIp)

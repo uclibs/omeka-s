@@ -28,7 +28,7 @@ class VocabularyController extends AbstractActionController
 
     public function browseAction()
     {
-        $this->browse()->setDefaults('vocabularies');
+        $this->setBrowseDefaults('label', 'asc');
         $response = $this->api()->search('vocabularies', $this->params()->fromQuery());
         $this->paginator($response->getTotalResults());
 
@@ -232,7 +232,7 @@ class VocabularyController extends AbstractActionController
             throw new Exception\NotFoundException;
         }
 
-        $this->browse()->setDefaults('properties');
+        $this->setBrowseDefaults('label', 'asc');
         $this->getRequest()->getQuery()->set('vocabulary_id', $this->params('id'));
         $propResponse = $this->api()->search('properties', $this->params()->fromQuery());
         $vocabResponse = $this->api()->read('vocabularies', $this->params('id'));
@@ -250,7 +250,7 @@ class VocabularyController extends AbstractActionController
             throw new Exception\NotFoundException;
         }
 
-        $this->browse()->setDefaults('resource_classes');
+        $this->setBrowseDefaults('label', 'asc');
         $this->getRequest()->getQuery()->set('vocabulary_id', $this->params('id'));
         $classResponse = $this->api()->search('resource_classes', $this->params()->fromQuery());
         $vocabResponse = $this->api()->read('vocabularies', $this->params('id'));

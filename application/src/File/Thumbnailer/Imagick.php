@@ -15,7 +15,7 @@ class Imagick extends AbstractThumbnailer
     protected $tempFileFactory;
 
     /**
-     * Check whether the GD extension is loaded.
+     * Check whether the GD entension is loaded.
      *
      * @throws Exception\InvalidThumbnailer
      */
@@ -32,7 +32,7 @@ class Imagick extends AbstractThumbnailer
         $mediaType = $this->sourceFile->getMediaType();
         $origPath = sprintf('%s[%s]', $this->source, $this->getOption('page', 0));
         if (strpos($mediaType, 'video/') === 0) {
-            $origPath = 'mp4:' . $origPath;
+            $origPath = 'mpeg:' . $origPath;
         }
 
         try {
@@ -55,16 +55,11 @@ class Imagick extends AbstractThumbnailer
         $imagick->setBackgroundColor('white');
         $imagick->setImageBackgroundColor('white');
         $imagick->setImagePage($origWidth, $origHeight, 0, 0);
-
-        if (defined('Imagick::ALPHACHANNEL_REMOVE')) {
-            $imagick->setImageAlphaChannel(ImagickPhp::ALPHACHANNEL_REMOVE);
-        } else {
-            $imagick = $imagick->mergeImageLayers(ImagickPhp::LAYERMETHOD_FLATTEN);
-        }
+        $imagick = $imagick->mergeImageLayers(ImagickPhp::LAYERMETHOD_FLATTEN);
 
         switch ($strategy) {
             case 'square':
-                $gravity = $options['gravity'] ?? 'center';
+                $gravity = isset($options['gravity']) ? $options['gravity'] : 'center';
                 if ($origWidth < $origHeight) {
                     $tempWidth = $constraint;
                     $tempHeight = $origHeight * ($constraint / $origWidth);
@@ -76,7 +71,7 @@ class Imagick extends AbstractThumbnailer
                     $origY = 0;
                     $origX = $this->getOffsetX($tempWidth, $constraint, $gravity);
                 }
-                $imagick->thumbnailImage(round($tempWidth), round($tempHeight));
+                $imagick->thumbnailImage($tempWidth, $tempHeight);
                 $imagick->cropImage($constraint, $constraint, $origX, $origY);
                 $imagick->setImagePage($constraint, $constraint, 0, 0);
                 break;

@@ -1,39 +1,27 @@
-$(document).ready(function () {
+$(document).ready( function() {
+    var values = $('#property-queries .value');
+    var itemSets = $('#item-sets .value');
+    var index = values.length;
 
-    // Add a multi-value.
-    $(document).on('click', '.multi-value .add-value', function(e) {
-        e.preventDefault();
-        var fieldContainer = $(this).parents('.field');
-        var template = fieldContainer.data('field-template');
-        var newValue = $(template);
-        newValue.children('input[type="text"]').val(null);
-        newValue.children('select').prop('selectedIndex', 0);
-        newValue.appendTo(fieldContainer.find('.inputs'));
-        newValue.trigger('o:value-created');
-    });
-
-    // Remove a multi-value.
-    $(document).on('click', '.multi-value .remove-value', function(e) {
-        e.preventDefault();
-        $(this).closest('.value').remove();
-    });
-
-    // Set an index to property values and increment.
-    $(document).on('o:value-created', '.value', function(e) {
+    // Add a value.
+    $('#property-queries').on('o:value-created', '.value', function(e) {
         var value = $(this);
         value.children(':input').attr('name', function () {
-            return this.name.replace(/\[\d\]/, '[' + Omeka.propertySearchIndex + ']');
+            return this.name.replace(/\[\d\]/, '[' + index + ']');
         });
-        Omeka.propertySearchIndex++;
+        index++;
     });
 
-    // Disable query text according to query type.
-    $(document).on('change', '.query-type', Omeka.disableQueryTextInput);
+    function disableQueryTextInput() {
+        var queryType = $(this);
+        var queryText = queryType.siblings('.query-text');
+        if (queryType.val() === 'ex' || queryType.val() === 'nex') {
+            queryText.prop('disabled', true);
+        } else {
+            queryText.prop('disabled', false);
+        }
+    }
 
-    // Clean the query before submitting the form.
-    $(document).on('submit', '#advanced-search', function(e) {
-        Omeka.cleanSearchQuery($(this));
-    });
-
+    $('#advanced-search').find('.query-type').each(disableQueryTextInput);
+    $('#advanced-search').on('change', '.query-type', disableQueryTextInput);
 });
-
