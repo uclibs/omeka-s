@@ -41,7 +41,7 @@ class Cli
     }
 
     /**
-     * Verfy that a command exists and is executable.
+     * Verify that a command exists and is executable.
      *
      * @param string $commandDir The command's directory or the command path if
      *     $command is not passed
@@ -102,7 +102,7 @@ class Cli
     {
         exec($command, $output, $exitCode);
         if (0 !== $exitCode) {
-            $this->logger->err(sprintf('Command "%s" failed with status code %s.', $command, $exitCode));
+            $this->logger->err(sprintf('Command "%s" failed with status code %s.', $command, $exitCode)); // @translate
             return false;
         }
         return implode(PHP_EOL, $output);
@@ -130,8 +130,25 @@ class Cli
             return false;
         }
 
-        $output = stream_get_contents($pipes[1]);
-        $errors = stream_get_contents($pipes[2]);
+        // Set non-blocking mode on STDOUT and STDERR.
+        stream_set_blocking($pipes[1], false);
+        stream_set_blocking($pipes[2], false);
+
+        // Poll STDOUT and STDIN in a loop, waiting for EOF. We do this to avoid
+        // issues with stream_get_contents() where either stream could hang.
+        $output = '';
+        $errors = '';
+        while (!feof($pipes[1]) || !feof($pipes[2])) {
+            // Sleep to avoid tight busy-looping on the streams
+            usleep(25000);
+            if (!feof($pipes[1])) {
+                $output .= stream_get_contents($pipes[1]);
+            }
+            if (!feof($pipes[2])) {
+                $errors .= stream_get_contents($pipes[2]);
+            }
+        }
+
         foreach ($pipes as $pipe) {
             fclose($pipe);
         }
@@ -140,7 +157,7 @@ class Cli
         if (0 !== $exitCode) {
             // Log standard error
             $this->logger->err($errors);
-            $this->logger->err(sprintf('Command "%s" failed with status code %s.', $command, $exitCode));
+            $this->logger->err(sprintf('Command "%s" failed with status code %s.', $command, $exitCode)); // @translate
             return false;
         }
         return trim($output);

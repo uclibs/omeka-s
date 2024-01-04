@@ -20,7 +20,7 @@ $this->headTitle($subtitle);
 <div class="site-list">
 <?php
 foreach ($sites as $site):
-    echo $this->partial('common/site-list-entry', ['site' => $site, 'showSummary' => true]);
+    echo $this->partial('common/site-list-entry', ['site' => $site, 'showSummary' => true, 'showThumbnail' => true]);
 endforeach;
 ?>
 </div>
@@ -31,5 +31,5 @@ endforeach;
 <p><?php echo sprintf(
     $translate('Go to the %1$s to start working with %2$s.'),
     $this->hyperlink($translate('Admin dashboard'), $this->url('admin')),
-    $title
+    $this->escapeHtml($title)
 ); ?></p>

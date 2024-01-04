@@ -17,6 +17,18 @@ class ItemAdapter extends AbstractResourceEntityAdapter
         'title' => 'title',
     ];
 
+    protected $scalarFields = [
+        'id' => 'id',
+        'title' => 'title',
+        'created' => 'created',
+        'modified' => 'modified',
+        'is_public' => 'isPublic',
+        'thumbnail' => 'thumbnail',
+        'owner' => 'owner',
+        'resource_class' => 'resourceClass',
+        'resource_template' => 'resourceTemplate',
+    ];
+
     public function getResourceName()
     {
         return 'items';
@@ -50,6 +62,28 @@ class ItemAdapter extends AbstractResourceEntityAdapter
                     $itemSetAlias, 'WITH',
                     $qb->expr()->in("$itemSetAlias.id", $this->createNamedParameter($qb, $itemSets))
                 );
+            }
+        }
+
+        if (isset($query['not_item_set_id'])) {
+            $itemSets = $query['not_item_set_id'];
+            if (!is_array($itemSets)) {
+                $itemSets = [$itemSets];
+            }
+            $itemSets = array_filter($itemSets, 'is_numeric');
+
+            if ($itemSets) {
+                $subItemAlias = $this->createAlias();
+                $subItemSetAlias = $this->createAlias();
+                $subQb = $this->getEntityManager()->createQueryBuilder();
+                $subQb->select("$subItemAlias.id")
+                    ->from('Omeka\Entity\Item', $subItemAlias)
+                    ->innerJoin(
+                        "$subItemAlias.itemSets",
+                        $subItemSetAlias, 'WITH',
+                        $qb->expr()->in("$subItemSetAlias.id", $this->createNamedParameter($qb, $itemSets))
+                );
+                $qb->andWhere($qb->expr()->notIn("omeka_root.id", $subQb->getDQL()));
             }
         }
 
@@ -88,9 +122,24 @@ class ItemAdapter extends AbstractResourceEntityAdapter
                     $this->createNamedParameter($qb, $query['site_id']))
                 );
             }
-        } elseif (isset($query['in_sites']) && $query['in_sites']) {
+        } elseif (isset($query['in_sites']) && (is_numeric($query['in_sites']) || is_bool($query['in_sites']))) {
             $siteAlias = $this->createAlias();
-            $qb->innerJoin('omeka_root.sites', $siteAlias);
+            if ($query['in_sites']) {
+                $qb->innerJoin('omeka_root.sites', $siteAlias);
+            } else {
+                $qb->leftJoin('omeka_root.sites', $siteAlias);
+                $qb->andWhere($qb->expr()->isNull($siteAlias));
+            }
+        }
+
+        if (isset($query['has_media']) && (is_numeric($query['has_media']) || is_bool($query['has_media']))) {
+            $mediaAlias = $this->createAlias();
+            if ($query['has_media']) {
+                $qb->innerJoin('omeka_root.media', $mediaAlias);
+            } else {
+                $qb->leftJoin('omeka_root.media', $mediaAlias);
+                $qb->andWhere($qb->expr()->isNull($mediaAlias));
+            }
         }
     }
 
@@ -120,6 +169,15 @@ class ItemAdapter extends AbstractResourceEntityAdapter
         $isPartial = $isUpdate && $request->getOption('isPartial');
         $append = $isPartial && 'append' === $request->getOption('collectionAction');
         $remove = $isPartial && 'remove' === $request->getOption('collectionAction');
+
+        if ($this->shouldHydrate($request, 'o:primary_media')) {
+            $primaryMedia = $request->getValue('o:primary_media');
+            if (isset($primaryMedia['o:id']) && is_numeric($primaryMedia['o:id'])) {
+                $entity->setPrimaryMedia($this->getAdapter('media')->findEntity($primaryMedia['o:id']));
+            } else {
+                $entity->setPrimaryMedia(null);
+            }
+        }
 
         if ($this->shouldHydrate($request, 'o:item_set')) {
             $itemSetsData = $request->getValue('o:item_set', []);
@@ -263,7 +321,26 @@ class ItemAdapter extends AbstractResourceEntityAdapter
         if (isset($rawData['o:item_set'])) {
             $data['o:item_set'] = $rawData['o:item_set'];
         }
+        if (isset($rawData['o:site'])) {
+            $data['o:site'] = $rawData['o:site'];
+        }
 
         return $data;
+    }
+
+    public function getFulltextText($resource)
+    {
+        $texts = [];
+        $texts[] = parent::getFulltextText($resource);
+        // Get media text.
+        $mediaAdapter = $this->getAdapter('media');
+        foreach ($resource->getMedia() as $media) {
+            $texts[] = $mediaAdapter->getFulltextText($media);
+        }
+        // Remove empty texts.
+        $texts = array_filter($texts, function ($text) {
+            return !is_null($text) && $text !== '';
+        });
+        return implode("\n", $texts);
     }
 }

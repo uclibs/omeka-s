@@ -6,7 +6,7 @@ use Omeka\Api\Representation\ValueRepresentation;
 use Omeka\Entity\Value;
 use Laminas\View\Renderer\PhpRenderer;
 
-class Uri extends AbstractDataType
+class Uri extends AbstractDataType implements ValueAnnotatingInterface
 {
     public function getName()
     {
@@ -45,7 +45,7 @@ class Uri extends AbstractDataType
         } else {
             $value->setValue(null); // set default
         }
-        $value->setLang(null); // set default
+        $value->setLang($valueObject['o:lang'] ?? null); // set default
         $value->setValueResource(null); // set default
     }
 
@@ -65,11 +65,23 @@ class Uri extends AbstractDataType
         if ($value->value()) {
             $jsonLd['o:label'] = $value->value();
         }
+        if ($value->lang()) {
+            $jsonLd['o:lang'] = $value->lang();
+        }
         return $jsonLd;
     }
 
     public function getFulltextText(PhpRenderer $view, ValueRepresentation $value)
     {
         return sprintf('%s %s', $value->uri(), $value->value());
+    }
+
+    public function valueAnnotationPrepareForm(PhpRenderer $view)
+    {
+    }
+
+    public function valueAnnotationForm(PhpRenderer $view)
+    {
+        return $view->partial('common/data-type/value-annotation-uri');
     }
 }

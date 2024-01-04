@@ -5,7 +5,9 @@ use Omeka\Test\TestCase;
 
 class AbstractAdapterTest extends TestCase
 {
-    public function setUp()
+    private $adapter;
+
+    public function setUp(): void
     {
         $this->adapter = $this->getMockForAbstractClass('Omeka\Api\Adapter\AbstractAdapter');
     }
