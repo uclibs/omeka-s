@@ -2,9 +2,14 @@
 namespace Omeka;
 
 use Omeka\Api\Adapter\FulltextSearchableInterface;
+use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
+use Omeka\Entity\Item;
+use Omeka\Entity\Media;
 use Omeka\Module\AbstractModule;
 use Laminas\EventManager\Event as ZendEvent;
 use Laminas\EventManager\SharedEventManagerInterface;
+use Laminas\Form\Element;
+use Laminas\View\Renderer\PhpRenderer;
 
 /**
  * The Omeka module.
@@ -14,7 +19,7 @@ class Module extends AbstractModule
     /**
      * This Omeka version.
      */
-    const VERSION = '3.0.2';
+    const VERSION = '4.0.4';
 
     /**
      * The vocabulary IRI used to define Omeka application data.
@@ -116,9 +121,15 @@ class Module extends AbstractModule
         );
 
         $sharedEventManager->attach(
+            'Omeka\Entity\Media',
+            'entity.remove.pre',
+            [$this, 'deleteFulltextMedia']
+        );
+
+        $sharedEventManager->attach(
             'Omeka\Api\Adapter\SitePageAdapter',
             'api.delete.pre',
-            [$this, 'deleteFulltextPre']
+            [$this, 'deleteFulltextPreSitePage']
         );
 
         $sharedEventManager->attach(
@@ -131,6 +142,30 @@ class Module extends AbstractModule
             '*',
             'api.search.query',
             [$this, 'searchFulltext']
+        );
+
+        $sharedEventManager->attach(
+            'Omeka\Controller\Admin\Media',
+            'view.edit.form.advanced',
+            [$this, 'addMediaAdvancedForm']
+        );
+
+        $sharedEventManager->attach(
+            'Omeka\Controller\Site\Item',
+            'view.show.after',
+            [$this, 'noindexItem']
+        );
+
+        $sharedEventManager->attach(
+            'Omeka\Controller\Site\Media',
+            'view.show.after',
+            [$this, 'noindexMedia']
+        );
+
+        $sharedEventManager->attach(
+            'Omeka\Controller\Site\Item',
+            'view.browse.after',
+            [$this, 'noindexItemSet']
         );
 
         $sharedEventManager->attach(
@@ -517,11 +552,44 @@ class Module extends AbstractModule
      */
     public function saveFulltext(ZendEvent $event)
     {
-        $fulltext = $this->getServiceLocator()->get('Omeka\FulltextSearch');
-        $fulltext->save(
-            $event->getParam('response')->getContent(),
-            $event->getTarget()
-        );
+        $adapter = $event->getTarget();
+        $entity = $event->getParam('response')->getContent();
+        $fulltextSearch = $this->getServiceLocator()->get('Omeka\FulltextSearch');
+        $fulltextSearch->save($entity, $adapter);
+
+        // Item create needs special handling. We must save media fulltext here
+        // because media is created via cascade persist (during item create/update),
+        // which is invisible to normal API events.
+        if ($entity instanceof Item) {
+            $mediaAdapter = $adapter->getAdapter('media');
+            foreach ($entity->getMedia() as $mediaEntity) {
+                $fulltextSearch->save($mediaEntity, $mediaAdapter);
+            }
+        }
+        // Item media needs special handling. We must update the item's fulltext
+        // to append updated media data.
+        if ($entity instanceof Media) {
+            $itemEntity = $entity->getItem();
+            $itemAdapter = $adapter->getAdapter('items');
+            $fulltextSearch->save($itemEntity, $itemAdapter);
+        }
+    }
+
+    /**
+     * Delete the fulltext of a media.
+     *
+     * We must delete media fulltext here because media may be deleted via cascade
+     * remove (during item update), which is invisible to normal API events.
+     *
+     * @param ZendEvent $event
+     */
+    public function deleteFulltextMedia(ZendEvent $event)
+    {
+        $fulltextSearch = $this->getServiceLocator()->get('Omeka\FulltextSearch');
+        $adapterManager = $this->getServiceLocator()->get('Omeka\ApiAdapterManager');
+        $mediaEntity = $event->getTarget();
+        $mediaAdapter = $adapterManager->get('media');
+        $fulltextSearch->delete($mediaEntity->getId(), $mediaAdapter);
     }
 
     /**
@@ -533,7 +601,7 @@ class Module extends AbstractModule
      *
      * @param ZendEvent $event
      */
-    public function deleteFulltextPre(ZendEvent $event)
+    public function deleteFulltextPreSitePage(ZendEvent $event)
     {
         $request = $event->getParam('request');
         $em = $this->getServiceLocator()->get('Omeka\EntityManager');
@@ -554,10 +622,24 @@ class Module extends AbstractModule
      */
     public function deleteFulltext(ZendEvent $event)
     {
-        $fulltext = $this->getServiceLocator()->get('Omeka\FulltextSearch');
+        $adapter = $event->getTarget();
+        $entity = $event->getParam('response')->getContent();
         $request = $event->getParam('request');
-        $fulltext->delete(
-            // Note that the resource may not have an ID after being deleted.
+        $fulltextSearch = $this->getServiceLocator()->get('Omeka\FulltextSearch');
+
+        // Media delete needs special handling. We must update the item's fulltext
+        // to remove the appended media data. We return here because deleting media
+        // fulltext is handled by self::deleteFulltextMedia().
+        if ($entity instanceof Media) {
+            $itemEntity = $entity->getItem();
+            $itemAdapter = $adapter->getAdapter('items');
+            $fulltextSearch->save($itemEntity, $itemAdapter);
+            return;
+        }
+
+        // Note that the resource may not have an ID after being deleted. This
+        // is why we must use $request->getId() rather than $entity->getId().
+        $fulltextSearch->delete(
             $request->getOption('deleted_entity_id') ?? $request->getId(),
             $event->getTarget()
         );
@@ -622,5 +704,60 @@ class Module extends AbstractModule
             );
         }
         $qb->andWhere($constraints);
+    }
+
+    public function addMediaAdvancedForm(ZendEvent $event)
+    {
+        $view = $event->getTarget();
+        $altTextInput = new Element\Textarea('o:alt_text');
+        $altTextInput->setLabel('Alt text') // @translate
+            ->setAttributes([
+                'value' => $view->resource->altText() ?? null,
+                'rows' => 4,
+                'id' => 'alt_text',
+            ]);
+        $langInput = new Element\Text('o:lang');
+        $langInput->setLabel('Language') // @translate
+            ->setAttributes([
+                'value' => $view->resource->lang() ?? null,
+                'id' => 'lang',
+                'class' => 'validate-language',
+            ]);
+        echo $view->formRow($altTextInput);
+        echo $view->formRow($langInput);
+    }
+
+    public function noindexItem(ZendEvent $event)
+    {
+        $view = $event->getTarget();
+        $this->noindexResourceShow($view, $view->item);
+    }
+
+    public function noindexMedia(ZendEvent $event)
+    {
+        $view = $event->getTarget();
+        $this->noindexResourceShow($view, $view->media->item());
+    }
+
+    public function noindexItemSet(ZendEvent $event)
+    {
+        $view = $event->getTarget();
+        if (!isset($view->itemSet)) {
+            return;
+        }
+        $this->noindexResourceShow($view, $view->itemSet);
+    }
+
+    /**
+     * Add a robots "noindex" metatag to the current view if the resource
+     * being viewed does not belong to the current site.
+     */
+    protected function noindexResourceShow(PhpRenderer $view, AbstractResourceEntityRepresentation $resource)
+    {
+        $currentSite = $view->site;
+        $sites = $resource->sites();
+        if (!array_key_exists($currentSite->id(), $sites)) {
+            $view->headMeta()->prependName('robots', 'noindex');
+        }
     }
 }

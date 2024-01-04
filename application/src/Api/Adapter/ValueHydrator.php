@@ -5,6 +5,8 @@ use Doctrine\Common\Collections\Criteria;
 use Omeka\Api\Request;
 use Omeka\Entity\Resource;
 use Omeka\Entity\Value;
+use Omeka\Entity\ValueAnnotation;
+use Omeka\Stdlib\ErrorStore;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 
 class ValueHydrator
@@ -28,6 +30,8 @@ class ValueHydrator
         $isPartial = $isUpdate && $request->getOption('isPartial');
         $append = $isPartial && 'append' === $request->getOption('collectionAction');
         $remove = $isPartial && 'remove' === $request->getOption('collectionAction');
+        $valueAnnotationAdapter = $adapter->getAdapter('value_annotations');
+        $entityManager = $adapter->getEntityManager();
 
         $representation = $request->getContent();
         $valueCollection = $entity->getValues();
@@ -37,9 +41,12 @@ class ValueHydrator
         if ($isUpdate && isset($representation['clear_property_values'])
             && is_array($representation['clear_property_values'])
         ) {
-            $criteria = Criteria::create()->where(
-                Criteria::expr()->in('property', $representation['clear_property_values']
-            ));
+            // Change IDs to entity references to avoid issues with strict Criteria matching.
+            $propertyIds = [];
+            foreach ($representation['clear_property_values'] as $propertyId) {
+                $propertyIds[] = $entityManager->getReference('Omeka\Entity\Property', $propertyId);
+            }
+            $criteria = Criteria::create()->where(Criteria::expr()->in('property', $propertyIds));
             foreach ($valueCollection->matching($criteria) as $value) {
                 $valueCollection->removeElement($value);
             }
@@ -51,9 +58,12 @@ class ValueHydrator
             && is_array($representation['set_value_visibility']['property_id'])
             && isset($representation['set_value_visibility']['is_public'])
         ) {
-            $criteria = Criteria::create()->where(
-                Criteria::expr()->in('property', $representation['set_value_visibility']['property_id']
-            ));
+            // Change IDs to entity references to avoid issues with strict Criteria matching.
+            $propertyIds = [];
+            foreach ($representation['set_value_visibility']['property_id'] as $propertyId) {
+                $propertyIds[] = $entityManager->getReference('Omeka\Entity\Property', $propertyId);
+            }
+            $criteria = Criteria::create()->where(Criteria::expr()->in('property', $propertyIds));
             foreach ($valueCollection->matching($criteria) as $value) {
                 $value->setIsPublic($representation['set_value_visibility']['is_public']);
             }
@@ -70,7 +80,7 @@ class ValueHydrator
         $entityManager = $adapter->getEntityManager();
         $dataTypes = $adapter->getServiceLocator()->get('Omeka\DataTypeManager');
 
-        // Iterate the representation data. Note that we ignore terms.
+        // Iterate the representation data.
         $valuePassed = false;
         foreach ($representation as $term => $valuesData) {
             if (!is_array($valuesData)) {
@@ -110,14 +120,37 @@ class ValueHydrator
                 // Hydrate a single value.
                 $value->setResource($entity);
                 $value->setType($dataType->getName());
-                $value->setProperty($entityManager->getReference(
-                    'Omeka\Entity\Property',
-                    $valueData['property_id']
-                ));
+                // If the property_id is "auto", look out to the value's key for
+                // a property term.
+                $property = 'auto' === $valueData['property_id']
+                    ? $adapter->getPropertyByTerm($term)
+                    : $entityManager->getReference('Omeka\Entity\Property', $valueData['property_id']);
+                $value->setProperty($property);
                 if (isset($valueData['is_public'])) {
                     $value->setIsPublic($valueData['is_public']);
                 }
                 $dataType->hydrate($valueData, $value, $adapter);
+
+                // Hydrate annotation resource.
+                $valueAnnotation = $value->getValueAnnotation();
+                if (isset($valueData['@annotation']) && is_array($valueData['@annotation']) && $valueData['@annotation']) {
+                    // This value has annotation data. Create or update the
+                    // value annotation resource.
+                    if ($valueAnnotation) {
+                        $operation = Request::UPDATE;
+                    } else {
+                        $operation = Request::CREATE;
+                        $valueAnnotation = new ValueAnnotation;
+                    }
+                    $subrequest = new Request($operation, 'value_annotations');
+                    $subrequest->setContent($valueData['@annotation']);
+                    $valueAnnotationAdapter->hydrateEntity($subrequest, $valueAnnotation, new ErrorStore);
+                    $value->setValueAnnotation($valueAnnotation);
+                } elseif ($valueAnnotation) {
+                    // This value does not have annotation data. Delete the
+                    // value annotation resource.
+                    $value->setValueAnnotation(null);
+                }
             }
         }
 

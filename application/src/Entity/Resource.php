@@ -12,6 +12,15 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @Entity
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="resource_type", type="string")
+ * @Table(
+ *     indexes={
+ *         @Index(
+ *             name="title",
+ *             columns={"title"},
+ *             options={"lengths":{190}}
+ *         )
+ *     }
+ * )
  *
  * @see \Omeka\Db\Event\Listener\ResourceDiscriminatorMap
  */
@@ -37,7 +46,7 @@ abstract class Resource extends AbstractEntity
     protected $resourceClass;
 
     /**
-     * @ManyToOne(targetEntity="ResourceTemplate")
+     * @ManyToOne(targetEntity="ResourceTemplate", inversedBy="resources")
      * @JoinColumn(onDelete="SET NULL")
      */
     protected $resourceTemplate;
@@ -144,7 +153,7 @@ abstract class Resource extends AbstractEntity
     {
         // Unlike a resource value, a resource title cannot be an empty string
         // or a string containing only whitespace.
-        $title = trim($title);
+        $title = trim((string) $title);
         $this->title = ('' === $title) ? null : $title;
     }
 

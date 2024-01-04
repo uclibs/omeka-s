@@ -9,6 +9,7 @@
         };
 
         context.find('.wysiwyg').each(function () {
+            var editor = null;
             if ($(this).is('.caption')) {
                 editor = CKEDITOR.inline(this, config)
             } else {
@@ -105,6 +106,47 @@
         }
     }
 
+     function populateAssetAttachment(attachment) {
+        var asset = $('#asset-options .selected-asset');
+        var assetTitle = asset.find('.selected-asset-name').html();
+        var assetImage = asset.find('img').clone().attr('class', '');
+        var assetId = asset.find('.selected-asset-id').val();
+        if (assetTitle !== '') {
+            attachment.find('.asset-title').empty().append(assetTitle).prepend($('<div class="thumbnail"></div>'));
+            attachment.find('.thumbnail').append(assetImage);
+            attachment.find('input.asset').val(assetId);
+        }
+
+        var pageInput =  attachment.find('input.asset-page-id');
+        pageInput.attr('data-page-title', $('.selected-page').text()).attr('data-page-url', $('.selected-page + a').attr('href'));
+
+        $('#asset-options .asset-option').each(function() {
+            var assetOption = $(this);
+            var optionName = assetOption.attr('name');
+            attachment.find('.' + optionName).val(assetOption.val());
+        });
+     }
+
+     function resetAssetOption(optionSelector) {
+         var template = $(optionSelector).data('default-html');
+        $(optionSelector).find('.asset-option-selection').html(template);
+     }
+
+     function selectPageLink(pageButton) {
+         var pageUrl = $('.page-status').data('site-url') + '/page/' + pageButton.data('page-slug');
+         $('.selected-page').text(pageButton.text());
+         $('#asset-page-id').val(pageButton.val());
+         $('.selected-page + a').attr('href', pageUrl);
+     }
+
+    // Prevent drop into ckeditors to avoid picking up block content when sorting
+    CKEDITOR.on('instanceReady', function(e) {
+        var editor = e.editor;
+        editor.editable().attachListener(editor.container, 'drop', function (dropEv) {
+            dropEv.data.preventDefault();
+        })
+    });
+
     $(document).ready(function () {
         var list = document.getElementById('blocks');
         var blockIndex = 0;
@@ -150,8 +192,8 @@
             e.preventDefault();
             var block = $(this).parents('.block');
             block.toggleClass('delete');
-            block.find('a.remove-value, a.restore-value').show();
-            $(this).hide();
+            block.find('a.remove-value, a.restore-value').removeClass('inactive');
+            $(this).toggleClass('inactive');
             Omeka.markDirty($(this).closest('form'));
         });
 
@@ -183,6 +225,20 @@
                     $(this).removeAttr('disabled');
                 });
             }
+        });
+
+        $('.collapse-all').on('click', function() {
+            $('.block-header.collapse .collapse').click();
+        });
+
+        $('.expand-all').on('click', function() {
+            $('.block-header:not(.collapse) .expand').click();
+        });
+
+        // Toggle block visibility
+        $('#blocks').on('click', '.expand,.collapse', function() {
+            var blockToggle = $(this);
+            blockToggle.parents('.block-header').toggleClass('collapse');
         });
 
         // Make attachments sortable.
@@ -300,6 +356,76 @@
                 }
                 attachment.find('.item-title').empty().append(thumbnail).append(title);
             }
+        });
+
+        $('#blocks').on('click', '.asset-options-configure', function(e) {
+            e.preventDefault();
+            Omeka.closeSidebar($('.sidebar.active:not(#new-block)'));
+            var selectingAttachment = $(this).closest('.attachment');
+            var assetInput = selectingAttachment.find('input.asset');
+            $('.asset-selecting-button').removeClass('asset-selecting-button');
+            $(this).addClass('asset-selecting-button');
+            $('.selecting.attachment').removeClass('selecting');
+            selectingAttachment.addClass('selecting');
+
+            var currentAsset = selectingAttachment.find('.thumbnail img');
+            if (currentAsset.length > 0) {
+                var newSelectedAsset = currentAsset.clone().addClass('selected-asset-image');
+                $('#asset-options .selected-asset-name').text(selectingAttachment.find('.asset-title').text());
+                $('#asset-options .selected-asset-image').replaceWith(newSelectedAsset);
+            } else {
+                resetAssetOption('#asset-options .asset-form-element');
+            }
+            $('#asset-options .selected-asset-id').val(assetInput.val());
+
+            var pageInput = selectingAttachment.find('input.asset-page-id');
+            $('#asset-page-id').val(pageInput.val());
+            $('.selected-page').text(pageInput.attr('data-page-title'));
+            $('.selected-page + a').attr('href', pageInput.attr('data-page-url'));
+
+            $('#asset-options .asset-option').each(function() {
+                var assetOption = $(this);
+                var optionName = assetOption.attr('name');
+                assetOption.val(selectingAttachment.find('.' + optionName).val());
+            });
+            Omeka.openSidebar($('#asset-options'));
+        });
+
+        $('#content').on('click', '.add-asset-attachment', function() {
+            var selectingAttachmentButton = $(this);
+            var newAsset = selectingAttachmentButton.parents('.attachments').data('template');
+            selectingAttachmentButton.before(newAsset);
+            $('.new.attachment .asset-options-configure').click();
+            $('#asset-options .asset-form-select').click();
+        });
+
+        $('#content').on('click', '#asset-options-confirm-panel', function() {
+            var selectingAttachment = $('.selecting.attachment');
+            selectingAttachment.removeClass('new');
+            selectingAttachment.find('input[type="hidden"]').removeAttr('disabled');
+            populateAssetAttachment(selectingAttachment);
+            Omeka.closeSidebar($('#asset-options'));
+            $('.selecting.attachment').removeClass('selecting');
+        });
+
+        $('#content').on('click', '#asset-options .sidebar-close', function() {
+            $('.new.attachment').remove();
+        });
+
+        $('#content').on('click', '.page-select', function() {
+            var sidebar = $('#page-list');
+            var pageList = $('#page-list .pages');
+            Omeka.openSidebar(sidebar);
+
+            pageList.on('click', 'button.option', function(e) {
+                Omeka.closeSidebar(sidebar);
+                selectPageLink($(this));
+            });
+
+        });
+
+        $('#content').on('click', '.page-clear', function() {
+            resetAssetOption('#asset-options .page-link');
         });
     });
 })(window.jQuery);

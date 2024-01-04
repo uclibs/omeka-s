@@ -28,7 +28,7 @@ class VocabularyController extends AbstractActionController
 
     public function browseAction()
     {
-        $this->setBrowseDefaults('label', 'asc');
+        $this->browse()->setDefaults('vocabularies');
         $response = $this->api()->search('vocabularies', $this->params()->fromQuery());
         $this->paginator($response->getTotalResults());
 
@@ -107,8 +107,11 @@ class VocabularyController extends AbstractActionController
                 } catch (ValidationException $e) {
                     $messages = [];
                     // A message may be thrown directly from the RDF importer.
+                    // Here, we set a generic message because error messages
+                    // thrown by the RDF library may make the target server
+                    // vulnerable to Server Side Request Forgery (SSRF).
                     if ($e->getMessage()) {
-                        $messages[] = $e->getMessage();
+                        $messages[] = $this->translate('Error importing the vocabulary. Check the file or URL.');
                     }
                     // Messages may be thrown from the API via the importer.
                     foreach ($e->getErrorStore()->getErrors() as $message) {
@@ -232,7 +235,7 @@ class VocabularyController extends AbstractActionController
             throw new Exception\NotFoundException;
         }
 
-        $this->setBrowseDefaults('label', 'asc');
+        $this->browse()->setDefaults('properties');
         $this->getRequest()->getQuery()->set('vocabulary_id', $this->params('id'));
         $propResponse = $this->api()->search('properties', $this->params()->fromQuery());
         $vocabResponse = $this->api()->read('vocabularies', $this->params('id'));
@@ -250,7 +253,7 @@ class VocabularyController extends AbstractActionController
             throw new Exception\NotFoundException;
         }
 
-        $this->setBrowseDefaults('label', 'asc');
+        $this->browse()->setDefaults('resource_classes');
         $this->getRequest()->getQuery()->set('vocabulary_id', $this->params('id'));
         $classResponse = $this->api()->search('resource_classes', $this->params()->fromQuery());
         $vocabResponse = $this->api()->read('vocabularies', $this->params('id'));
