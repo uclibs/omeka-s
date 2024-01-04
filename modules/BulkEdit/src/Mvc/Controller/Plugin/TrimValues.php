@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 namespace BulkEdit\Mvc\Controller\Plugin;
 
 use Doctrine\ORM\EntityManager;
@@ -86,7 +85,7 @@ WHERE `v`.`resource_id` IN ($idsString)
 SQL;
         }
 
-        $processed = $connection->executeStatement($query);
+        $processed = $connection->exec($query);
         if ($processed) {
             $this->logger->info(sprintf('Trimmed %d values.', $processed));
         }
@@ -104,7 +103,7 @@ AND `resource_id` IN ($idsString)
 SQL;
         }
 
-        $deleted = $connection->executeStatement($query);
+        $deleted = $connection->exec($query);
         if ($deleted) {
             $this->logger->info(sprintf('Removed %d empty string values after trimming.', $deleted));
         }
@@ -127,7 +126,8 @@ SQL;
         $connection = $this->entityManager->getConnection();
 
         $sql = 'SHOW VARIABLES LIKE "version";';
-        $version = $connection->executeQuery($sql)->fetchAllKeyValue();
+        $stmt = $connection->query($sql);
+        $version = $stmt->fetchAll(\PDO::FETCH_KEY_PAIR);
         $version = reset($version);
 
         $isMySql = stripos($version, 'mysql') !== false;
@@ -145,7 +145,8 @@ SQL;
         }
 
         $sql = 'SHOW VARIABLES LIKE "innodb_version";';
-        $version = $connection->executeQuery($sql)->fetchAllKeyValue();
+        $stmt = $connection->query($sql);
+        $version = $stmt->fetchAll(\PDO::FETCH_KEY_PAIR);
         $version = reset($version);
         $isInnoDb = !empty($version);
         if ($isInnoDb) {

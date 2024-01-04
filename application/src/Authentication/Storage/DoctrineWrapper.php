@@ -24,18 +24,6 @@ class DoctrineWrapper implements StorageInterface
     protected $repository;
 
     /**
-     * Cached identity lookup result
-     *
-     * False (the default) indicates no cached result, and the lookup must be
-     * performed against the database. Null indicates a cached result of no
-     * identity (no user logged in or the user was invalid), and the user
-     * entity object is stored here if a user is logged in.
-     *
-     * @var Omeka\Entity|null|bool
-     */
-    protected $cachedIdentity = false;
-
-    /**
      * Create the wrapper around the given storage method, looking up users
      * from the given repository.
      *
@@ -62,33 +50,25 @@ class DoctrineWrapper implements StorageInterface
 
     public function read()
     {
-        if ($this->cachedIdentity !== false) {
-            return $this->cachedIdentity;
-        }
-
-        $identity = null;
-        $id = $this->storage->read();
-        if ($id) {
+        $identity = $this->storage->read();
+        if ($identity) {
             try {
-                $identity = $this->repository->findOneBy(['id' => $id, 'isActive' => true]);
+                return $this->repository->find($identity);
             } catch (DBALException $e) {
                 // The user table does not exist.
+                return null;
             }
         }
-
-        $this->cachedIdentity = $identity;
-        return $identity;
+        return null;
     }
 
     public function write($identity)
     {
-        $this->cachedIdentity = $identity;
         $this->storage->write($identity->getId());
     }
 
     public function clear()
     {
-        $this->cachedIdentity = false;
         $this->storage->clear();
     }
 

@@ -194,7 +194,6 @@ body {
         background-color: $gray-on-white;
         box-shadow: 0 0 0 1px rgba(0,0,0,.15) inset;
         color: lighten($copy-gray, 25);
-        -webkit-text-fill-color: lighten($copy-gray, 25);
         cursor: default;
 
         &:hover {
@@ -267,7 +266,7 @@ body {
         padding-right: (1.5 * $spacing-large);
 
         &:after {
-            @include font-awesome;
+            font-family: "Font Awesome 5 Free";
             content: fa-content($fa-var-asterisk);
             font-size: .75 * $base-font-size;
             position: absolute;
@@ -283,7 +282,8 @@ body {
     }
 
     label.required:after  {
-        @include font-awesome;
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
         content: fa-content($fa-var-asterisk);
         font-size: .75 * $base-font-size;
         color: $red;
@@ -375,10 +375,6 @@ body {
     }
 
         /* @group ----- Forms elements: Chosen selects ----- */
-
-        .chosen-container {
-            max-width: 100%;
-        }
 
         .chosen-container-single .chosen-single,
         .chosen-container-multi .chosen-choices {
@@ -476,7 +472,7 @@ body {
             background: none !important;
 
             &:after {
-                @include font-awesome;
+                font-family: "Font Awesome 5 Free";
                 content: fa-content($fa-var-caret-down);
                 line-height: $base-line-height;
                 padding: $spacing-small 0;
@@ -496,8 +492,8 @@ body {
             position: relative;
 
             &:after  {
-                @include font-awesome;
-                    content: fa-content($fa-var-search);
+                font-family: "Font Awesome 5 Free";
+                content: fa-content($fa-var-search);
                 line-height: $base-line-height;
                 padding: $spacing-small 0;
                 display: block;
@@ -538,10 +534,6 @@ body {
 
 .mobile-only {
     display: none;
-}
-
-.sr-only {
-    left: -9999px;
 }
 
 div[role="main"] > .messages {
@@ -633,31 +625,18 @@ table .icon-sortable {
     @include field-row;
 }
 
-.row.delete {
-    background-color: $delete-bg;
-    overflow: hidden;
-}
-
-.jstree-themeicon,
 .sortable-handle {
     cursor: move;
     margin-right: $spacing-medium;
-    width: 1.5 * $spacing-medium;
 
     &:before {
         content: fa-content($fa-var-bars);
-        @include font-awesome;
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
         opacity: .35;
         font-size: 1.25 * $base-font-size;
         line-height: $base-line-height;
     }
-}
-
-.jstree i.jstree-themeicon {
-    color: $copy-gray;
-    position: static;
-    top: auto;
-    right: auto;
 }
 
 .o-description {
@@ -671,13 +650,15 @@ a.collapse {
 
 .expand:after {
     content: fa-content($fa-var-caret-right);
-    @include font-awesome;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
     margin-left: 3px;
 }
 
 .collapse:after {
     content: fa-content($fa-var-caret-down);
-    @include font-awesome;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
     margin-left: 3px;
 }
 
@@ -703,7 +684,6 @@ a.collapse {
     display: block;
 }
 
-.selector .selector-child.filter-hidden,
 .selector .selector-child.added {
   display: none;
 }
@@ -824,7 +804,8 @@ header {
 
     &:after {
         content: fa-content($fa-var-ellipsis-h);
-        @include font-awesome;
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
         text-indent: 0;
         position: absolute;
         top: 0;
@@ -876,7 +857,8 @@ div[role="main"] > h1:first-of-type .title {
 }
 
 .subhead:before {
-    @include font-awesome;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
     display: inline-block;
     margin-right: $spacing-small;
     font-size: $base-font-size;
@@ -1020,11 +1002,6 @@ nav.pagination + *:not(.sorting) {
     position: relative;
 }
 
-button .o-icon-private {
-    margin: 0 $spacing-small;
-    color: $border-gray;
-}
-
     /* @group ----- Top-level navigation ----- */
 
     header nav h4 {
@@ -1065,7 +1042,8 @@ button .o-icon-private {
 
     header nav li > a:before {
         content: fa-content($fa-var-plus-square);
-        @include font-awesome;
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
         display: inline-block;
         width: $spacing-large;
     }
@@ -1120,11 +1098,6 @@ button .o-icon-private {
         content: fa-content($fa-var-cogs);
     }
 
-    header nav .assets:before,
-    .assets .subhead:before {
-        content: fa-content($fa-var-image);
-    }
-
     header nav li li a:before {
         content: fa-content($fa-var-caret-right);
     }
@@ -1172,9 +1145,10 @@ button .o-icon-private {
 
     header nav#site-nav h5 a:before {
         content: fa-content($fa-var-laptop);
-        @include font-awesome;
+        font-family: "Font Awesome 5 Free";
         width: $spacing-large;
         display: inline-block;
+        font-weight: normal;
         font-size: $base-font-size;
     }
 
@@ -1237,7 +1211,7 @@ div[role="main"] {
 
 #manage-resources .add.button:before {
     content: fa-content($fa-var-plus);
-    @include font-awesome;
+    font-family: "Font Awesome 5 Free";
 }
 
 .panel {
@@ -1309,7 +1283,7 @@ div[role="main"] {
 
 .browse .browse-controls .advanced-search:before {
     @include fa-icon();
-    @include font-awesome;
+    font-family: "Font Awesome 5 Free";
     content: fa-content($fa-var-search);
     padding: .25em;
 }
@@ -1388,12 +1362,6 @@ div[role="main"] {
     vertical-align: top;
     border: 0;
     box-shadow: none;
-    display: inline-block;
-}
-
-.actions .button:hover,
-.actions button:hover {
-    box-shadow: none !important;
 }
 
 .actions a,
@@ -1410,10 +1378,6 @@ div[role="main"] {
 .actions a:active,
 .actions button:hover {
     opacity: 1;
-}
-
-.actions .inactive {
-    display: none;
 }
 
 .actions button {
@@ -1443,7 +1407,8 @@ div[role="main"] {
     margin-top: (4 * $spacing-large);
 
     &:before {
-        @include font-awesome;
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
         font-size: 6 * $base-font-size;
         position: absolute;
         top: 0;
@@ -1508,16 +1473,6 @@ td .o-icon-user-inactive {
 
 .sidebar .no-resources {
     display: block;
-}
-
-.browse.assets {
-    td:first-child, th:first-child {
-        width: 75%;
-    }
-}
-
-.asset-inline {
-    max-width: 100%;
 }
 
     /* @group ----- Batch Update ----- */
@@ -1697,9 +1652,6 @@ td .o-icon-user-inactive {
         padding-right: 1.5 * $spacing-large;
     }
 
-    .item-set-select-type {
-        max-width: 25%;
-    }
     /* @end */
 
 /* @end */
@@ -1791,124 +1743,6 @@ fieldset.section > legend {
     }
 }
 
-.page-action-menu {
-    display: inline-block;
-    position: relative;
-}
-
-.page-action-menu ul {
-    display: none;
-    list-style: none;
-    border: 1px solid #dfdfdf;
-    background-color: #fff;
-    border-radius: 3px;
-    text-align: left;
-    padding: 0;
-    position: relative;
-    box-shadow: 0 0 5px #dfdfdf;
-    position: absolute;
-    right: 0;
-    width: auto;
-    white-space: nowrap;
-    margin: 12px 0;
-}
-
-.page-action-menu ul:before {
-    content: "";
-    position: absolute;
-    bottom: calc(100% - 1px);
-    right: 12px;
-    width: 0;
-    height: 0;
-    border-bottom: 12px solid #fff;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-}
-
-.page-action-menu ul:after {
-    content: "";
-    position: absolute;
-    bottom: calc(100% - 1px);
-    right: 11px;
-    width: 0;
-    height: 0;
-    border-bottom: 14px solid #dfdfdf;
-    border-left: 7px solid transparent;
-    border-right: 7px solid transparent;
-    z-index: -1;
-}
-
-.page-action-menu ul a,
-.page-action-menu ul .inactive {
-    padding: 6px 12px 5px;
-    display: block;
-    position: relative;
-}
-
-.page-action-menu ul .inactive {
-    color: #dfdfdf;
-}
-
-.page-action-menu ul li {
-  position: relative;
-}
-
-.page-action-menu ul li:hover:before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background-color: #dfdfdf;
-}
-
-.page-action-menu ul li:not(:last-child) a,
-.page-action-menu ul li:not(:last-child) span,
-.page-action-menu ul li:not(:last-child) [type="submit"] {
-    border-bottom: 1px solid #dfdfdf;
-}
-
-.page-action-menu [type="submit"] {
-    background: none;
-    box-shadow: none;
-    width: 100%;
-    margin-bottom: 0;
-    text-align: left;
-}
-
-.page-action-menu li label {
-    display: inline-block;
-    height: 36px;
-    padding: 6px 1em;
-    min-height: 0;
-    vertical-align: top;
-    width: 100%;
-}
-
-.page-action-menu li label input {
-    margin-left: .25em;
-}
-
-.page-action-menu li:not(:last-child) label {
-    border-bottom: 1px solid #dfdfdf;
-}
-
-.page-action-menu .expand:after {
-    content: "\f0d7";
-}
-
-.page-action-menu .expand:after,
-.page-action-menu .collapse:after {
-    margin-left: 6px;
-}
-
-.page-action-menu .collapse + .collapsible {
-    overflow: visible;
-    display: block;
-}
-
-
 .add-property.button {
     margin-top: $spacing-large;
 }
@@ -1919,119 +1753,47 @@ fieldset.section > legend {
     font-size: .75 * $base-font-size;
 }
 
-.value .input-body a.value-language {
+.inputs .value a.value-language {
     margin-right: 0;
     vertical-align: top;
     position: absolute;
     top: 0;
-    right: 0;
+    left: 0;
     height: (1.5 * $spacing-large);
     width: (1.5 * $spacing-large);
     line-height: (1.5 * $spacing-large);
     border: 1px solid $border-gray;
-    border-width: 0 0 1px 1px;
     overflow: hidden;
     text-align: center;
     color: lighten($red, 40%);
     z-index: 1;
 
+    &.active {
+        border-color: transparent;
+    }
+
     & ~ textarea {
-        padding-right: 1.75 * $spacing-large;
+        padding-left: 1.75 * $spacing-large;
     }
 }
 
-.value .input-body .language-wrapper.active a.value-language {
-    border-color: transparent;
-    color: $red;
-}
-
-.value .language-wrapper:not(.active) ~ textarea {
-    padding-right: 2 * $spacing-large;
-}
-
-.value .actions a.o-icon-more {
-    display: block;
-    height: 1.5 * $spacing-large;
-}
-
-.more-actions.active a.o-icon-more {
-    border-bottom: 1px solid #dfdfdf;
-}
-
-.language-wrapper input[type="text"].value-language {
+.inputs input[type="text"].value-language.active {
     line-height: $base-line-height;
     background-color: transparent;
-    border: 0;
+    border: 1px solid $border-gray;
     min-height: 0;
-    padding: $spacing-small (1.75 * $spacing-large) $spacing-small $spacing-small;
+    padding: 0 0 0 (1.75 * $spacing-large);
     display: block;
-    background-color: #fff;
+
+    &.active ~ textarea {
+        padding-left: $spacing-small;
+        border-top: 0;
+    }
 }
 
-.language-wrapper.active input[type="text"].value-language ~ textarea {
-    padding-left: $spacing-small;
-    border-top: 0;
-}
-
-.input-body .language-wrapper:not(.active) .language-label {
+input[type="text"].value-language,
+.delete input[type="text"].value-language.active {
     display: none;
-}
-
-.sidebar .language-label {
-    font-weight: inherit;
-}
-
-.language-wrapper .language-label,
-.value[data-data-type="uri"] .input-body label {
-    display: flex;
-    align-items: flex-start;
-    background-color: #fff;
-    margin: 0;
-    padding: 0 (1.75 * $spacing-large) 0 $spacing-small;
-    box-shadow: 0 0 0 1px $border-gray;
-}
-
-.value-label-text {
-    background-color: $gray-on-white;
-    border-radius: 2px;
-    font-size: .875 * $base-font-size;
-    margin: $spacing-small;
-    padding: 0 $spacing-small;
-}
-
-.sidebar .value-annotation .value {
-    padding-bottom: 0;
-}
-
-.sidebar .value-annotation label:after {
-    content: none;
-}
-
-.sidebar .value-annotation p.selected-resource {
-    border-bottom: 1px solid $border-gray;
-}
-
-.sidebar .value-annotation-resource-select {
-    margin: $spacing-small !important;
-}
-
-.sidebar [data-data-type^="resource"] .o-title:not(:empty) {
-    padding: 0;
-    border-bottom: 0;
-
-    a:empty { 
-        display: none;
-    }
-
-    img {
-        margin: $spacing-small;
-    }
-
-
-    a {
-        padding: $spacing-small;
-        width: 100%;
-    }
 }
 
 .non-properties {
@@ -2183,7 +1945,7 @@ fieldset.section > legend {
 
         &:after {
             content: fa-content($fa-var-caret-right);
-            @include font-awesome;
+            font-family: "Font Awesome 5 Free";
             position: absolute;
             right: 0;
             top: $spacing-small;
@@ -2380,7 +2142,7 @@ fieldset.section > legend {
 
     .field .docs-link:before {
         content: fa-content($fa-var-info-circle);
-        @include font-awesome;
+        font-family: "Font Awesome 5 Free";
         display: inline-block;
         margin-right: $spacing-small;
         font-size: 14px;
@@ -2417,8 +2179,9 @@ fieldset.section > legend {
         left: -9999px;
     }
 
-    .resource-property .field-term {
+    .resource-values .field-term {
         display: block;
+        font-size: 12px;
     }
 
     .inputs {
@@ -2468,12 +2231,6 @@ fieldset.section > legend {
         input[type="submit"] {
             margin: $spacing-small 0;
             line-height: $base-line-height;
-        }
-
-        input:focus,
-        textarea:focus {
-            position: relative;
-            z-index: 100;
         }
     }
 
@@ -2550,7 +2307,7 @@ fieldset.section > legend {
     }
 
     .input-footer .actions {
-        margin-left: $spacing-small;
+        margin-left: 0;
         flex-direction: column;
     }
 
@@ -2558,21 +2315,7 @@ fieldset.section > legend {
         line-height: 1.5 * $spacing-large;
         height: 1.5 * $spacing-large;
         text-align: center;
-    }
-
-    .more-actions ul {
-        padding: 0;
-        display: none;
-    }
-
-    .more-actions.active {
-        box-shadow: 0 0 0 1px $border-gray;
-        background-color: #fff;
-        border-radius: 2px;
-
-        ul {
-            display: block;
-        }
+        margin-left: $spacing-small;
     }
     
     .value.delete {
@@ -2580,19 +2323,19 @@ fieldset.section > legend {
         overflow: hidden;
     }
 
-    .value .restore-value,
-    .value.delete a.tab,
-    .value.delete [class*="o-icon-"]:not(.restore-value) {
+    .value.delete .input-footer .actions li:last-child {
+        display: none;
+    }
+
+    .value a.restore-value,
+    .value span.restore-value,
+    .value.delete a.tab {
         display: none;
     }
 
     .value.delete .input-footer {
         background-color: transparent;
         width: 100%;
-    }
-
-    .value.delete .restore-value {
-        display: inline-block;
     }
 
     .value [class*="o-icon-"].label {
@@ -2614,10 +2357,6 @@ fieldset.section > legend {
         line-height: $base-line-height;
     }
 
-    .block.value .inputs label {
-        margin-right: $spacing-large;
-    }
-
     .add-values button,
     .add-values .button {
         line-height: $base-line-height;
@@ -2631,8 +2370,6 @@ fieldset.section > legend {
     
     .inputs .value textarea {
         min-height: 3 * $spacing-large;
-        border: 0;
-        box-shadow: 0 0 0 1px $border-gray;
     }
     
     .inputs .value .input-body > textarea {
@@ -2658,26 +2395,10 @@ fieldset.section > legend {
         flex: 1;
         position: relative;
         box-shadow: 0 0 0 1px inset $border-gray;
-        max-width: calc(100% - 30px);
-    }
-
-    .value:not(:only-of-type) .input-body {
-        max-width: calc(100% - 48px);
     }
 
     .inputs .input-body input[type="text"] {
         margin: 0;
-        background-color: transparent;
-    }
-
-    .inputs .input-body input[type="text"]:focus,
-    .inputs .input-body textarea:focus {
-        z-index: 10;
-    }
-
-    .inputs .input-body .chosen-container {
-        max-width: calc(100% - 12px);
-        margin: 6px;
     }
 
     [data-data-type^="resource"] .button {
@@ -2702,15 +2423,6 @@ fieldset.section > legend {
         display: none;
     }
 
-    .sortable-handle ~ .input-body {
-        background-color: transparent;
-    }
-
-    .resource-inputs {
-        background-color: #fff;
-        box-shadow: 0 0 0 1px $border-gray;
-    }
-
     p.selected-resource {
         position: relative;
         width: 100%;
@@ -2731,7 +2443,8 @@ fieldset.section > legend {
     }
 
     .selected-resource .o-title a:after {
-        @include font-awesome;
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
         display: inline-block;
         margin: 0 $spacing-small;
     }
@@ -2748,40 +2461,30 @@ fieldset.section > legend {
         content: fa-content($fa-var-image);
     }
 
-    [data-data-type="literal"] .sortable-handle ~ .input-body {
-        background-color: #fff;
-    }
-
-    .inputs [data-data-type="literal"] textarea.input-value {
-        background-color: transparent;
-        padding-right: 1.75 * $spacing-large;
-    }
-
     [data-data-type="uri"] .input {
         position: relative;
         clear: both;
-        background-color: #fff;
-        box-shadow: 0 0 0 1px $border-gray;
 
         &:first-child {
             border-bottom: 1px solid $border-gray;
         }
     }
 
-    .value[data-data-type="uri"] .input-body label {
-        padding-right: 0;
-    }
-
-    .sidebar [data-data-type="uri"] label {
-        font-weight: inherit;
+    [data-data-type="uri"] label {
+        padding: $spacing-small 0 $spacing-small $spacing-small;
+        z-index: 1;
+        font-weight: bold;
+        color: rgba(0,0,0,.35);
+        width: auto;
+        display: flex;
     }
 
     [data-data-type="uri"] .input-body input.value,
     [data-data-type="uri"] textarea.value-label {
+        margin: (-1 * $spacing-small) 0 (-1 * $spacing-small) $spacing-small;
         height: (1.5 * $spacing-large);
         border: 0;
-        box-shadow: none;
-        padding: $spacing-small (1.75 * $spacing-large) $spacing-small $spacing-small;
+        padding: $spacing-small;
         font-weight: normal;
         background: transparent;
         min-height: 1.5 * $spacing-large;
@@ -2789,25 +2492,6 @@ fieldset.section > legend {
 
     [data-data-type="uri"] textarea.value-label {
         border-top-width: 0;
-    }
-
-    .annotation-form {
-        padding-bottom: $spacing-medium;
-
-        & > div,
-        & > select {
-            margin-bottom: $spacing-small;
-        }
-    }
-
-    .value-annotation:not(:last-child) {
-        border-bottom: 1px solid $border-gray;
-        padding-bottom: $spacing-medium;
-        margin-bottom: $spacing-medium;
-    }
-
-    .value-annotation .restore-value {
-        line-height: 1.5 * $base-line-height;
     }
 
     /* @end */
@@ -2841,19 +2525,8 @@ fieldset.section > legend {
         min-width: 0;
     }
 
-    .media.row .primary-media {
-        text-transform: uppercase;
-        font-size: (.75 * $base-font-size);
-        font-weight: bold;
-        margin: 0 0 0 auto;
-
-        input {
-            margin-left: $spacing-small;
-        }
-    }
-
-    .media.row .actions { 
-        margin-left: $spacing-large;
+    .media.row .actions {
+        margin-left: auto;
     }
 
     .media.value.delete span.restore-value {
@@ -2936,14 +2609,6 @@ fieldset.section > legend {
         content: fa-content($fa-var-laptop);
     }
     
-    /* @end */
-
-    /* @group ----- Media ----- */
-
-    .media.edit #media .cke_contents {
-        min-height: 500px;
-    }
-
     /* @end */
 
 /* @end */
@@ -3056,10 +2721,6 @@ fieldset.section > legend {
             color: #B9B9B9;
         }
     }
-
-    textarea {
-        resize: vertical;
-    }
 }
 
 #item-results + .confirm-panel,
@@ -3080,7 +2741,6 @@ fieldset.section > legend {
     }
 }
 
-.sidebar button.select-all,
 .sidebar button.quick-select-toggle {
     background-color: transparent;
     color: $copy-gray;
@@ -3089,48 +2749,22 @@ fieldset.section > legend {
     padding: 0;
     line-height: 1;
     min-height: 0;
-}
 
-.success-statuses {
-    position: absolute;
-}
+    &:before {
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        content: fa-content($fa-var-toggle-off);
+        display: inline-block;
+        margin-right: $spacing-small;
+    }
 
-// Screen reader ignores inactive status.
-.success-statuses .status,
-.sidebar button .sr-only {
-    display: none;
-}
+    &.active:before {
+        content: fa-content($fa-var-toggle-on);
+    }
 
-.sidebar button:not(.active) .sr-only.off,
-.sidebar button.active .sr-only.on,
-.success-statuses:not(.active) .sr-only.off,
-.success-statuses.active .sr-only.on {
-    display: block;
-}
-
-.sidebar button.select-all:before,
-.sidebar button.quick-select-toggle:before {
-    @include font-awesome;
-    content: fa-content($fa-var-toggle-off);
-    display: inline-block;
-    margin-right: $spacing-small;
-}
-
-.sidebar button.quick-select-toggle.active:before {
-    content: fa-content($fa-var-toggle-on);
-}
-
-.sidebar button.select-all:before {
-    content: fa-content($fa-var-square);
-    font-weight: 400;
-}
-
-.sidebar button.select-all.active:before {
-    content: fa-content($fa-var-check-square);
-}
-
-.sidebar button.quick-select-toggle + .resource-list {
-    border-top: 1px solid $border-gray;
+    & + .resource-list {
+        border-top: 1px solid $border-gray;
+    }
 }
 
 .resource-link {
@@ -3219,150 +2853,6 @@ fieldset.section > legend {
 
 /* @end */
 
-/* @group ----- Query Editor ----- */
-
-.sidebar .field-meta {
-    width: 100%;
-    position: relative;
-    padding-right: 1.5 * $spacing-large;
-    margin-bottom: $spacing-medium;
-    border-bottom: 3px solid $border-gray;
-
-    .label, 
-    label {
-        margin: 0;
-        width: auto;
-        display: inline-block;
-        padding: 0 0 $spacing-small;
-
-        &:after {
-            content: none;
-        }
-    }
-
-    .collapsible {
-        margin-bottom: $spacing-medium;
-    }
-
-    button.add-value {
-        padding: 0;
-        background: transparent;
-        color: $copy-gray;
-        min-height: 0;
-        position: absolute;
-        top: 0;
-        right: 0;
-
-        &:before {
-            height: auto;
-            line-height: 1.5;
-        }
-    }
-
-}
-
-.sidebar .inputs {
-    width: 100%;
-}
-
-.sidebar #advanced-search .value {
-    flex-wrap: wrap;
-
-    &:not(:first-child) {
-        margin-top: $spacing-small;
-    }
-}
-
-.sidebar .multi-value .value:not(:only-child) {
-    width: calc(100% - #{1.5 * $spacing-large});
-    position: relative;
-    padding-bottom: 0;
-    margin-bottom: 5px;
-    border-bottom: 0;
-}
-
-.sidebar .multi-value .value:only-child .remove-value {
-    display: none;
-}
-
-.sidebar .multi-value .remove-value {
-    position: absolute;
-    right: -1.5 * $spacing-large;
-    bottom: 0;;
-}
-
-.sidebar #advanced-search .value select, 
-.sidebar #advanced-search .value input {
-    margin-left: 0;
-}
-
-.sidebar #advanced-search .confirm-panel {
-    display: flex;
-    justify-content: space-between;
-
-    button {
-        width: calc(33.33% - #{$spacing-small});
-    }
-}
-
-.block .block-content input[type="hidden"] + button {
-    padding-top: $spacing-small;
-}
-
-.query-form-element .active {
-    display: block;
-}
-
-.query-form-element .inactive {
-    display: none;
-}
-
-.query-display .search-filters {
-    margin-bottom: 0;
-}
-
-.query-display .filter {
-    background-color: #fff;
-    box-shadow: 0 0 0 1px $border-gray inset;
-}
-
-.query-display .filter-label {
-    background-color: $border-gray;
-}
-
-.query-form-element button.active {
-    display: inline-block;
-}
-
-.query-display {
-    min-height: 1.75 * $spacing-large;
-}
-
-input[type=text].query-form-query {
-    margin-top: 0;
-}
-
-.query-display .filter-value:not(:last-child):after {
-    content: none;
-}
-
-#save-search {
-    display: none;
-}
-
-#save-search.active {
-    display: flex;
-    margin-top: -1 * $spacing-small;
-    padding: 0 $spacing-small $spacing-medium calc(30% + #{.5 * $spacing-small});
-    background-color: $gray-on-white;
-
-    input {
-        margin-left: $spacing-small;
-    }
-}
-
-/* @end */
-
 /* @group ----- Vocabulary: Import ----- */
 
 .vocabs .field [type="file"] {
@@ -3419,23 +2909,22 @@ input[type=text].query-form-query {
 /* @group ----- Show Views ----- */
 
 .show .property,
-.meta-group {
+#item-metadata .meta-group {
     overflow: hidden;
     display: flex;
     justify-content: flex-end;
     flex-wrap: wrap;
 
-    dt {
+    h4 {
         width: span(2 of 9);
         vertical-align: top;
         padding: $spacing-small 0;
-        font-weight: bold;
     }
 
-    dd,
+    h4 + .value,
     .values {
         padding: $spacing-small;
-        margin: 0;
+        margin-bottom: 0;
         word-wrap: break-word;
         width: span(7 of 9);
 
@@ -3450,16 +2939,24 @@ input[type=text].query-form-query {
         margin-right: $spacing-small;
         background-color: $gray-on-white;
     }
+
+    .private:after {
+        @include fa-icon();
+        content: fa-content($fa-var-eye-slash);
+        font-family: "Font Awesome 5 Free";
+        display: inline-block;
+        margin-left: $spacing-small;
+    }
 }
 
-#linked-filter label {
+#linked-filter {
     display: flex;
     align-items: center;
     margin-bottom: $spacing-large;
+}
 
-    select {
-        margin-left: $spacing-medium;
-    }
+#linked-filter h4 {
+    margin-right: $spacing-small;
 }
 
 #linked-resources table {
@@ -3473,7 +2970,6 @@ input[type=text].query-form-query {
     font-family: "Lato", sans-serif;
     font-weight: bold;
     text-align: left;
-    font-size: 1.25 * $base-font-size;
 }
 
 #linked-resources th {
@@ -3486,60 +2982,14 @@ input[type=text].query-form-query {
     border-bottom: 1px solid $border-gray;
 }
 
-.has-annotation:before {
-    display: inline-block;
-}
-
-.o-icon-annotation:before {
-    content: "\f27a";
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-}
-
-.show .value.resource,
-.show .value.resource .value-content {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.show .value .o-icon-private,
-.show .value .value-content {
-    margin-right: $spacing-medium;
-}
-
-
-.collapsible.annotation {
-    border-left: 3px solid $border-gray;
-    padding: 0;
-    border-radius: 3px;
-    margin: $spacing-small 0 $spacing-medium $spacing-large;
-    width: 100%;
-}
-
-.collapsible.annotation h4, 
-.collapsible.annotation .values {
-    width: 100%;
-    padding: 0;
-}
-
-.collapsible.annotation .property {
-    padding: 0 $spacing-medium;
-}
-
-.collapsible.annotation .property:not(:first-child) {
-    margin-top: $spacing-medium;
-    border-top: 1px solid $border-gray;
-    padding-top: $spacing-medium;
-}
-
 /* @end */
 
     /* @group ----- Item: Show----- */
 
     .property .value .resource-name:after,
     .property .value.uri .uri-value-link:after {
-        @include font-awesome;
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
         display: inline-block;
         margin-left: .5em;
     }
@@ -3612,17 +3062,18 @@ input[type=text].query-form-query {
         }
 
         &:after {
-            @include font-awesome;
+            font-family: "Font Awesome 5 Free";
+            @include fa-icon();
             content: fa-content($fa-var-circle-notch);
-            line-height: 1;
             position: absolute;
             top: .75em;
-            left: calc(50% - .5em);
+            left: calc(50% - .6em);
             font-size: 4em;
             animation: fa-spin 1s infinite linear;
-            height: 1em;
-            width: 1em;
+            height: 0.95em;
+            width: 1.2em;
             text-align: center;
+            font-weight: 900;
         }
     }
 
@@ -3682,7 +3133,6 @@ input[type=text].query-form-query {
         position: relative;
         width: 100%;
         word-wrap: break-word;
-        max-width: none;
 
         &:after {
             content: "";
@@ -3719,14 +3169,6 @@ input[type=text].query-form-query {
         background-color: $copy-gray;
         border-color: $copy-gray;
         color: #fff;
-
-        &:disabled,
-        &.disabled {
-            background-color: $gray-on-white;
-            border-color: $gray-on-white;
-            color: $copy-gray;
-            box-shadow: none !important;
-        }
     }
 
     button.option {
@@ -3735,12 +3177,11 @@ input[type=text].query-form-query {
         border-color: $border-gray;
         background-color: #fff;
         color: $copy-gray;
-        display: inline-flex;
-        justify-content: space-between;
 
         &:after {
             content: fa-content($fa-var-plus);
-            @include font-awesome;
+            font-family: "Font Awesome 5 Free";
+            float: right;
             color: $border-gray;
         }
     }
@@ -3866,9 +3307,6 @@ body.sidebar-open #content {
 .resource-templates #edit-sidebar .field .option label {
     margin: 0;
     padding-bottom: $spacing-small;
-    padding-right: 0;
-    display: flex;
-    justify-content: space-between;
 
     &:only-child {
         padding-bottom: 0;
@@ -3911,7 +3349,7 @@ body.sidebar-open #content {
     
     &:after {
         content: "\f00c";
-        @include font-awesome;
+        font-family: "Font Awesome 5 Free";
         display: inline-block;
         margin-left: $spacing-small;
     }
@@ -4034,17 +3472,11 @@ body.sidebar-open #content {
         padding: 0;
         line-height: 1.75;
         border: none;
-        vertical-align: top;
     }
 
     th[scope="rowgroup"] {
         font-size: 1em;
         border-bottom: 1px solid $border-gray;
-        padding-left: $spacing-small;
-    }
-
-    tbody:not(:last-child) tr:last-child td {
-        padding-bottom: $spacing-large;
     }
 
     th[scope="row"] {
@@ -4071,7 +3503,8 @@ body.sidebar-open #content {
 
 .breadcrumbs > *:not(:last-child):after {
     content: fa-content($fa-var-caret-right);
-    @include font-awesome;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
     display: inline-block;
     margin: 0 calc(#{$spacing-medium} - 3px) 0 $spacing-medium;
     color: #000;
@@ -4164,11 +3597,6 @@ body.sidebar-open #content {
         margin-right: -1px;
     }
 
-    .expand-collapse-all {
-        margin-top: $spacing-medium;
-        text-align: right;
-    }
-
     .block {
         margin-bottom: $spacing-small;
     }
@@ -4180,10 +3608,6 @@ body.sidebar-open #content {
         background-color: opacify($gray-on-white, .08);
         padding: $spacing-small;
         font-weight: bold;
-    }
-
-    .block .block-header .actions a:before {
-        text-align: center;
     }
 
     .block .block-content input[type="hidden"] + * {
@@ -4261,8 +3685,7 @@ body.sidebar-open #content {
         display: inline-block;
     }
 
-    .block .delete.attachment .sortable-handle,
-    .block .delete.attachment .actions li:not(.undo) {
+    .block .delete.attachment .actions .delete {
         display: none;
     }
 
@@ -4303,10 +3726,6 @@ body.sidebar-open #content {
         display: none;
     }
 
-    .block-content fieldset:last-of-type {
-        margin-bottom: 0;
-    }
-
     .block .attachment {
         display: flex;
         align-items: center;
@@ -4327,12 +3746,8 @@ body.sidebar-open #content {
         margin: $spacing-small 0 0;
     }
 
-    .block-header.collapse:after {
-        content: none;
-    }
-
-    .block-content .expand,
-    .block-content .collapse {
+    .block .expand,
+    .block .collapse {
         width: 100%;
         display: flex;
         padding: 0 $spacing-small 0 0;
@@ -4350,7 +3765,7 @@ body.sidebar-open #content {
         padding: 0;
     }
 
-    .block-content .collapse + .collapsible {
+    .block .collapse + .collapsible {
         border-top: 1px solid $border-gray;
         padding: -1px 0 0 $spacing-large;
         margin-top: $spacing-small;
@@ -4459,128 +3874,17 @@ body.sidebar-open #content {
         }
     }
 
-    #asset-options .selected-asset {
-        overflow: hidden;
-    }
-
-    #asset-options .selected-asset-image {
-        float: left;
-        margin: 0 $spacing-medium 0 0;
-        max-width: 50%;
-    }
-
-    #asset-list.active {
-        z-index: 6;
-    }
-
-    #asset-options .selected-asset .selected-asset-name {
-        display: none;
-    }
-
-    .asset-attachments-form {
-        margin-bottom: $spacing-medium;
-    }
-
-    .add-asset-attachment {
-        margin-top: $spacing-small;
-    }
-      
-    #asset-options .sidebar-content > div {
-        margin-bottom: 2rem;
-    }
-      
-    .asset-attachment-select {
-        margin-top: .5rem;
-    }
-      
-    .asset-title {
-        display: flex;
-        align-items: center;
-    }
-      
-    .asset-title img {
-        height: 100%;
-        width: auto;
-    }
-      
-    .asset-title .thumbnail:not(:empty) {
-        height: 2rem;
-        position: relative;
-        width: 2rem;
-        margin: .25rem .25rem .25rem 0;
-        overflow: hidden;
-        display: inline-flex;
-        justify-content: center;
-    }
-    
-    #asset-options .none-selected.inactive {
-        display: none;
-    }
-
-    #asset-options .none-selected:not(.inactive) ~ * {
-        display: none;
-    }
-
-    #asset-options .page-status {
-        margin-bottom: $spacing-medium;
-    }
-
-    #asset-options .selected-page + .o-icon-external {
-        margin-left: $spacing-small;
-    }
-
     /* @end */
 
-    /* @group ----- Site Admin ----- */
-    
-    .browse-defualts-form-element {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .browse-defualts-form-element select {
-        width: 49.5%;
-    }
-
-    /* @end */
-    
-    /* @group ----- Site Navigation/List of Pages ----- */
+    /* @group ----- Site Navigation ----- */
 
     input[type="text"].page-selector-filter {
         width: 100%;
         margin-bottom: $spacing-medium;
     }
 
-    #nav-page-links,
-    #nav-custom-links {
+    #nav-page-links {
         width: 100%;
-    }
-
-    .page-selector-filter.empty,
-    #nav-page-links .nav-page-link,
-    #nav-page-links .added.active.nav-page-link,
-    #no-pages {
-        display: none;
-    }
-
-    #nav-page-links .active.nav-page-link {
-        display: flex;
-    }
-
-    .empty ~ #no-pages {
-        display: block;
-    }
-
-    .site-page-add {
-        margin: 0;
-    }
-
-    .jstree > .jstree-node:first-child .jstree-anchor {
-        margin-top: 0;
-    }
-
-    .block-pagelist-tree li:last-child {
-        margin-bottom: $spacing-small;
     }
 
     /* @end */
@@ -4661,7 +3965,7 @@ body.sidebar-open #content {
 
         &:after {
             content: fa-content($fa-var-check);
-            @include font-awesome;
+            font-family: "Font Awesome 5 Free";
             position: absolute;
             bottom: 0;
             right: 0;
@@ -4702,41 +4006,6 @@ body.sidebar-open #content {
     }
 
     /* @end */
-
-/* @end */
-
-/* @groups ----- Page Block Config ----- */
-
-.theme-resource-pages .blocks {
-    list-style: none;
-    padding-left: 0;
-    border: 1px solid $border-gray; 
-    padding: $spacing-medium; 
-    min-height: 30px;
-}
-
-.theme-resource-pages .block {
-    @include field-row;
-    display: flex;
-    height: 1.5 * $spacing-large;
-
-    &.delete {
-        background-color: $delete-bg;
-        padding-left: 1.5 * $spacing-large;
-    }
-}
-
-.theme-resource-pages .block.delete > *:not(.block-header) {
-    display: block;
-}
-
-.theme-resource-pages .block.delete .sortable-handle {
-    display: none;
-}
-
-.theme-resource-pages button:disabled {
-    display: none;
-}
 
 /* @end */
 
@@ -4829,15 +4098,9 @@ body.minimal {
 
     .site-list {
         margin-bottom: $spacing-large;
-        display: flex;
-        flex-wrap: wrap;
-        
+
         .site {
             margin-bottom: $spacing-medium;
-            overflow: auto;
-            max-width: 60rem;
-            width: 50%;
-            padding-right: 1rem;
         }
 
         .site-link {
@@ -4846,19 +4109,8 @@ body.minimal {
         }
         
         .site-summary {
-            margin: 0;
+            margin: 0 0 0 $spacing-medium;
             line-height: 20px;
-        }
-        
-        .site-thumbnail {
-            float: left;
-            display: block;
-            margin-right: 1rem;
-        }
-
-        .site-thumbnail-image {
-            max-width: 15rem;
-            vertical-align: bottom;
         }
     }
 
@@ -4984,27 +4236,17 @@ body.minimal .site.results thead {
     }
 }
 
+.select-asset img {
+    width: 25%;
+}
+
 .selected-asset,
 .no-selected-asset {
     display: block;
 }
 
-.selected-asset-name:not(:empty) ~ .none-selected,
-.selected-page:empty + a,
-.selected-page:not(:empty) ~ .none-selected {
-    display: none;
-}
-
 .selected-asset-image {
     max-width: 100%;
-}
-
-.asset-form-select {
-    margin-top: $spacing-medium;
-}
-
-.new.attachment {
-    display: none;
 }
 
 .asset-upload {
@@ -5023,7 +4265,6 @@ body.minimal .site.results thead {
     ul.errors {
         color: $red;
         margin-top: 0;
-        word-wrap: break-word;
 
         &:empty {
             display: none;
@@ -5032,18 +4273,6 @@ body.minimal .site.results thead {
         a {
             border-bottom: 1px solid $red;
         }
-    }
-
-    label {
-        margin: $spacing-small 0;
-        padding: 0;
-        &:after {
-            content: none;
-        }
-    }
-
-    input[type="file"] {
-        width: 100%;
     }
 }
 
@@ -5061,20 +4290,22 @@ body.minimal .site.results thead {
     }
 }
 
-.asset-entry {
+.asset-list .select-asset {
     display: flex;
     align-items: center;
     word-wrap: break-word;
 }
 
-.asset-entry img {
+.asset-list .select-asset img {
     margin-right: $spacing-small;
-    max-height: 2 * $spacing-large;
-    max-width: 50%;
 }
 
-.asset-entry .asset-name {
-    flex-grow: 1;
+.asset-list .select-asset .asset-name {
+    min-width: 0;
+}
+
+#asset-sidebar input[type="file"] {
+    width: 100%;
 }
 
 /* @end */

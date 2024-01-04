@@ -10,7 +10,7 @@ class RdfImporterTest extends DbTestCase
      */
     protected $rdfImporter;
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 

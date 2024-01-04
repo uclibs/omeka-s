@@ -1,10 +1,9 @@
 <?php
 $translate = $this->plugin('translate');
-$totalCount = count($users);
 ?>
 <div id="user-selector" class="selector sidebar<?php echo $alwaysOpen ? ' always-open' : ''; ?>">
     <a href="#" class="mobile-only sidebar-close o-icon-close"><span class="screen-reader-text"><?php echo $translate('Close'); ?></span></a>
-    <div class="resources-available" data-all-resources-count="<?php echo $totalCount; ?>">
+    <div class="resources-available">
     <h3>
         <?php if ($title): ?>
         <?php echo $title; ?>
@@ -14,7 +13,7 @@ $totalCount = count($users);
     </h3>
     <input type="text" class="selector-filter" placeholder="<?php echo $translate('Filter users'); ?>" aria-label="<?php echo $translate('Filter users'); ?>">
     <ul id="new-users">
-        <li class="total-count-heading"><?php echo sprintf($translate('Users (%s)'), '<span class="selector-total-count">' . $totalCount . '</span>'); ?></li>
+        <li class="total-count-heading"><?php echo sprintf($translate('Users (%s)'), '<span class="selector-total-count">' . count($users) . '</span>'); ?></li>
             <ul class="selectable-list">
             <?php foreach ($usersByInitial as $initial => $users): ?>
                 <li class="selector-parent">

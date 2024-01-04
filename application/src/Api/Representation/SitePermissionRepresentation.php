@@ -23,7 +23,7 @@ class SitePermissionRepresentation extends AbstractRepresentation
         $this->permission = $permission;
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize()
     {
         return [
             'o:user' => $this->user()->getReference(),

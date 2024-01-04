@@ -10,7 +10,7 @@ class PropertyTest extends TestCase
 {
     protected $property;
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->property = new Property;
     }

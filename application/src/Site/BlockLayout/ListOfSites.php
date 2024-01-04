@@ -15,7 +15,6 @@ class ListOfSites extends AbstractBlockLayout
         'limit' => null,
         'pagination' => false,
         'summaries' => true,
-        'thumbnails' => true,
         'exclude_current' => true,
     ];
 
@@ -80,16 +79,6 @@ class ListOfSites extends AbstractBlockLayout
             ],
         ]);
         $form->add([
-            'name' => 'o:block[__blockIndex__][o:data][thumbnails]',
-            'type' => Element\Checkbox::class,
-            'options' => [
-                'label' => 'Show thumbnails', // @translate
-            ],
-            'attributes' => [
-                'id' => 'list-of-sites-thumbnails',
-            ],
-        ]);
-        $form->add([
             'name' => 'o:block[__blockIndex__][o:data][exclude_current]',
             'type' => Element\Checkbox::class,
             'options' => [
@@ -105,7 +94,6 @@ class ListOfSites extends AbstractBlockLayout
             'o:block[__blockIndex__][o:data][limit]' => $data['limit'],
             'o:block[__blockIndex__][o:data][pagination]' => $data['pagination'],
             'o:block[__blockIndex__][o:data][summaries]' => $data['summaries'],
-            'o:block[__blockIndex__][o:data][thumbnails]' => $data['thumbnails'],
             'o:block[__blockIndex__][o:data][exclude_current]' => $data['exclude_current'],
         ]);
 
@@ -118,7 +106,6 @@ class ListOfSites extends AbstractBlockLayout
         $limit = $block->dataValue('limit', $this->defaults['limit']);
         $pagination = $limit && $block->dataValue('pagination', $this->defaults['pagination']);
         $summaries = $block->dataValue('summaries', $this->defaults['summaries']);
-        $thumbnails = $block->dataValue('thumbnails', $this->defaults['thumbnails']);
         $excludeCurrent = $block->dataValue('exclude_current', $this->defaults['exclude_current']);
 
         $data = [];
@@ -161,7 +148,6 @@ class ListOfSites extends AbstractBlockLayout
             'sites' => $sites,
             'pagination' => $pagination,
             'summaries' => $summaries,
-            'thumbnails' => $thumbnails,
         ]);
     }
 }

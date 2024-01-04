@@ -37,7 +37,7 @@ abstract class Resource extends AbstractEntity
     protected $resourceClass;
 
     /**
-     * @ManyToOne(targetEntity="ResourceTemplate", inversedBy="resources")
+     * @ManyToOne(targetEntity="ResourceTemplate")
      * @JoinColumn(onDelete="SET NULL")
      */
     protected $resourceTemplate;
@@ -144,7 +144,7 @@ abstract class Resource extends AbstractEntity
     {
         // Unlike a resource value, a resource title cannot be an empty string
         // or a string containing only whitespace.
-        $title = trim((string) $title);
+        $title = trim($title);
         $this->title = ('' === $title) ? null : $title;
     }
 

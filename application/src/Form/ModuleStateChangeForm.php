@@ -78,6 +78,7 @@ class ModuleStateChangeForm extends Form
             ],
             'attributes' => [
                 'type' => 'submit',
+                'title' => $label,
                 'class' => $class,
             ],
         ]);

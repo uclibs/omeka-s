@@ -83,8 +83,7 @@ class PaginationTest extends TestCase
                     'pagelessUrl' => null,
                     'offset' => null,
                 ])
-            )
-            ->will($this->returnValue(''));
+            );
         $params = $this->getMockBuilder('Omeka\View\Helper\Params')
             ->disableOriginalConstructor()
             ->getMock();

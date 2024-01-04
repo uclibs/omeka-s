@@ -1,6 +1,7 @@
 <?php
 namespace Omeka\View\Helper;
 
+use Omeka\Api\Exception as ApiException;
 use Laminas\View\Helper\AbstractHelper;
 
 /**
@@ -19,12 +20,18 @@ class ThemeSettingAssetUrl extends AbstractHelper
     {
         $view = $this->getView();
 
-        $asset = $view->themeSettingAsset($id);
+        $setting = $view->themeSetting($id);
 
-        if ($asset === null) {
+        if ($setting === null) {
             return $default;
         }
 
-        return $asset->assetUrl();
+        try {
+            $response = $view->api()->read('assets', $setting);
+        } catch (ApiException\NotFoundException $e) {
+            return $default;
+        }
+
+        return $response->getContent()->assetUrl();
     }
 }

@@ -73,7 +73,7 @@ class Message implements \JsonSerializable
         return (string) sprintf($this->getMessage(), ...$this->getArgs());
     }
 
-    public function jsonSerialize(): string
+    public function jsonSerialize()
     {
         return (string) $this;
     }

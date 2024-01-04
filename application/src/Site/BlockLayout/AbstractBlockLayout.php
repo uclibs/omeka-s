@@ -3,11 +3,10 @@ namespace Omeka\Site\BlockLayout;
 
 use Omeka\Api\Representation\SitePageBlockRepresentation;
 use Omeka\Entity\SitePageBlock;
-use Omeka\ServiceManager\SortableInterface;
 use Omeka\Stdlib\ErrorStore;
 use Laminas\View\Renderer\PhpRenderer;
 
-abstract class AbstractBlockLayout implements BlockLayoutInterface, SortableInterface
+abstract class AbstractBlockLayout implements BlockLayoutInterface
 {
     public function prepareForm(PhpRenderer $view)
     {
@@ -23,10 +22,5 @@ abstract class AbstractBlockLayout implements BlockLayoutInterface, SortableInte
 
     public function getFulltextText(PhpRenderer $view, SitePageBlockRepresentation $block)
     {
-    }
-
-    public function getSortableString()
-    {
-        return $this->getLabel();
     }
 }

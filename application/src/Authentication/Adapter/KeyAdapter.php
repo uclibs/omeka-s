@@ -18,11 +18,6 @@ class KeyAdapter extends AbstractAdapter
     protected $repository;
 
     /**
-     * @var EntityManager
-     */
-    protected $entityManager;
-
-    /**
      * Create the adapter.
      *
      * @param EntityRepository $repository The Key repository.

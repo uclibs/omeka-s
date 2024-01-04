@@ -26,7 +26,7 @@ class QueryToHiddenInputs extends AbstractHtmlElement
             if (!$query) {
                 continue;
             }
-            [$queryName, $queryValue] = array_map('urldecode', explode('=', $query));
+            list($queryName, $queryValue) = array_map('urldecode', explode('=', $query));
             if (in_array($queryName, $removeQueries)) {
                 continue;
             }

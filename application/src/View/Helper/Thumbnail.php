@@ -32,7 +32,7 @@ class Thumbnail extends AbstractHtmlElement
         $attribs = $params['attribs'];
 
         if (!isset($attribs['alt'])) {
-            $attribs['alt'] = $representation->thumbnailAltText();
+            $attribs['alt'] = '';
         }
 
         return sprintf('<img%s>', $this->htmlAttribs($attribs));

@@ -10,7 +10,7 @@ class ResourceClassTest extends TestCase
 {
     protected $resourceClass;
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->resourceClass = new ResourceClass;
     }

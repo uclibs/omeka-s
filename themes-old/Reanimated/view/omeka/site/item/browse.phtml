@@ -1,0 +1,73 @@
+<!-- BEGIN browse.phtml -->
+
+<?php
+  $query = $this->params()->fromQuery();
+  $sortHeadings = [
+    [
+        'label' => 'Title',
+        'value' => 'dcterms:title'
+    ],
+    [
+        'label' => 'Identifier',
+        'value' => 'dcterms:identifier'
+    ],
+    [
+        'label' => 'Class',
+        'value' => 'resource_class_label'
+    ],
+    [
+        'label' => 'Created',
+        'value' => 'created'
+    ],
+];
+?>
+
+<h3>Search results</h3>
+
+<div class="browse-controls">
+  <?= $this->pagination(); ?>
+
+  <?= $this->sortSelector($sortHeadings); ?>
+
+  <div class="rdt-advanced-search-link">
+             (Or, use
+  <?= 
+    $this->hyperlink(
+        'advanced search', 
+        $this->url(
+            'site/resource', 
+            ['controller' => 'item', 'action' => 'search'],
+            ['query' => $query],
+             true
+        ), ['class' => 'advanced-search']
+    )
+                ?>.)
+  </div>
+
+</div>
+
+<table class="rdt-browse-results">
+<?php
+foreach ($items as $item) {
+?>
+
+<?php
+    $title = $item->value('dcterms:title');
+    $body = $item->value('dcterms:description');
+?>
+
+  
+
+  <tr>
+    <td><?= $item->linkRaw($title) ?></td>
+    <td class="rdt-thumbnail-cell">
+      <?= $item->linkRaw($this->thumbnail($item, 'medium')) ?>
+    </td>
+  </tr>
+
+<?php
+}
+?>
+</table>
+
+<!-- END browse.phtml -->

@@ -10,7 +10,7 @@ class ApiKeyTest extends TestCase
 {
     protected $key;
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->key = new ApiKey;
     }

@@ -4,7 +4,6 @@
  *
  * Generate Doctrine proxies for a module and dump the SQL needed to create its tables.
  */
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\SchemaTool;
 
 if (!isset($argv[1])) {
@@ -38,19 +37,10 @@ $entityManager = $application->getServiceManager()->get('Omeka\EntityManager');
 
 $classMetadatas = $entityManager->getMetadataFactory()->getAllMetadata();
 $moduleClassMetadatas = [];
-$moduleTables = [];
 foreach ($classMetadatas as $classMetadata) {
     $fileName = $classMetadata->getReflectionClass()->getFileName();
     if (strncmp($fileName, $modulePath, strlen($modulePath)) === 0) {
         $moduleClassMetadatas[] = $classMetadata;
-
-        // Gather "main" table and any owned many-to-many tables for each file
-        $moduleTables[] = $classMetadata->getTableName();
-        foreach ($classMetadata->associationMappings as $mapping) {
-            if ($mapping['type'] == ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
-                $moduleTables[] = $mapping['joinTable']['name'];
-            }
-        }
     }
 }
 
@@ -84,8 +74,8 @@ $schema = $schemaTool->getSchemaFromMetadata($classMetadatas);
 // the SQL we actually want, we drop all the tables that aren't coming from
 // the module before we get the SQL.
 foreach ($schema->getTables() as $table) {
-    foreach ($moduleTables as $tableName) {
-        if ($table->getName() === $tableName) {
+    foreach ($moduleClassMetadatas as $classMetadata) {
+        if ($table->getName() === $classMetadata->getTableName()) {
             continue 2;
         }
     }

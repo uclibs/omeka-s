@@ -13,7 +13,7 @@ class AbstractEntityAdapterTest extends TestCase
 
     protected $adapter;
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->adapter = $this->getMockBuilder('Omeka\Api\Adapter\AbstractEntityAdapter')
             ->setMethods([
@@ -103,7 +103,7 @@ class TestRepresentation implements RepresentationInterface
     public function setData($data)
     {
     }
-    public function jsonSerialize(): mixed
+    public function jsonSerialize()
     {
     }
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)

@@ -6,7 +6,7 @@ use Laminas\Form\ElementInterface;
 
 class FormRestoreTextarea extends FormTextarea
 {
-    public function render(ElementInterface $element): string
+    public function render(ElementInterface $element)
     {
         $view = $this->getView();
         $view->headScript()->appendFile($view->assetUrl('js/restore-textarea.js', 'Omeka'));

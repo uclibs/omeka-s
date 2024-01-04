@@ -13,30 +13,28 @@ $this->htmlElement('body')->appendAttribute('class', 'users show');
 </div>
 
 <?php $this->trigger('view.show.before'); ?>
-<dl>
 <div class="property">
-    <dt><?php echo $translate('Email'); ?></dt>
-    <dd class="value">
+    <h4><?php echo $translate('Email'); ?></h4>
+    <div class="value">
         <?php echo $escape($user->email()); ?>
-    </dd>
+    </div>
 </div>
 <div class="property">
-    <dt><?php echo $translate('Display name'); ?></dt>
-    <dd class="value">
+    <h4><?php echo $translate('Display name'); ?></h4>
+    <div class="value">
         <?php echo $escape($user->name()); ?>
-    </dd>
+    </div>
 </div>
 <div class="property">
-    <dt><?php echo $translate('Role'); ?></dt>
-    <dd class="value">
+    <h4><?php echo $translate('Role'); ?></h4>
+    <div class="value">
         <?php echo $escape($translate($user->displayRole())); ?>
-    </dd>
+    </div>
 </div>
 <div class="property">
-    <dt><?php echo $translate('Is active'); ?></dt>
-    <dd class="value">
+    <h4><?php echo $translate('Is active'); ?></h4>
+    <div class="value">
         <?php echo $escape($user->isActive() ? $translate('yes') : $translate('no')); ?>
-    </dd>
+    </div>
 </div>
-</dl>
 <?php $this->trigger('view.show.after'); ?>

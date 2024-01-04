@@ -91,11 +91,6 @@ class Media extends Resource
      */
     protected $lang;
 
-    /**
-     * @Column(type="text", nullable=true)
-     */
-    protected $altText;
-
     public function getResourceName()
     {
         return 'media';
@@ -253,15 +248,5 @@ class Media extends Resource
     public function getLang()
     {
         return $this->lang;
-    }
-
-    public function setAltText($altText)
-    {
-        $this->altText = $altText;
-    }
-
-    public function getAltText()
-    {
-        return $this->altText;
     }
 }

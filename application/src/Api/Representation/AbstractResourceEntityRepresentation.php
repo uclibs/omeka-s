@@ -106,11 +106,6 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
         if ($this->thumbnail()) {
             $thumbnail = $this->thumbnail()->getReference();
         }
-        // According to the JSON-LD spec, the value of the @reverse key "MUST be
-        // a JSON object containing members representing reverse properties."
-        // Here, we include the key only if the resource has reverse properties.
-        $reverse = $this->subjectValuesForReverse();
-        $reverse = $reverse ? ['@reverse' => $reverse] : [];
 
         return array_merge(
             [
@@ -124,8 +119,7 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
             ],
             $dateTime,
             $this->getResourceJsonLd(),
-            $values,
-            $reverse
+            $values
         );
     }
 
@@ -369,7 +363,7 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
             if ($types && empty($types[strtolower($value->type())])) {
                 continue;
             }
-            if ($langs && empty($langs[strtolower((string) $value->lang())])) {
+            if ($langs && empty($langs[strtolower($value->lang())])) {
                 continue;
             }
             $matchingValues[] = $value;
@@ -387,44 +381,45 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
      *
      * @param int $page
      * @param int $perPage
-     * @param int|string|null $propertyId Filter by property ID
-     * @param string|null $resourceType Filter by resource type
-     * @param int|null $siteId Filter by site ID
+     * @param int $property Filter by property ID
      * @return array
      */
-    public function subjectValues($page = null, $perPage = null, $propertyId = null, $resourceType = null, $siteId = null)
+    public function subjectValues($page = null, $perPage = null, $property = null)
     {
-        $results = $this->getAdapter()->getSubjectValues($this->resource, $page, $perPage, $propertyId, $resourceType, $siteId);
+        $values = $this->getAdapter()->getSubjectValues($this->resource, $page, $perPage, $property);
         $subjectValues = [];
-        foreach ($results as $result) {
-            $index = sprintf('%s-%s', $result['property_id'], $result['resource_template_property_id']);
-            $result['val'] = new ValueRepresentation($result['val'], $this->getServiceLocator());
-            $subjectValues[$index][] = $result;
+        foreach ($values as $value) {
+            $valueRep = new ValueRepresentation($value, $this->getServiceLocator());
+            $subjectValues[$valueRep->property()->term()][] = $valueRep;
         }
         return $subjectValues;
     }
 
     /**
-     * Get the subject values for the JSON-LD @reverse array.
+     * Get the total count of this resource's subject values.
      *
-     * @see https://w3c.github.io/json-ld-syntax/#reverse-properties
-     * @param int|string|null $propertyId Filter by property ID
-     * @param string|null $resourceType Filter by resource type
-     * @param int|null $siteId Filter by site ID
+     * @param int $property Filter by property ID
+     * @return int
+     */
+    public function subjectValueTotalCount($property = null)
+    {
+        return $this->getAdapter()->getSubjectValueTotalCount($this->resource, $property);
+    }
+
+    /**
+     * Get distinct properties (predicates) where this resource is the RDF object.
+     *
      * @return array
      */
-    public function subjectValuesForReverse($propertyId = null, $resourceType = null, $siteId = null)
+    public function subjectValueProperties()
     {
-        $url = $this->getViewHelper('Url');
-        $subjectValuesSimple = $this->getAdapter()->getSubjectValuesSimple($this->resource, $propertyId, $resourceType, $siteId);
-        $subjectValues = [];
-        foreach ($subjectValuesSimple as $subjectValue) {
-            $subjectValues[$subjectValue['term']][] = [
-                '@id' => $url('api/default', ['resource' => 'resources', 'id' => $subjectValue['id']], ['force_canonical' => true]),
-                'o:title' => $subjectValue['title'],
-            ];
+        $propertyAdapter = $this->getAdapter('properties');
+        $properties = $this->getAdapter()->getSubjectValueProperties($this->resource);
+        $subjectProperties = [];
+        foreach ($properties as $property) {
+            $subjectProperties[] = $propertyAdapter->getRepresentation($property);
         }
-        return $subjectValues;
+        return $subjectProperties;
     }
 
     /**
@@ -450,119 +445,55 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
      *
      * Options:
      *
-     * - viewName: Name of view script, or a view model. Default "common/resource-values"
-     * - siteId: A site ID
+     * + viewName: Name of view script, or a view model. Default
+     *   "common/resource-values"
      *
      * @param array $options
      * @return string
      */
     public function displayValues(array $options = [])
     {
-        $options['viewName'] ??= 'common/resource-values';
-        $options['siteId'] ??= null;
-
-        $services = $this->getServiceLocator();
-        $values = $this->values();
-
-        if ($options['siteId']) {
-            // Exclude resources that are not assigned to the site if the
-            // "exclude_resources_not_in_site" site setting is true.
-            foreach ($values as $term => $propertyData) {
-                foreach ($propertyData['values'] as $valueIndex => $value) {
-                    $valueResource = $value->valueResource();
-                    if ($valueResource && in_array($valueResource->resourceName(), ['items', 'item_sets'])) {
-                        $resourceSites = $valueResource->sites();
-                        if (!isset($resourceSites[$options['siteId']])) {
-                            // This item is not assigned to the current site, so remove it.
-                            unset($values[$term]['values'][$valueIndex]);
-                        }
-                    }
-                }
-                if (!$values[$term]['values']) {
-                    // This property no longer has values, so remove it.
-                    unset($values[$term]);
-                }
-            }
+        if (!isset($options['viewName'])) {
+            $options['viewName'] = 'common/resource-values';
         }
+        $partial = $this->getViewHelper('partial');
 
         $eventManager = $this->getEventManager();
-        $args = $eventManager->prepareArgs(['values' => $values]);
+        $args = $eventManager->prepareArgs(['values' => $this->values()]);
         $eventManager->trigger('rep.resource.display_values', $this, $args);
+        $options['values'] = $args['values'];
 
         $template = $this->resourceTemplate();
-        $options['resource'] = $this;
-        $options['values'] = $args['values'];
         $options['templateProperties'] = $template
             ? $template->resourceTemplateProperties()
             : [];
 
-        $partial = $this->getViewHelper('partial');
         return $partial($options['viewName'], $options);
     }
 
     /**
      * Get the display markup for values where this resource is the RDF object.
      *
-     * Options:
-     *
-     * - viewName: Name of view script, or a view model. Default "common/linked-resources"
-     * - page: The page number
-     * - perPage: The number of resources per page
-     * - resourceProperty: Compound identifier with the pattern: <resource_type>:<property_id>
-     * - siteId: A site ID
-     *
-     * For resourceProperty, the <resource_type> can be items, item_sets, media.
-     * The <property_id> should follow the pattern laid out in
-     * AbstractResourceEntityAdapter::getSubjectValuesQueryBuilder(). If a
-     * $resourceProperty isn't passed or is invalid, the default is all
-     * properties for the "items" resource type.
-     *
-     * @param array $options
+     * @param int $page
+     * @param int $perPage
+     * @param int $property Filter by property ID
      * @return string
      */
-    public function displaySubjectValues(array $options = [])
+    public function displaySubjectValues($page = null, $perPage = null, $property = null)
     {
-        $services = $this->getServiceLocator();
-        $adapter = $this->getAdapter();
-
-        $viewName = $options['viewName'] ?? 'common/linked-resources';
-        $page = $options['page'] ?? null;
-        $perPage = $options['perPage'] ?? null;
-        $resourceProperty = $options['resourceProperty'] ?? null;
-        $siteId = $options['siteId'] ?? null;
-
-        $resourceType = 'items';
-        $propertyId = null;
-        if ($resourceProperty && false !== strpos($resourceProperty, ':')) {
-            // Derive the resource type and property ID from $resourceProperty.
-            [$resourceType, $propertyId] = explode(':', $resourceProperty);
-        }
-
-        $totalCount = $adapter->getSubjectValueTotalCount($this->resource, $propertyId, $resourceType, $siteId);
-        if (!$totalCount) {
-            return;
-        }
-        $subjectValues = $this->subjectValues($page, $perPage, $propertyId, $resourceType, $siteId);
+        $subjectValues = $this->subjectValues($page, $perPage, $property);
         if (!$subjectValues) {
-            return;
+            return null;
         }
-        $resourcePropertiesAll = [
-            'items' => $adapter->getSubjectValueProperties($this->resource, 'items', $siteId),
-            'item_sets' => $adapter->getSubjectValueProperties($this->resource, 'item_sets', $siteId),
-            'media' => $adapter->getSubjectValueProperties($this->resource, 'media', $siteId),
-        ];
-
         $partial = $this->getViewHelper('partial');
-        return $partial($viewName, [
+        return $partial('common/linked-resources', [
             'objectResource' => $this,
             'subjectValues' => $subjectValues,
             'page' => $page,
             'perPage' => $perPage,
-            'totalCount' => $totalCount,
-            'resourceProperty' => $resourceProperty,
-            'propertyId' => $propertyId,
-            'resourceType' => $resourceType,
-            'resourcePropertiesAll' => $resourcePropertiesAll,
+            'property' => $property,
+            'totalCount' => $this->subjectValueTotalCount($property),
+            'properties' => $this->subjectValueProperties(),
         ]);
     }
 
@@ -570,76 +501,41 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
      * Get the display title for this resource.
      *
      * @param string|null $default
-     * @param array|string|null $lang
      * @return string|null
      */
-    public function displayTitle($default = null, $lang = null)
+    public function displayTitle($default = null)
     {
-        $title = null;
-        $template = $this->resourceTemplate();
-        if ($template && $template->titleProperty()) {
-            $titleTerm = $template->titleProperty()->term();
-        } else {
-            $titleTerm = 'dcterms:title';
+        $title = $this->title();
+        if (null !== $title) {
+            return $title;
         }
 
-        if ($lang !== null) {
-            if ($titleValue = $this->value($titleTerm, ['lang' => $lang])) {
-                $title = (string) $titleValue->value();
-            }
+        if ($default === null) {
+            $translator = $this->getServiceLocator()->get('MvcTranslator');
+            $default = $translator->translate('[Untitled]');
         }
 
-        if ($title === null) {
-            $title = $this->title();
-        }
-
-        if ($title === null) {
-            if ($default === null) {
-                $translator = $this->getServiceLocator()->get('MvcTranslator');
-                $title = $translator->translate('[Untitled]');
-            } else {
-                $title = $default;
-            }
-        }
-
-        $eventManager = $this->getEventManager();
-        $args = $eventManager->prepareArgs(['title' => $title]);
-        $eventManager->trigger('rep.resource.display_title', $this, $args);
-
-        return $args['title'];
+        return $default;
     }
 
     /**
      * Get the display description for this resource.
      *
      * @param string|null $default
-     * @param array|string|null $lang
      * @return string|null
      */
-    public function displayDescription($default = null, $lang = null)
+    public function displayDescription($default = null)
     {
-        $description = null;
         $template = $this->resourceTemplate();
         if ($template && $template->descriptionProperty()) {
-            $descriptionTerm = $template->descriptionProperty()->term();
-        } else {
-            $descriptionTerm = 'dcterms:description';
-        }
-
-        if ($lang !== null) {
-            if ($descriptionValue = $this->value($descriptionTerm, ['default' => $default, 'lang' => $lang])) {
-                $description = (string) $descriptionValue->value();
+            $description = $this->value($template->descriptionProperty()->term());
+            if (null !== $description) {
+                return $description;
             }
         }
-
-        if ($description === null) {
-            $description = (string) $this->value($descriptionTerm, ['default' => $default]);
-        }
-
-        $eventManager = $this->getEventManager();
-        $args = $eventManager->prepareArgs(['description' => $description]);
-        $eventManager->trigger('rep.resource.display_description', $this, $args);
-        return $args['description'];
+        return (string) $this->value('dcterms:description', [
+            'default' => $default,
+        ]);
     }
 
     /**
@@ -655,18 +551,6 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
     }
 
     /**
-     * Get the display resource template label for this resource.
-     *
-     * @param string|null $default
-     * @return string|null
-     */
-    public function displayResourceTemplateLabel($default = null)
-    {
-        $resourceTemplate = $this->resourceTemplate();
-        return $resourceTemplate ? $resourceTemplate->label() : $default;
-    }
-
-    /**
      * Get a "pretty" link to this resource containing a thumbnail and
      * display title.
      *
@@ -674,22 +558,20 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
      * @param string|null $titleDefault See $default param for displayTitle()
      * @param string|null $action Action to link to (see link() and linkRaw())
      * @param array $attributes HTML attributes, key and value
-     * @param array|string|null $lang Language IETF tag
      * @return string
      */
     public function linkPretty(
         $thumbnailType = 'square',
         $titleDefault = null,
         $action = null,
-        array $attributes = null,
-        $lang = null
+        array $attributes = null
     ) {
         $escape = $this->getViewHelper('escapeHtml');
         $thumbnail = $this->getViewHelper('thumbnail');
         $linkContent = sprintf(
             '%s<span class="resource-name">%s</span>',
             $thumbnail($this, $thumbnailType),
-            $escape($this->displayTitle($titleDefault, $lang))
+            $escape($this->displayTitle($titleDefault))
         );
         if (empty($attributes['class'])) {
             $attributes['class'] = 'resource-link';

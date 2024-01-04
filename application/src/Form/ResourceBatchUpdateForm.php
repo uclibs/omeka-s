@@ -4,7 +4,6 @@ namespace Omeka\Form;
 use Omeka\Form\Element\ItemSetSelect;
 use Omeka\Form\Element\PropertySelect;
 use Omeka\Form\Element\ResourceClassSelect;
-use Omeka\Form\Element\SiteSelect;
 use Omeka\Form\Element\ResourceSelect;
 use Laminas\EventManager\Event;
 use Laminas\EventManager\EventManagerAwareTrait;
@@ -128,34 +127,6 @@ class ResourceBatchUpdateForm extends Form
                         'label' => 'Remove from item sets', // @translate
                     ],
                 ]);
-
-                $this->add([
-                    'name' => 'add_to_sites',
-                    'type' => SiteSelect::class,
-                    'attributes' => [
-                        'id' => 'add-to-sites',
-                        'class' => 'chosen-select',
-                        'multiple' => true,
-                        'data-placeholder' => 'Select sites', // @translate
-                    ],
-                    'options' => [
-                        'label' => 'Add to sites', // @translate
-                    ],
-                ]);
-
-                $this->add([
-                    'name' => 'remove_from_sites',
-                    'type' => SiteSelect::class,
-                    'attributes' => [
-                        'id' => 'remove-from-sites',
-                        'class' => 'chosen-select',
-                        'multiple' => true,
-                        'data-placeholder' => 'Select sites', // @translate
-                    ],
-                    'options' => [
-                        'label' => 'Remove from sites', // @translate
-                    ],
-                ]);
                 break;
 
             case 'media':
@@ -171,7 +142,7 @@ class ResourceBatchUpdateForm extends Form
                     'name' => 'language',
                     'type' => Element\Text::class,
                     'attributes' => [
-                        'class' => 'validate-language',
+                        'class' => 'value-language active',
                     ],
                     'options' => [
                         'label' => 'Set language', // @translate
@@ -241,14 +212,6 @@ class ResourceBatchUpdateForm extends Form
             'required' => false,
         ]);
         $inputFilter->add([
-            'name' => 'add_to_sites',
-            'required' => false,
-        ]);
-        $inputFilter->add([
-            'name' => 'remove_from_sites',
-            'required' => false,
-        ]);
-        $inputFilter->add([
             'name' => 'clear_property_values',
             'required' => false,
         ]);
@@ -281,7 +244,7 @@ class ResourceBatchUpdateForm extends Form
      * Preprocess data to get data to replace, to remove and to append.
      *
      * Batch update data contains instructions on what to update. It needs to be
-     * preprocessed before it's sent to the API. The elements are updated by
+     * preprocessed before it's sent to the API. The elements are udpated by
      * entity according to the attribute "data-collection-action", that can be
      * "replace" (default), "remove" or "append".
      *
@@ -318,9 +281,6 @@ class ResourceBatchUpdateForm extends Form
         }
         if (isset($data['remove_from_item_set'])) {
             $preData['remove']['o:item_set'] = $data['remove_from_item_set'];
-        }
-        if (isset($data['remove_from_sites'])) {
-            $preData['remove']['o:site'] = $data['remove_from_sites'];
         }
         if (isset($data['clear_property_values'])) {
             $preData['remove']['clear_property_values'] = $data['clear_property_values'];
@@ -361,15 +321,11 @@ class ResourceBatchUpdateForm extends Form
         if (isset($data['add_to_item_set'])) {
             $preData['append']['o:item_set'] = array_unique($data['add_to_item_set']);
         }
-        if (isset($data['add_to_sites'])) {
-            $preData['append']['o:site'] = array_unique($data['add_to_sites']);
-        }
 
         // Set remaining elements according to attribute data-collection-action.
         $processeds = [
             'is_public', 'is_open', 'resource_template', 'resource_class',
             'remove_from_item_set', 'add_to_item_set',
-            'remove_from_sites', 'add_to_sites',
             'clear_property_values', 'value',
             'clear_language', 'language',
             'csrf', 'id', 'o:id',

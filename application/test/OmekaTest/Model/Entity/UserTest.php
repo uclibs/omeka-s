@@ -9,7 +9,7 @@ class UserTest extends TestCase
 {
     protected $user;
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->user = new User;
     }

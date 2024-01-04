@@ -43,7 +43,7 @@ abstract class AbstractGroupByOwnerSelect extends Select
      */
     abstract public function getValueLabel($resource);
 
-    public function getValueOptions(): array
+    public function getValueOptions()
     {
         $query = $this->getOption('query');
         if (!is_array($query)) {

@@ -1,0 +1,196 @@
+/* @group ----- Grid ----- */
+
+#wrap {
+    max-width: (($total-columns * $column-width) + (($total-columns - 1) * $gutter-width));
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#content {
+    width: 75%;
+    padding: $spacing-unit;
+}
+
+#primary-nav {
+    width: 25%;
+    padding: $spacing-unit;
+}
+
+/* @end */
+
+/* @group ----- Header ----- */
+
+header {
+    background-size: cover !important;
+    -ms-behavior: url('../javascripts/backgroundsize.min.htc');
+    border-width: 0 0 20px 0;
+    border-style: solid;
+}
+
+.button.menu-button { display: none; }
+
+#primary-nav {
+    margin-top: .75 * $spacing-unit;
+    padding-right: 0;
+
+    ul.navigation {
+        display: block;
+        margin: 0;
+    }
+
+    .sub-nav-toggle {
+        background-color: transparent;
+    }
+
+    .active ul {
+        display: block;
+    }
+
+    ul {
+        margin-top: 0;
+        margin-bottom: 2 * $spacing-unit;
+    }
+
+    li {
+        background-color: #fff;
+
+        ul li { background-color: #fff; }
+
+        ul li ul li { background-color: #fff; }
+    }
+
+    ul.navigation > li a {
+        padding: $spacing-m;
+    }
+    
+    ul.navigation ul li a {
+        padding-left: $spacing-unit;
+    }
+    
+    a:link {
+        color: inherit;
+    }
+
+    a:hover {
+        position: relative;
+    }
+
+    a:hover:before {
+        content: "\f0da";
+        font-family: "Font Awesome 5 Free";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+
+#search {
+    margin: $spacing-unit 0;
+}
+
+#search-form {
+    margin-bottom: $spacing-unit;
+}
+
+#query {
+    margin-bottom: $spacing-unit;
+}
+
+/* == Browse Items == */
+
+.browse-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    
+    .advanced-search {
+        margin: 0;
+    }
+}
+
+
+.resource-meta:not(:only-child) {
+    width: 60%;
+    padding-right: $spacing-unit;
+}
+
+.resource-list a.thumbnail {
+    width: 40%;
+    float: right;
+    border-bottom: 0;
+    text-align: center;
+}
+
+/* @end */
+
+/* @group ----- Forms ----- */
+
+.field {
+    border-bottom:1px solid #ccc;
+    width:100%;
+    overflow: auto;
+    padding: (1 * $spacing-unit) 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    
+    .inputs {
+        width: calc(70% - #{.5 * $spacing-unit});
+    }
+
+    .field-meta {
+        width: calc(30% - #{.5 * $spacing-unit});
+    }
+
+    .columns.alpha label,
+    .columns.alpha .label {
+        width: 100%;
+    }
+}
+
+/* @end */
+
+/* @group ----- Pages ----- */
+
+.sub-menu {
+    float: left;
+    width: 30%;
+}
+
+.sub-menu ~ .blocks, 
+.sub-menu ~ .site-page-pagination {
+    width: 70%;
+    float: right;
+}
+
+.sub-menu a {
+    color: #000;
+}
+
+/* @end */
+
+.sitewide-search-form ~ h2 {
+  width: 50%;
+  float: left;
+  clear: both;
+}
+
+.sitewide-search-form ~ .pagination {
+  margin: (1.25 * $spacing-unit) 0 $spacing-unit;
+  text-align: right;
+  width: 50%;
+  float: right;
+}
+
+.sitewide-search-form ~ .advanced-search {
+  display: block;
+  float: left;
+}
+
+/* ----- Content ----- */
+
+.resource-list .thumbnail {
+    margin-bottom: 0;
+}

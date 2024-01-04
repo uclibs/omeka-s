@@ -186,15 +186,6 @@ return [
                 'resource' => 'Omeka\Controller\Admin\Setting',
                 'privilege' => 'browse',
             ],
-            [
-                'label' => 'Assets', // @translate
-                'class' => 'assets',
-                'route' => 'admin/default',
-                'controller' => 'asset',
-                'action' => 'browse',
-                'resource' => 'Omeka\Controller\Admin\Asset',
-                'privilege' => 'browse',
-            ],
         ],
         'site' => [
             [
@@ -254,18 +245,6 @@ return [
                 'action' => 'theme',
                 'privilege' => 'update',
                 'useRouteMatch' => true,
-                'pages' => [
-                    [
-                        'route' => 'admin/site/slug/action',
-                        'action' => 'theme-settings',
-                        'visible' => false,
-                    ],
-                    [
-                        'route' => 'admin/site/slug/action',
-                        'action' => 'theme-resource-pages',
-                        'visible' => false,
-                    ],
-                ],
             ],
         ],
     ],

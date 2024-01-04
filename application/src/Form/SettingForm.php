@@ -3,9 +3,8 @@ namespace Omeka\Form;
 
 use DateTimeZone;
 use Omeka\Form\Element\ArrayTextarea;
-use Omeka\Form\Element\PropertySelect;
-use Omeka\Form\Element\RestoreTextarea;
 use Omeka\Form\Element\SiteSelect;
+use Omeka\Form\Element\RestoreTextarea;
 use Omeka\Settings\Settings;
 use Laminas\Form\Form;
 use Laminas\EventManager\EventManagerAwareTrait;
@@ -102,18 +101,21 @@ class SettingForm extends Form
 
     public function init()
     {
-        $this->setOption('element_groups', [
-            'general' => 'General', // @translate
-            'security' => 'Security', // @translate
-        ]);
-
-        // General element group
+        // General fieldset
 
         $this->add([
+            'type' => 'fieldset',
+            'name' => 'general',
+            'options' => [
+                'label' => 'General', // @translate
+            ],
+        ]);
+        $generalFieldset = $this->get('general');
+
+        $generalFieldset->add([
             'name' => 'administrator_email',
             'type' => 'Email',
             'options' => [
-                'element_group' => 'general',
                 'label' => 'Administrator email', // @translate
             ],
             'attributes' => [
@@ -123,11 +125,10 @@ class SettingForm extends Form
             ],
         ]);
 
-        $this->add([
+        $generalFieldset->add([
             'name' => 'installation_title',
             'type' => 'Text',
             'options' => [
-                'element_group' => 'general',
                 'label' => 'Installation title', // @translate
             ],
             'attributes' => [
@@ -139,11 +140,10 @@ class SettingForm extends Form
 
         $timeZones = DateTimeZone::listIdentifiers();
         $timeZones = array_combine($timeZones, $timeZones);
-        $this->add([
+        $generalFieldset->add([
             'name' => 'time_zone',
             'type' => 'Select',
             'options' => [
-                'element_group' => 'general',
                 'label' => 'Time zone', // @translate
                 'value_options' => $timeZones,
             ],
@@ -154,11 +154,10 @@ class SettingForm extends Form
             ],
         ]);
 
-        $this->add([
+        $generalFieldset->add([
             'name' => 'pagination_per_page',
             'type' => 'Text',
             'options' => [
-                'element_group' => 'general',
                 'label' => 'Results per page', // @translate
                 'info' => 'The maximum number of results per page on browse pages.', // @translate
             ],
@@ -169,11 +168,10 @@ class SettingForm extends Form
             ],
         ]);
 
-        $this->add([
+        $generalFieldset->add([
             'name' => 'property_label_information',
             'type' => 'Select',
             'options' => [
-                'element_group' => 'general',
                 'label' => 'Property label information', // @translate
                 'info' => 'The additional information that accompanies labels on resource pages.', // @translate
                 'value_options' => [
@@ -188,11 +186,10 @@ class SettingForm extends Form
             ],
         ]);
 
-        $this->add([
+        $generalFieldset->add([
             'name' => 'default_site',
             'type' => SiteSelect::class,
             'options' => [
-                'element_group' => 'general',
                 'label' => 'Default site', // @translate
                 'info' => 'Select which site should appear when users go to the front page of the installation.', // @translate
                 'empty_option' => '',
@@ -206,11 +203,10 @@ class SettingForm extends Form
             ],
         ]);
 
-        $this->add([
+        $generalFieldset->add([
             'name' => 'locale',
             'type' => 'Omeka\Form\Element\LocaleSelect',
             'options' => [
-                'element_group' => 'general',
                 'label' => 'Locale', // @translate
                 'info' => 'Global locale/language code for all interfaces.', // @translate
             ],
@@ -221,11 +217,10 @@ class SettingForm extends Form
             ],
         ]);
 
-        $this->add([
+        $generalFieldset->add([
             'name' => 'version_notifications',
             'type' => 'Checkbox',
             'options' => [
-                'element_group' => 'general',
                 'label' => 'Enable version notifications', // @translate
                 'info' => 'Enable notifications when a new version of Omeka S, modules, or themes are available.', // @translate
             ],
@@ -235,11 +230,10 @@ class SettingForm extends Form
             ],
         ]);
 
-        $this->add([
+        $generalFieldset->add([
             'name' => 'disable_jsonld_embed',
             'type' => 'Checkbox',
             'options' => [
-                'element_group' => 'general',
                 'label' => 'Disable JSON-LD embed', // @translate
                 'info' => 'By default, Omeka embeds JSON-LD in resource browse and show pages for the purpose of machine-readable metadata discovery. Check this to disable embedding.', // @translate
             ],
@@ -249,11 +243,10 @@ class SettingForm extends Form
             ],
         ]);
 
-        $this->add([
+        $generalFieldset->add([
             'name' => 'default_to_private',
             'type' => 'Checkbox',
             'options' => [
-                'element_group' => 'general',
               'label' => 'Default content visibility to Private', // @translate
               'info' => 'If checked, all items, item sets and sites newly created will have their visibility set to private by default.', // @translate
             ],
@@ -263,11 +256,10 @@ class SettingForm extends Form
             ],
         ]);
 
-        $this->add([
+        $generalFieldset->add([
             'name' => 'value_languages',
             'type' => ArrayTextarea::class,
             'options' => [
-                'element_group' => 'general',
                 'label' => 'Suggested languages for values', // @translate
                 'info' => 'List of languages to facilitate filling of the values in the resource form. List them one by line. The label displayed for a language may be appended with a "=".', // @translate
                 'as_key_value' => true,
@@ -278,28 +270,10 @@ class SettingForm extends Form
             ],
         ]);
 
-        $this->add([
-            'name' => 'media_alt_text_property',
-            'type' => PropertySelect::class,
-            'options' => [
-                'element_group' => 'general',
-                'label' => 'Media alt text property', // @translate
-                'info' => 'Media property to use as alt text if no alt text is explicitly set.', // @translate
-                'empty_option' => '[None]', // @translate
-                'term_as_value' => true,
-            ],
-            'attributes' => [
-                'id' => 'media_alt_text_property',
-                'class' => 'chosen-select',
-                'value' => $this->settings->get('media_alt_text_property'),
-            ],
-        ]);
-
-        $this->add([
+        $generalFieldset->add([
             'name' => 'index_fulltext_search',
             'type' => 'Checkbox',
             'options' => [
-                'element_group' => 'general',
               'label' => 'Index full-text search', // @translate
             ],
             'attributes' => [
@@ -308,13 +282,21 @@ class SettingForm extends Form
             ],
         ]);
 
-        // Security element group
+        // Security fieldset
 
         $this->add([
+            'type' => 'fieldset',
+            'name' => 'security',
+            'options' => [
+                'label' => 'Security', // @translate
+            ],
+        ]);
+        $securityFieldset = $this->get('security');
+
+        $securityFieldset->add([
             'name' => 'use_htmlpurifier',
             'type' => 'Checkbox',
             'options' => [
-                'element_group' => 'security',
                 'label' => 'Use HTMLPurifier', // @translate
                 'info' => 'Clean up user-entered HTML.', // @translate
             ],
@@ -324,11 +306,10 @@ class SettingForm extends Form
             ],
         ]);
 
-        $this->add([
+        $securityFieldset->add([
             'type' => 'checkbox',
             'name' => 'disable_file_validation',
             'options' => [
-                'element_group' => 'security',
                 'label' => 'Disable file validation', // @translate
                 'info' => 'Check this to disable file media type and extension validation.', // @translate
             ],
@@ -341,7 +322,6 @@ class SettingForm extends Form
         $mediaTypeWhitelist
             ->setLabel('Allowed media types') // @translate
             ->setOption('info', 'A comma-separated list of allowed media types for file uploads.') // @translate
-            ->setOption('element_group', 'security')
             ->setAttributes([
                 'rows' => '4',
                 'id' => 'media_type_whitelist',
@@ -349,13 +329,12 @@ class SettingForm extends Form
             ->setRestoreButtonText('Restore default media types')
             ->setValue(implode(',', $this->settings->get('media_type_whitelist', [])))
             ->setRestoreValue(implode(',', self::MEDIA_TYPE_WHITELIST));
-        $this->add($mediaTypeWhitelist);
+        $securityFieldset->add($mediaTypeWhitelist);
 
         $extensionWhitelist = new RestoreTextarea('extension_whitelist');
         $extensionWhitelist
             ->setLabel('Allowed file extensions') // @translate
             ->setOption('info', 'A comma-separated list of allowed file extensions for file uploads.') // @translate
-            ->setOption('element_group', 'security')
             ->setAttributes([
                 'rows' => '4',
                 'id' => 'extension_whitelist',
@@ -363,13 +342,12 @@ class SettingForm extends Form
             ->setRestoreButtonText('Restore default extensions')
             ->setValue(implode(',', $this->settings->get('extension_whitelist', [])))
             ->setRestoreValue(implode(',', self::EXTENSION_WHITELIST));
-        $this->add($extensionWhitelist);
+        $securityFieldset->add($extensionWhitelist);
 
-        $this->add([
+        $securityFieldset->add([
             'type' => 'text',
             'name' => 'recaptcha_site_key',
             'options' => [
-                'element_group' => 'security',
                 'label' => 'reCAPTCHA site key', // @translate
             ],
             'attributes' => [
@@ -377,11 +355,10 @@ class SettingForm extends Form
                 'id' => 'recaptcha_site_key',
             ],
         ]);
-        $this->add([
+        $securityFieldset->add([
             'type' => 'text',
             'name' => 'recaptcha_secret_key',
             'options' => [
-                'element_group' => 'security',
                 'label' => 'reCAPTCHA secret key', // @translate
             ],
             'attributes' => [
@@ -397,7 +374,8 @@ class SettingForm extends Form
 
         $inputFilter = $this->getInputFilter();
 
-        $inputFilter->add([
+        $generalInputFilter = $inputFilter->get('general');
+        $generalInputFilter->add([
             'name' => 'pagination_per_page',
             'required' => true,
             'filters' => [
@@ -407,20 +385,17 @@ class SettingForm extends Form
                 ['name' => 'Digits'],
             ],
         ]);
-        $inputFilter->add([
+        $generalInputFilter->add([
             'name' => 'default_site',
             'allow_empty' => true,
         ]);
-        $inputFilter->add([
+        $generalInputFilter->add([
             'name' => 'locale',
             'allow_empty' => true,
         ]);
-        $inputFilter->add([
-            'name' => 'media_alt_text_property',
-            'allow_empty' => true,
-        ]);
 
-        $inputFilter->add([
+        $securityInputFilter = $inputFilter->get('security');
+        $securityInputFilter->add([
             'name' => 'media_type_whitelist',
             'required' => false,
             'filters' => [
@@ -438,7 +413,7 @@ class SettingForm extends Form
                 ],
             ],
         ]);
-        $inputFilter->add([
+        $securityInputFilter->add([
             'name' => 'extension_whitelist',
             'required' => false,
             'filters' => [

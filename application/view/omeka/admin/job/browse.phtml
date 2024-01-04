@@ -2,13 +2,31 @@
 $translate = $this->plugin('translate');
 $escape = $this->plugin('escapeHtml');
 $this->htmlElement('body')->appendAttribute('class', 'jobs browse');
+$sortHeadings = [
+    [
+        'label' => $translate('ID'),
+        'value' => 'id'
+    ],
+    [
+        'label' => $translate('Class'),
+        'value' => 'class'
+    ],
+    [
+        'label' => $translate('Status'),
+        'value' => 'status'
+    ],
+    [
+        'label' => $translate('Owner'),
+        'value' => 'owner'
+    ]
+];
 ?>
 
 <?php echo $this->pageTitle($translate('Jobs')); ?>
 
 <div class="browse-controls">
     <?php echo $this->pagination(); ?>
-    <?php echo $this->browse()->renderSortSelector('jobs'); ?>
+    <?php echo $this->sortSelector($sortHeadings); ?>
 </div>
 <?php $this->trigger('view.browse.before'); ?>
 
@@ -61,3 +79,5 @@ $this->htmlElement('body')->appendAttribute('class', 'jobs browse');
 </div>
 
 <?php endif; ?>
+
+
