@@ -1,9 +1,0 @@
-@import "base";
-//media query para dos tamaños.
-@media screen {
-    @import "screen";
-}
-
-@media screen and (min-width:800px) {
-    @import "desktop";
-}
