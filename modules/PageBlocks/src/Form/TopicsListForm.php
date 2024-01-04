@@ -3,7 +3,7 @@ namespace PageBlocks\Form;
 
 use Laminas\Form\Element;
 use Laminas\Form\Fieldset;
-use Omeka\Form\Element\ColorPicker;
+use Omeka\Form\Element as OmekaElement;
 
 class TopicsListForm extends Fieldset
 {
@@ -19,7 +19,7 @@ class TopicsListForm extends Fieldset
         
         $this->add([
             'name' => 'o:block[__blockIndex__][o:data][button_color]',
-            'type' => ColorPicker::class,
+            'type' => OmekaElement\ColorPicker::class,
             'options' => [
                 'label' => 'Button color', // @translate
             ],
@@ -27,7 +27,7 @@ class TopicsListForm extends Fieldset
         
         $this->add([
             'name' => 'o:block[__blockIndex__][o:data][text_color]',
-            'type' => ColorPicker::class,
+            'type' => OmekaElement\ColorPicker::class,
             'options' => [
                 'label' => 'Text color', // @translate
             ],

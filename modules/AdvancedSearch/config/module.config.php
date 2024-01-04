@@ -44,7 +44,6 @@ return [
             'facetSelect' => View\Helper\FacetSelect::class,
             'facetSelectRange' => View\Helper\FacetSelectRange::class,
             'formMultiText' => Form\View\Helper\FormMultiText::class,
-            'formNote' => Form\View\Helper\FormNote::class,
             'getSearchConfig' => View\Helper\GetSearchConfig::class,
             'hiddenInputsFromFilteredQuery' => View\Helper\HiddenInputsFromFilteredQuery::class,
             'searchFilters' => View\Helper\SearchFilters::class,
@@ -90,7 +89,6 @@ return [
             Form\Element\ArrayText::class => Form\Element\ArrayText::class,
             Form\Element\DataTextarea::class => Form\Element\DataTextarea::class,
             Form\Element\MultiText::class => Form\Element\MultiText::class,
-            Form\Element\Note::class => Form\Element\Note::class,
             Form\Element\OptionalMultiCheckbox::class => Form\Element\OptionalMultiCheckbox::class,
             Form\Element\OptionalRadio::class => Form\Element\OptionalRadio::class,
             Form\Element\OptionalSelect::class => Form\Element\OptionalSelect::class,
@@ -378,19 +376,24 @@ return [
             'advancedsearch_main_config' => 1,
             'advancedsearch_configs' => [1],
             'advancedsearch_api_config' => '',
+            // TODO Remove this option if there is no issue with sync or async (except multiple search engines).
+            'advancedsearch_index_batch_edit' => 'sync',
             'advancedsearch_batch_size' => 100,
             // Hidden value.
             'advancedsearch_all_configs' => [1 => 'find'],
         ],
         'site_settings' => [
-            'advancedsearch_restrict_used_terms' => true,
             'advancedsearch_search_fields' => [
+                'common/advanced-search/sort',
                 'common/advanced-search/fulltext',
                 'common/advanced-search/properties',
                 'common/advanced-search/resource-class',
+                // 'common/advanced-search/resource-template',
                 'common/advanced-search/item-sets',
                 'common/advanced-search/date-time',
                 'common/advanced-search/has-media',
+                'common/advanced-search/ids',
+                // Modules.
                 'common/advanced-search/media-type',
                 'common/advanced-search/data-type-geography',
                 'common/numeric-data-types-advanced-search',
@@ -417,17 +420,16 @@ return [
         // config/local.config.php) are not managed by this module.
         'search_fields' => [
             // From view/common/advanced-search'.
+            'common/advanced-search/sort' => ['label' => 'Sort'], // @translate
             'common/advanced-search/fulltext' => ['label' => 'Full text'], // @translate
             'common/advanced-search/properties' => ['label' => 'Properties'], // @translate
             'common/advanced-search/resource-class' => ['label' => 'Classes'], // @translate
             'common/advanced-search/resource-template' => ['label' => 'Templates', 'default' => false], // @translate
-            'common/advanced-search/resource-template-restrict' => ['label' => 'Templates (restricted)', 'default' => false], // @translate
+            // This partial is managed separately by a core option.
+            //'common/advanced-search/resource-template-restrict' => ['label' => 'Templates (restricted)', 'default' => false], // @translate
             'common/advanced-search/item-sets' => ['label' => 'Item sets'], // @translate
             'common/advanced-search/owner' => ['label' => 'Owner', 'default' => false], // @translate
             'common/advanced-search/site' => ['label' => 'Site', 'default' => false], // @translate
-            'common/advanced-search/sort' => ['label' => 'Sort', 'default' => false], // @translate
-            // This partial is managed separately by a core option.
-            // 'common/advanced-search/resource-template-restrict' => ['label' => 'Resource template restrict'],
             // From module advanced search plus.
             'common/advanced-search/date-time' => ['label' => 'Date time'], // @translate
             'common/advanced-search/has-media' => ['label' => 'Has media'], // @translate

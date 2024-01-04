@@ -78,7 +78,7 @@ class Showcase extends AbstractBlockLayout
         $defaultSettings = $services->get('Config')['blockplus']['block_settings']['showcase'];
         $blockFieldset = \BlockPlus\Form\ShowcaseFieldset::class;
 
-        $data = $block ? $block->data() + $defaultSettings : $defaultSettings;
+        $data = $block ? ($block->data() ?? []) + $defaultSettings : $defaultSettings;
 
         foreach ($data['entries'] as &$entry) {
             $entry = $entry['entry'] ?? '';
@@ -165,6 +165,9 @@ class Showcase extends AbstractBlockLayout
                     'caption' => $caption,
                     'body' => $body,
                 ];
+                if (($asset . $title . $caption . $body) === '' && strpos(trim($entry), ' ')) {
+                    [$normEntry['data']['url'], $normEntry['data']['title']] = explode(' ', $entry, 2);
+                }
                 $result[] = $normEntry;
                 continue;
             }
