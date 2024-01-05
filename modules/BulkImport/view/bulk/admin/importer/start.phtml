@@ -1,0 +1,62 @@
+<?php
+/**
+ * @var \Laminas\View\Renderer\PhpRenderer $this
+ * @var \BulkImport\Api\Representation\ImporterRepresentation $importer
+ * @var \BulkImport\Form\ImporterForm $form
+ * @var array $importArgs
+ * @var bool $storeAsTask
+ * @var string $messagePre
+ * @var string $messagePost
+ */
+
+$plugins = $this->getHelperPluginManager();
+$escape = $plugins->get('escapeHtml');
+$translate = $plugins->get('translate');
+
+$this->htmlElement('body')->appendAttribute('class', 'bulk-importers bulk-imports edit');
+$this->headLink()->appendStylesheet($this->assetUrl('css/bulk-import.css', 'BulkImport'));
+
+$form->prepare();
+
+$storeAsTask = !empty($storeAsTask) && $form->has('start_submit');
+if ($storeAsTask) {
+    $form->get('start_submit')->get('submit')->setValue('Store import'); // @translate
+}
+?>
+
+<?= $this->pageTitle($translate('Importer'), 1, $translate('Bulk import')) ?>
+
+<div id="bulk-import">
+    <h2><?= $escape($storeAsTask ? $translate('Store import') : $translate('Start import')) ?></h2>
+    <h3><?= $escape(sprintf($translate('Importer: %s'), $importer->label())) ?></h3>
+
+    <?php if ($messagePre): ?>
+    <div><?= $messagePre ?></div>
+    <?php endif; ?>
+
+    <?php if (isset($importArgs)): ?>
+    <?php $comment = $importArgs['comment']; ?>
+    <?php unset($importArgs['comment']); ?>
+    <p><?= $escape(sprintf($translate('Comment: %s'), $comment)) ?></p>
+    <h3><?= $escape($translate('Parameters')) ?></h3>
+    <h4><?= $escape($translate('Reader')) ?></h4>
+    <div class="value">
+        <pre><?= $escape(json_encode($importArgs['reader'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) ?></pre>
+    </div>
+    <h4><?= $escape($translate('Processor')) ?></h4>
+    <div class="value">
+        <pre><?= $escape(json_encode($importArgs['processor'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) ?></pre>
+    </div>
+    <?php endif; ?>
+
+    <?php
+    echo $this->form()->openTag($form);
+    echo $this->formCollection($form);
+    echo $this->form()->closeTag();
+    ?>
+
+    <?php if ($messagePost): ?>
+    <div><?= $messagePost ?></div>
+    <?php endif; ?>
+
+</div>
