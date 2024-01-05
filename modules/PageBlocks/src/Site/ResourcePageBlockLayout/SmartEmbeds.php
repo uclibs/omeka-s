@@ -38,6 +38,11 @@ class SmartEmbeds implements ResourcePageBlockLayoutInterface
     {
         if ($resource instanceof ItemRepresentation)
         {
+            if (is_null($resource->primaryMedia()))
+            {
+                return "";
+            }
+            
             return self::shouldUseLightbox($resource->primaryMedia(), $this->pdfCapable) ?
                 $view->partial('common/resource-page-block-layout/lightbox-gallery-item', [
                     'resource' => $resource

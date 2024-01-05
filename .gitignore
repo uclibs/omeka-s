@@ -1,8 +1,4 @@
-logs/*
-
 config/database.ini
-
+modules1424
 files/*
 !files/index.html
-modules-old/*
-themes-old/*

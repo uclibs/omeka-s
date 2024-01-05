@@ -5,7 +5,7 @@
 # 
 # Translators:
 # John P <ipapaste@gmail.com>, 2020
-# John Flatness <john@omeka.org>, 2021
+# John Flatness <john@omeka.org>, 2023
 # Yannis Kaskamanidis <kiolalis@gmail.com>, 2023
 # 
 #, fuzzy
@@ -13,10 +13,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-13 15:06-0500\n"
+"POT-Creation-Date: 2023-04-10 21:23-0400\n"
 "PO-Revision-Date: 2017-06-13 18:56+0000\n"
 "Last-Translator: Yannis Kaskamanidis <kiolalis@gmail.com>, 2023\n"
-"Language-Team: Greek (Greece) (https://www.transifex.com/omeka/teams/14184/el_GR/)\n"
+"Language-Team: Greek (Greece) (https://app.transifex.com/omeka/teams/14184/el_GR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -66,20 +66,20 @@ msgstr "Ο προσαρμογέας %1$s δεν υλοποιεί τη λειτο
 #: application/src/Api/Adapter/AbstractEntityAdapter.php:292
 #, php-format
 msgid "The \"%1$s\" field is not available in the %2$s adapter class."
-msgstr ""
+msgstr "Το πεδίο \"%1$s\" δεν είναι διαθέσιμο στην κατηγορία προσαρμογέα %2$s."
 
 #: application/src/Api/Adapter/AbstractEntityAdapter.php:308
 #, php-format
 msgid "The \"%1$s\" field is not available in the %2$s entity class."
 msgstr "Το πεδίο \"%1$s\" δεν είναι διαθέσιμο στην κατηγορία οντοτήτων %2$s."
 
-#: application/src/Api/Adapter/AbstractEntityAdapter.php:673
+#: application/src/Api/Adapter/AbstractEntityAdapter.php:680
 #: application/src/Api/Manager.php:209
 #, php-format
 msgid "Permission denied for the current user to %1$s the %2$s resource."
 msgstr "Απορρίφθηκε η άδεια για τον τρέχοντα χρήστη για %1$s τον πόρο %2$s."
 
-#: application/src/Api/Adapter/AbstractEntityAdapter.php:715
+#: application/src/Api/Adapter/AbstractEntityAdapter.php:722
 #, php-format
 msgid "%1$s entity with criteria %2$s not found"
 msgstr "%1$s οντότητα με κριτήρια %2$s δεν βρέθηκε"
@@ -98,9 +98,9 @@ msgid "The API does not support the \"%s\" resource."
 msgstr "Το API δεν υποστηρίζει περιεχόμενο τύπου \"%s\"."
 
 #: application/src/Api/Representation/AbstractResourceEntityRepresentation.php:599
-#: application/view/common/block-layout/browse-preview.phtml:23
-#: application/view/omeka/site/item-set/browse.phtml:26
-#: application/view/omeka/site/item/browse.phtml:44
+#: application/view/common/block-layout/browse-preview.phtml:25
+#: application/view/omeka/site/item-set/browse.phtml:28
+#: application/view/omeka/site/item/browse.phtml:46
 msgid "[Untitled]"
 msgstr "[Χωρίς τίτλο]"
 
@@ -190,14 +190,14 @@ msgstr "Προσθήκη νέου resource template;"
 #: application/src/Controller/Admin/SystemInfoController.php:89
 #: application/src/Controller/Admin/SystemInfoController.php:94
 msgid "[invalid]"
-msgstr ""
+msgstr "[μη έγκυρο]"
 
 #: application/src/Controller/Admin/SystemInfoController.php:134
 #: application/src/Controller/Admin/SystemInfoController.php:145
 msgid "[Unable to execute command]"
-msgstr ""
+msgstr "[Αδυναμία εκτέλεσης της εντολής]"
 
-#: application/src/Controller/Admin/UserController.php:117
+#: application/src/Controller/Admin/UserController.php:119
 msgid "Add another user?"
 msgstr "Θέλετε να προσθέσετε νέο χρήστη;"
 
@@ -230,8 +230,8 @@ msgstr "Το περιεχόμενο με id %s δεν βρέθηκε."
 #: application/view/omeka/admin/resource-template/show-details.phtml:18
 #: application/view/omeka/admin/user/show-details.phtml:12
 #: application/view/omeka/site-admin/index/resources.phtml:22
-#: application/view/omeka/site/item/browse.phtml:25
 #: application/view/omeka/site/item/browse.phtml:27
+#: application/view/omeka/site/item/browse.phtml:29
 msgid "Items"
 msgstr "Αντικείμενα"
 
@@ -253,7 +253,7 @@ msgstr "Ομάδες αντικειμένων"
 #: application/view/omeka/admin/media/search.phtml:5
 #: application/view/omeka/admin/media/show.phtml:11
 #: application/view/omeka/site-admin/page/attachment-item-options.phtml:32
-#: application/view/omeka/site/media/show.phtml:9
+#: application/view/omeka/site/media/show.phtml:12
 msgid "Media"
 msgstr "Πολυμέσα"
 
@@ -360,7 +360,7 @@ msgid "Permission denied for the current user to %1$s the %2$s module."
 msgstr ""
 "Απορρίφθηκε η άδεια για τον τρέχοντα χρήστη για %1$s το πρόσθετο %2$s."
 
-#: application/src/Mvc/MvcListeners.php:456
+#: application/src/Mvc/MvcListeners.php:458
 #, php-format
 msgid ""
 "Permission denied for the current user to access the %1$s action of the %2$s"
@@ -468,7 +468,7 @@ msgid "Thumbnail type"
 msgstr "Είδος μικρογραφίας"
 
 #: application/src/View/Helper/CancelButton.php:14
-#: application/view/common/query-form.phtml:27
+#: application/view/common/query-form.phtml:26
 #: application/view/omeka/admin/vocabulary/update.phtml:23
 msgid "Cancel"
 msgstr "Άκυρο"
@@ -525,22 +525,22 @@ msgstr "δεν περιλαμβάνει"
 #: application/src/View/Helper/SearchFilters.php:36
 #: application/view/common/advanced-search/properties.phtml:80
 msgid "starts with"
-msgstr ""
+msgstr "αρχίζει με"
 
 #: application/src/View/Helper/SearchFilters.php:37
 #: application/view/common/advanced-search/properties.phtml:81
 msgid "does not start with"
-msgstr ""
+msgstr "δεν αρχίζει με"
 
 #: application/src/View/Helper/SearchFilters.php:38
 #: application/view/common/advanced-search/properties.phtml:82
 msgid "ends with"
-msgstr ""
+msgstr "τελειώνει με"
 
 #: application/src/View/Helper/SearchFilters.php:39
 #: application/view/common/advanced-search/properties.phtml:83
 msgid "does not end with"
-msgstr ""
+msgstr "δεν τελειώνει με"
 
 #: application/src/View/Helper/SearchFilters.php:40
 #: application/view/common/advanced-search/properties.phtml:84
@@ -634,7 +634,7 @@ msgstr "Άγνωστο πρότυπο"
 
 #: application/src/View/Helper/SearchFilters.php:160
 msgid "In item set"
-msgstr ""
+msgstr "Βρίσκεται στην ομάδα αντικειμένων"
 
 #: application/src/View/Helper/SearchFilters.php:164
 #: application/src/View/Helper/SearchFilters.php:182
@@ -643,7 +643,7 @@ msgstr "Άγνωστη ομάδα αντικειμένων"
 
 #: application/src/View/Helper/SearchFilters.php:178
 msgid "Not in item set"
-msgstr ""
+msgstr "Δεν βρίσκεται στην ομάδα αντικειμένων"
 
 #: application/src/View/Helper/SearchFilters.php:190
 #: application/view/omeka/site-admin/index/users.phtml:54
@@ -699,17 +699,17 @@ msgstr "Μη δημόσια"
 
 #: application/src/View/Helper/SearchFilters.php:215
 msgid "Media presence"
-msgstr ""
+msgstr "Παρουσία μέσου"
 
 #: application/src/View/Helper/SearchFilters.php:216
 #: application/view/common/advanced-search/has-media.phtml:5
 msgid "Has media"
-msgstr ""
+msgstr "Έχει πολυμέσο"
 
 #: application/src/View/Helper/SearchFilters.php:216
 #: application/view/common/advanced-search/has-media.phtml:6
 msgid "Has no media"
-msgstr ""
+msgstr "Δεν έχει πολυμέσο"
 
 #: application/src/View/Helper/SearchFilters.php:220
 #: application/view/omeka/admin/item-set/show-details.phtml:13
@@ -774,7 +774,7 @@ msgstr "Το μέγιστο επιτρεπόμενο μέγεθος είναι %
 
 #: application/src/View/Helper/UserBar.php:120
 #: application/src/View/Helper/UserBar.php:166
-#: application/view/common/query-form.phtml:24
+#: application/view/common/query-form.phtml:23
 #: application/view/omeka/admin/asset/browse.phtml:57
 #: application/view/omeka/admin/asset/edit.phtml:10
 #: application/view/omeka/admin/item-set/browse.phtml:74
@@ -803,15 +803,15 @@ msgstr "Προβολή"
 
 #: application/view/common/advanced-search/has-media.phtml:3
 msgid "Search by media presence"
-msgstr ""
+msgstr "Αναζήτηση με παρουσία πολυμέσου"
 
 #: application/view/common/advanced-search/has-media.phtml:8
 msgid "Select media presence…"
-msgstr ""
+msgstr "Επιλογή παρουσίας πολυμέσου..."
 
 #: application/view/common/advanced-search/ids.phtml:12
 msgid "Search by ID"
-msgstr ""
+msgstr "Αναζήτηση με ID"
 
 #: application/view/common/advanced-search/ids.phtml:13
 #: application/view/common/advanced-search/item-sets.phtml:44
@@ -820,7 +820,7 @@ msgstr ""
 #: application/view/common/advanced-search/resource-template.phtml:17
 #: application/view/common/advanced-search/site.phtml:4
 #: application/view/common/form-row.phtml:16
-#: application/view/common/resource-values.phtml:58
+#: application/view/common/resource-values.phtml:73
 #: application/view/omeka/admin/item-set/sidebar-select.phtml:19
 #: application/view/omeka/admin/item/sidebar-select.phtml:28
 msgid "Expand"
@@ -831,6 +831,8 @@ msgid ""
 "Searches for resources by Omeka S ID. You can search for more than one ID by"
 " separating them by commas."
 msgstr ""
+"Αναζήτηση πόρων με Omeka S ID. Μπορείτε να κάνετε αναζήτηση με περισσότερα "
+"από ένα ID διαχωρίζοντάς τα με κόμματα."
 
 #: application/view/common/advanced-search/item-sets.phtml:43
 msgid "Search by item set"
@@ -850,11 +852,11 @@ msgstr "Προσθήκη νέας ομάδας αντικειμένων"
 
 #: application/view/common/advanced-search/item-sets.phtml:54
 msgid "In"
-msgstr ""
+msgstr "Εντός"
 
 #: application/view/common/advanced-search/item-sets.phtml:55
 msgid "Not in"
-msgstr ""
+msgstr "Όχι εντός"
 
 #: application/view/common/advanced-search/item-sets.phtml:66
 #: application/view/common/advanced-search/properties.phtml:90
@@ -975,11 +977,11 @@ msgstr "Αναζήτηση με δραστηριότητα"
 
 #: application/view/common/advanced-search/visibility.phtml:3
 msgid "Search by visibility"
-msgstr ""
+msgstr "Αναζήτηση με ορατότητα"
 
 #: application/view/common/advanced-search/visibility.phtml:8
 msgid "Select visibility…"
-msgstr ""
+msgstr "Επιλογή ορατότητας..."
 
 #: application/view/common/asset-block-form.phtml:7
 #: application/view/common/asset-block-form.phtml:40
@@ -1039,7 +1041,7 @@ msgstr "Επιλογή"
 
 #: application/view/common/asset-form.phtml:41
 #: application/view/common/asset-options.phtml:37
-#: application/view/common/query-form.phtml:29
+#: application/view/common/query-form.phtml:28
 msgid "Clear"
 msgstr "Καθαρισμός"
 
@@ -1095,7 +1097,7 @@ msgstr "[Δεν επιλέχθηκε σελίδα]"
 #: application/view/omeka/admin/vocabulary/classes.phtml:52
 #: application/view/omeka/admin/vocabulary/properties.phtml:53
 #: application/view/omeka/site-admin/index/index.phtml:71
-#: application/view/omeka/site-admin/index/navigation.phtml:31
+#: application/view/omeka/site-admin/index/navigation.phtml:30
 #: application/view/omeka/site-admin/page/edit.phtml:56
 #: application/view/omeka/site-admin/page/index.phtml:78
 msgid "Close"
@@ -1153,7 +1155,7 @@ msgstr "Επαναφορά τιμής"
 #: application/view/common/cross-site-search/results.phtml:70
 #: application/view/common/data-type/resource.phtml:30
 #: application/view/common/item-set-selector.phtml:11
-#: application/view/common/resource-page-block-layout/item-sets.phtml:7
+#: application/view/common/resource-page-block-layout/item-sets.phtml:9
 #: application/view/layout/layout-admin.phtml:72
 #: application/view/omeka/admin/item-set/add.phtml:6
 #: application/view/omeka/admin/item-set/browse.phtml:7
@@ -1165,7 +1167,7 @@ msgstr "Επαναφορά τιμής"
 #: application/view/omeka/admin/item/show.phtml:69
 #: application/view/omeka/admin/user/show-details.phtml:17
 #: application/view/omeka/site-admin/index/resources.phtml:23
-#: application/view/omeka/site/item-set/browse.phtml:11
+#: application/view/omeka/site/item-set/browse.phtml:13
 msgid "Item sets"
 msgstr "Ομάδες αντικειμένων"
 
@@ -1185,11 +1187,11 @@ msgstr "Τροποποιήθηκε"
 
 #: application/view/common/browse-defaults-form.phtml:12
 msgid "[Custom sort by]"
-msgstr ""
+msgstr "[Προσαρμοσμένη ταξινόμηση με]"
 
 #: application/view/common/browse-defaults-form.phtml:17
 msgid "Enter a custom sort by"
-msgstr ""
+msgstr "Καταχώριση προσαρμοσμένης ταξινόμησης με"
 
 #: application/view/common/columns-form.phtml:16
 #: application/view/omeka/admin/item/add.phtml:13
@@ -1231,7 +1233,7 @@ msgid "Item set results for \"%s\""
 msgstr "Αποτελέσματα ομάδας αντικειμένων για \"%s\""
 
 #: application/view/common/cross-site-search/results.phtml:6
-#: application/view/omeka/site/index/search.phtml:11
+#: application/view/omeka/site/index/search.phtml:12
 #, php-format
 msgid "Search results for “%s”"
 msgstr "Αναζήτηση αποτελεσμάτων για \"%s\""
@@ -1244,13 +1246,13 @@ msgstr "Σελίδες ιστότοπου"
 #: application/view/common/cross-site-search/results.phtml:24
 #: application/view/common/cross-site-search/results.phtml:55
 #: application/view/common/cross-site-search/results.phtml:85
-#: application/view/omeka/site/index/search.phtml:51
+#: application/view/omeka/site/index/search.phtml:52
 #, php-format
 msgid "View all results (%s total)"
 msgstr "Προβολή όλων των αποτελεσμάτων (%s συνολικά)"
 
 #: application/view/common/cross-site-search/results.phtml:97
-#: application/view/omeka/site/index/search.phtml:14
+#: application/view/omeka/site/index/search.phtml:15
 msgid "No result found"
 msgstr "Δεν υπάρχουν αποτελέσματα"
 
@@ -1375,7 +1377,7 @@ msgstr "Φιλτράρισμα ομάδων αντικειμένων"
 #: application/view/omeka/admin/job/browse.phtml:38
 #: application/view/omeka/admin/job/show.phtml:18
 #: application/view/omeka/admin/resource-template/browse.phtml:44
-msgid "[no owner]"
+msgid "[No owner]"
 msgstr "[δεν υπάρχει κάτοχος]"
 
 #: application/view/common/item-set-selector.phtml:31
@@ -1386,12 +1388,12 @@ msgstr "Περισσότερες πληροφορίες"
 
 #: application/view/common/linked-resources.phtml:54
 msgid "Filter by resource type and property:"
-msgstr ""
+msgstr "Φιλτράρισμα με είδος πόρου και ιδιότητα:"
 
 #: application/view/common/linked-resources.phtml:64
 #, php-format
 msgid "%s with \"%s: %s\""
-msgstr ""
+msgstr "%s με \"%s: %s\""
 
 #: application/view/common/linked-resources.phtml:74
 #: application/view/omeka/admin/item-set/browse.phtml:54
@@ -1498,21 +1500,21 @@ msgstr ""
 msgid "Filter properties"
 msgstr "Ιδιότητες φίλτρου"
 
-#: application/view/common/query-form.phtml:9
+#: application/view/common/query-form.phtml:8
 #: application/view/omeka/admin/query/search-filters.phtml:4
 msgid "[Edit below]"
 msgstr "[Επεξεργασία παρακάτω]"
 
-#: application/view/common/query-form.phtml:25
+#: application/view/common/query-form.phtml:24
 msgid "Advanced edit"
 msgstr "Προχωρημένη επεξεργασία"
 
-#: application/view/common/query-form.phtml:26
+#: application/view/common/query-form.phtml:25
 #: application/view/omeka/admin/query/sidebar-edit.phtml:14
 msgid "Apply"
 msgstr "Εφαρμογή"
 
-#: application/view/common/query-form.phtml:28
+#: application/view/common/query-form.phtml:27
 #: application/view/omeka/site-admin/index/users.phtml:8
 msgid "Restore"
 msgstr "Επαναφορά"
@@ -1543,7 +1545,7 @@ msgstr "Κείμενο"
 
 #: application/view/common/resource-page-block-layout/lightbox-gallery-item.phtml:11
 msgid "Other Media"
-msgstr ""
+msgstr "Άλλα πολυμέσα"
 
 #: application/view/common/resource-page-block-layout/linked-resources.phtml:14
 #: application/view/omeka/admin/item-set/show.phtml:22
@@ -1553,13 +1555,13 @@ msgstr "Συνδεδεμένα δεδομένα"
 
 #: application/view/common/resource-page-block-layout/resource-class.phtml:7
 msgid "Resource class"
-msgstr ""
+msgstr "Κατηγορία πόρου"
 
 #: application/view/common/resource-select-sidebar.phtml:20
 msgid "Select resource"
 msgstr "Επιλογή πόρου"
 
-#: application/view/common/resource-values.phtml:55
+#: application/view/common/resource-values.phtml:70
 #: application/view/common/sidebar-pagelist.phtml:26
 #: application/view/omeka/admin/item-set/browse.phtml:68
 #: application/view/omeka/admin/item-set/show-details.phtml:18
@@ -1572,12 +1574,12 @@ msgstr "Επιλογή πόρου"
 #: application/view/omeka/admin/media/show.phtml:39
 #: application/view/omeka/admin/resource-template/form.phtml:90
 #: application/view/omeka/site-admin/index/index.phtml:35
-#: application/view/omeka/site-admin/index/navigation.phtml:63
+#: application/view/omeka/site-admin/index/navigation.phtml:62
 #: application/view/omeka/site-admin/page/index.phtml:42
 msgid "Private"
 msgstr "Ιδιωτικό"
 
-#: application/view/common/resource-values.phtml:59
+#: application/view/common/resource-values.phtml:74
 msgid "Has annotation"
 msgstr "Έχει σχόλιο"
 
@@ -1586,12 +1588,12 @@ msgid "Add to List of pages"
 msgstr "Προσθήκη στη λίστα ιστοσελίδων"
 
 #: application/view/common/sidebar-pagelist.phtml:12
-#: application/view/omeka/site-admin/index/navigation.phtml:51
+#: application/view/omeka/site-admin/index/navigation.phtml:50
 msgid "Filter pages"
 msgstr "Φιλτράρισμα σελίδων"
 
 #: application/view/common/sidebar-pagelist.phtml:32
-#: application/view/omeka/site-admin/index/navigation.phtml:69
+#: application/view/omeka/site-admin/index/navigation.phtml:68
 msgid "There are no available pages."
 msgstr "Δεν υπάρχουν διαθέσιμες σελίδες."
 
@@ -1607,11 +1609,11 @@ msgstr "Ανενεργός"
 
 #: application/view/common/sidebar-select-quick-add.phtml:8
 msgid "Quick add checkboxes are now available."
-msgstr ""
+msgstr "Τα πλαίσια ελέγχου γρήγορης προσθήκης είναι πλέον διαθέσιμα."
 
 #: application/view/common/sidebar-select-quick-add.phtml:9
 msgid "Quick add checkboxes are now hidden."
-msgstr ""
+msgstr "Τα πλαίσια ελέγχου γρήγορης προσθήκης είναι κρυμμένα."
 
 #: application/view/common/sidebar-select-quick-add.phtml:12
 #: application/view/omeka/admin/item-set/browse.phtml:53
@@ -1622,11 +1624,11 @@ msgstr "Επιλογή όλων"
 
 #: application/view/common/sidebar-select-quick-add.phtml:17
 msgid "All results are now selected."
-msgstr ""
+msgstr "Όλα τα αποτελέσματα είναι πλέον επιλεγμένα."
 
 #: application/view/common/sidebar-select-quick-add.phtml:18
 msgid "All results are now deselected."
-msgstr ""
+msgstr "Όλα τα αποτελέσματα έχουν πλέον αποεπιλεγεί."
 
 #: application/view/common/site-page-pagination.phtml:3
 msgid "Prev"
@@ -1648,7 +1650,7 @@ msgstr "Φίλτρο ιστότοπων"
 #: application/view/omeka/site-admin/index/add.phtml:12
 #: application/view/omeka/site-admin/index/edit.phtml:8
 #: application/view/omeka/site-admin/index/index.phtml:7
-#: application/view/omeka/site-admin/index/navigation.phtml:15
+#: application/view/omeka/site-admin/index/navigation.phtml:14
 #: application/view/omeka/site-admin/index/resources.phtml:20
 #: application/view/omeka/site-admin/index/show.phtml:7
 #: application/view/omeka/site-admin/index/theme.phtml:11
@@ -1940,6 +1942,7 @@ msgid "Details"
 msgstr "Λεπτομέρειες"
 
 #: application/view/omeka/admin/asset/browse.phtml:98
+#: application/view/omeka/admin/asset/sidebar-select.phtml:56
 msgid "Omeka could not find any assets."
 msgstr "Η Omeka δεν βρήκε κανένα απόκτημα."
 
@@ -1959,30 +1962,26 @@ msgstr "Χωρίς ιδιοκτήτη"
 msgid "Filter by owner"
 msgstr "Φιλτράρισμα με βάση τον ιδιοκτήτη"
 
-#: application/view/omeka/admin/asset/sidebar-select.phtml:56
-msgid "assets"
-msgstr "αποκτήματα"
-
 #: application/view/omeka/admin/columns/column-edit-sidebar.phtml:5
 #: application/view/omeka/admin/columns/column-row.phtml:10
 msgid "Edit column"
-msgstr ""
+msgstr "Επεξεργασία στήλης"
 
 #: application/view/omeka/admin/columns/column-edit-sidebar.phtml:10
 msgid "Set column"
-msgstr ""
+msgstr "Ορισμός στήλης"
 
 #: application/view/omeka/admin/columns/column-row.phtml:5
 msgid "Column to be removed"
-msgstr ""
+msgstr "Στήλη που θα αφαιρεθεί"
 
 #: application/view/omeka/admin/columns/column-row.phtml:14
 msgid "Remove column"
-msgstr ""
+msgstr "Αφαίρεση στήλης"
 
 #: application/view/omeka/admin/columns/column-row.phtml:18
 msgid "Restore column"
-msgstr ""
+msgstr "Επαναφορά στήλης"
 
 #: application/view/omeka/admin/index/browse.phtml:4
 #: application/view/omeka/index/index.phtml:33
@@ -2050,27 +2049,11 @@ msgid "Batch edit item sets"
 msgstr "Μαζική επεξεργασία ομάδων αντικειμένων"
 
 #: application/view/omeka/admin/item-set/batch-edit.phtml:19
-#: application/view/omeka/admin/item-set/edit.phtml:20
-#: application/view/omeka/admin/item-set/form.phtml:56
 #: application/view/omeka/admin/item/batch-edit.phtml:19
-#: application/view/omeka/admin/item/edit.phtml:22
-#: application/view/omeka/admin/media/batch-edit.phtml:21
-#: application/view/omeka/admin/media/edit.phtml:68
-#: application/view/omeka/admin/resource-template/edit.phtml:15
-#: application/view/omeka/admin/setting/browse.phtml:11
-#: application/view/omeka/admin/user/batch-edit.phtml:19
-#: application/view/omeka/admin/user/edit.phtml:19
-#: application/view/omeka/admin/vocabulary/edit.phtml:13
-#: application/view/omeka/site-admin/index/edit.phtml:29
-#: application/view/omeka/site-admin/index/navigation.phtml:22
-#: application/view/omeka/site-admin/index/resources.phtml:31
-#: application/view/omeka/site-admin/index/theme-resource-pages.phtml:28
-#: application/view/omeka/site-admin/index/theme-settings.phtml:12
-#: application/view/omeka/site-admin/index/theme.phtml:18
-#: application/view/omeka/site-admin/index/users.phtml:48
-#: application/view/omeka/site-admin/page/edit.phtml:31
-msgid "Save"
-msgstr "Αποθήκευση"
+#: application/view/omeka/admin/media/batch-edit.phtml:19
+#: application/view/omeka/admin/module/configure.phtml:10
+msgid "Submit"
+msgstr "Υποβολή"
 
 #: application/view/omeka/admin/item-set/batch-edit.phtml:27
 msgid "Affected item sets"
@@ -2094,8 +2077,8 @@ msgstr "Επεξεργάζεστε %s ομάδες αντικειμένων."
 #: application/view/omeka/admin/media/search.phtml:5
 #: application/view/omeka/admin/user/browse.phtml:16
 #: application/view/omeka/admin/user/search.phtml:5
-#: application/view/omeka/site/item-set/browse.phtml:17
-#: application/view/omeka/site/item/browse.phtml:34
+#: application/view/omeka/site/item-set/browse.phtml:19
+#: application/view/omeka/site/item/browse.phtml:36
 msgid "Advanced search"
 msgstr "Προχωρημένη αναζήτηση"
 
@@ -2215,6 +2198,26 @@ msgstr "Είστε βέβαιος;"
 msgid "Omeka could not find any item sets."
 msgstr "Η Omeka δεν εντόπισε καμία ομάδα αντικειμένων."
 
+#: application/view/omeka/admin/item-set/edit.phtml:20
+#: application/view/omeka/admin/item-set/form.phtml:56
+#: application/view/omeka/admin/item/edit.phtml:22
+#: application/view/omeka/admin/media/edit.phtml:68
+#: application/view/omeka/admin/resource-template/edit.phtml:15
+#: application/view/omeka/admin/setting/browse.phtml:11
+#: application/view/omeka/admin/user/batch-edit.phtml:19
+#: application/view/omeka/admin/user/edit.phtml:19
+#: application/view/omeka/admin/vocabulary/edit.phtml:13
+#: application/view/omeka/site-admin/index/edit.phtml:29
+#: application/view/omeka/site-admin/index/navigation.phtml:21
+#: application/view/omeka/site-admin/index/resources.phtml:31
+#: application/view/omeka/site-admin/index/theme-resource-pages.phtml:28
+#: application/view/omeka/site-admin/index/theme-settings.phtml:12
+#: application/view/omeka/site-admin/index/theme.phtml:18
+#: application/view/omeka/site-admin/index/users.phtml:48
+#: application/view/omeka/site-admin/page/edit.phtml:31
+msgid "Save"
+msgstr "Αποθήκευση"
+
 #: application/view/omeka/admin/item-set/form.phtml:13
 #: application/view/omeka/admin/item/form.phtml:14
 #: application/view/omeka/admin/media/edit.phtml:13
@@ -2274,7 +2277,7 @@ msgstr "Αναζήτηση φίλτρου"
 
 #: application/view/omeka/admin/item-set/sidebar-select.phtml:36
 msgid "Filter by item set ID"
-msgstr ""
+msgstr "Φιλτράρισμα με ID ομάδας αντικειμέν ων"
 
 #: application/view/omeka/admin/item-set/sidebar-select.phtml:70
 #: application/view/omeka/admin/item/browse.phtml:178
@@ -2362,7 +2365,7 @@ msgstr "Πολυμέσο προς αφαίρεση"
 
 #: application/view/omeka/admin/item/manage-media.phtml:33
 msgid "Primary media"
-msgstr ""
+msgstr "Πρωτεύον πολυμέσο"
 
 #: application/view/omeka/admin/item/manage-media.phtml:75
 msgid ""
@@ -2420,11 +2423,11 @@ msgid "Omeka could not find any jobs."
 msgstr "Η Omeka δεν βρήκε καμία εργασία."
 
 #: application/view/omeka/admin/job/show.phtml:8
-msgid "[not started]"
+msgid "[Not started]"
 msgstr "[δεν άρχισε]"
 
 #: application/view/omeka/admin/job/show.phtml:13
-msgid "[not ended]"
+msgid "[Not ended]"
 msgstr "[δεν τελείωσε]"
 
 #: application/view/omeka/admin/job/show.phtml:34
@@ -2440,8 +2443,8 @@ msgid "Args"
 msgstr "Παράμετροι"
 
 #: application/view/omeka/admin/job/show.phtml:55
-msgid "[no args]"
-msgstr "[no args]"
+msgid "[No args]"
+msgstr "[No args]"
 
 #: application/view/omeka/admin/job/show.phtml:59
 msgid "Log"
@@ -2452,23 +2455,23 @@ msgid "view log"
 msgstr "προβολή αρχείου καταγραφών"
 
 #: application/view/omeka/admin/job/show.phtml:66
-msgid "[no log]"
+msgid "[No log]"
 msgstr "[χωρίς αρχείο καταγραφών]"
 
-#: application/view/omeka/admin/media/batch-edit.phtml:9
+#: application/view/omeka/admin/media/batch-edit.phtml:7
 msgid "Batch edit media"
 msgstr "Μαζική επεξεργασία πολυμέσων"
 
-#: application/view/omeka/admin/media/batch-edit.phtml:29
+#: application/view/omeka/admin/media/batch-edit.phtml:27
 msgid "Affected media"
 msgstr "Πολυμέσα που επηρεάστηκαν"
 
-#: application/view/omeka/admin/media/batch-edit.phtml:31
+#: application/view/omeka/admin/media/batch-edit.phtml:29
 #, php-format
 msgid "You are editing the following %s media:"
 msgstr "Επεξεργάζεστε το ακόλουθο %s μέσο:"
 
-#: application/view/omeka/admin/media/batch-edit.phtml:38
+#: application/view/omeka/admin/media/batch-edit.phtml:36
 #, php-format
 msgid "You are editing %s media."
 msgstr "Επεξεργάζεστε το %s μέσο."
@@ -2614,10 +2617,6 @@ msgstr ""
 msgid "Omeka could not find any modules."
 msgstr "Η Omeka δεν βρήκε κανένα πρόσθετο."
 
-#: application/view/omeka/admin/module/configure.phtml:10
-msgid "Submit"
-msgstr "Υποβολή"
-
 #: application/view/omeka/admin/module/uninstall-confirm.phtml:5
 msgid "Uninstall module"
 msgstr "Απεγκατάσταση πρόσθετου"
@@ -2709,7 +2708,7 @@ msgstr "Απαραίτητο"
 #: application/view/omeka/admin/resource-template/review-import.phtml:72
 #: application/view/omeka/admin/resource-template/show.phtml:32
 msgid "Default language"
-msgstr ""
+msgstr "Προκαθορισμένη γλώσσα"
 
 #: application/view/omeka/admin/resource-template/form.phtml:101
 #: application/view/omeka/admin/resource-template/review-import.phtml:67
@@ -2793,11 +2792,11 @@ msgstr "Γενικές ρυθμίσεις"
 
 #: application/view/omeka/admin/system-info/browse.phtml:31
 msgid "Get PHP CLI version"
-msgstr ""
+msgstr "Λήψη έκδοσης PHP CLI"
 
 #: application/view/omeka/admin/system-info/browse.phtml:35
 msgid "Get ImageMagick version"
-msgstr ""
+msgstr "Λήψη έκδοσης ImageMagick"
 
 #: application/view/omeka/admin/user/add.phtml:7
 msgid "New user"
@@ -3028,11 +3027,11 @@ msgstr "Ο ιστότοπος είναι υπό συντήρηση"
 
 #: application/view/omeka/maintenance/index.phtml:5
 msgid ""
-"This site is down for maintenance. Please contact the site administrator for\n"
-"more information."
+"This site is down for maintenance. Please contact the site administrator for"
+" more information."
 msgstr ""
-"Ο ιστότοπος είναι προσωρινά εκτός λειτουργίας για συντήρηση.\n"
-"Επικοινωνήστε με τον διαχειριστή του ιστότοπου για περισσότερες πληροφορίες."
+"Ο ιστότοπος είναι προσωρινά εκτός λειτουργίας για συντήρηση. Επικοινωνήστε "
+"με τον διαχειριστή του ιστότοπου για περισσότερες πληροφορίες."
 
 #: application/view/omeka/migrate/index.phtml:4
 #: application/view/omeka/migrate/index.phtml:7
@@ -3097,20 +3096,20 @@ msgstr "Προσθήκη νέου ιστότοπου"
 msgid "Omeka could not find any sites."
 msgstr "Η Omeka δεν μπόρεσε να βρει ιστότοπους."
 
-#: application/view/omeka/site-admin/index/navigation.phtml:15
+#: application/view/omeka/site-admin/index/navigation.phtml:14
 msgid "Navigation"
 msgstr "Πλοήγηση"
 
-#: application/view/omeka/site-admin/index/navigation.phtml:29
-#: application/view/omeka/site-admin/index/navigation.phtml:49
+#: application/view/omeka/site-admin/index/navigation.phtml:28
+#: application/view/omeka/site-admin/index/navigation.phtml:48
 msgid "Add a link to a site page"
 msgstr "Προσθήκη ενός συνδέσμου σε μια σελίδα ιστότοπου"
 
-#: application/view/omeka/site-admin/index/navigation.phtml:33
+#: application/view/omeka/site-admin/index/navigation.phtml:32
 msgid "Select a homepage"
 msgstr "Επιλογή αρχικής σελίδας"
 
-#: application/view/omeka/site-admin/index/navigation.phtml:37
+#: application/view/omeka/site-admin/index/navigation.phtml:36
 msgid "Add a custom link"
 msgstr "Προσθήκη προσαρμοσμένου συνδέσμου"
 
@@ -3158,16 +3157,16 @@ msgstr "Μικρογραφία"
 
 #: application/view/omeka/site-admin/index/theme-resource-pages.phtml:6
 msgid "Remove block"
-msgstr ""
+msgstr "Αφαίρεση πλαισίου"
 
 #: application/view/omeka/site-admin/index/theme-resource-pages.phtml:7
 msgid "Restore block"
-msgstr ""
+msgstr "Επαναφορά πλαισίου"
 
 #: application/view/omeka/site-admin/index/theme-resource-pages.phtml:21
 #: application/view/omeka/site-admin/index/theme.phtml:47
 msgid "Configure resource pages"
-msgstr ""
+msgstr "Διαμόρφωση σελίδων πόρων"
 
 #: application/view/omeka/site-admin/index/theme-resource-pages.phtml:33
 msgid "Item page"
@@ -3179,24 +3178,24 @@ msgstr "Σελίδα πολυμέσων"
 
 #: application/view/omeka/site-admin/index/theme-resource-pages.phtml:35
 msgid "Item set page"
-msgstr ""
+msgstr "Σελίδα ομάδας αντικειμένων"
 
 #: application/view/omeka/site-admin/index/theme-resource-pages.phtml:42
 #, php-format
 msgid "Region: %s"
-msgstr ""
+msgstr "Περιοχή: %s"
 
 #: application/view/omeka/site-admin/index/theme-resource-pages.phtml:53
 msgid "Select a region"
-msgstr ""
+msgstr "Επιλογή περιοχής"
 
 #: application/view/omeka/site-admin/index/theme-resource-pages.phtml:60
 msgid "Add a block to selected region"
-msgstr ""
+msgstr "Προσθήκη πλαισίου στην επιλεγμένη περιοχή"
 
 #: application/view/omeka/site-admin/index/theme-resource-pages.phtml:66
 msgid "There are no available blocks."
-msgstr ""
+msgstr "Δεν υπάρχουν διαθέσιμα πλαίσια."
 
 #: application/view/omeka/site-admin/index/theme-selector.phtml:26
 msgid "Invalid theme.ini file"
@@ -3209,7 +3208,7 @@ msgstr "Αυτό το θέμα εμφάνισης απαιτεί Omeka S %s"
 
 #: application/view/omeka/site-admin/index/theme-settings.phtml:6
 msgid "Edit settings"
-msgstr ""
+msgstr "Επεξεργασία ρυθμίσεων"
 
 #: application/view/omeka/site-admin/index/theme-settings.phtml:17
 msgid "The current theme has no configuration options."
@@ -3287,11 +3286,11 @@ msgstr "Δεν έχει επιλεγεί αντικείμενο."
 
 #: application/view/omeka/site-admin/page/edit.phtml:37
 msgid "Expand all"
-msgstr ""
+msgstr "Επέκταση όλων"
 
 #: application/view/omeka/site-admin/page/edit.phtml:38
 msgid "Collapse all"
-msgstr ""
+msgstr "Σύμπτυξη όλων"
 
 #: application/view/omeka/site-admin/page/edit.phtml:46
 msgid "Add new block"
@@ -3321,15 +3320,15 @@ msgstr "Αυτός ο ιστότοπος δεν έχει ιστοσελίδες.
 msgid "Advanced item set Search"
 msgstr "Προχωρημένη αναζήτηση λίστας αντικειμένων"
 
-#: application/view/omeka/site/item/browse.phtml:20
+#: application/view/omeka/site/item/browse.phtml:22
 msgid "Item set"
 msgstr "Λίστα αντικειμένων"
 
-#: application/view/omeka/site/item/show.phtml:9
+#: application/view/omeka/site/item/show.phtml:10
 msgid "Item"
 msgstr "Αντικείμενο"
 
-#: application/view/omeka/site/media/show.phtml:12
+#: application/view/omeka/site/media/show.phtml:15
 #, php-format
 msgid "Part of %s"
 msgstr "Τμήμα του %s"
@@ -3341,9 +3340,9 @@ msgstr "Δεν βρέθηκαν ιστοσελίδες"
 #: application/src/Stdlib/Browse.php:124
 #, php-format
 msgid "Custom (%s)"
-msgstr ""
+msgstr "Προσαρμοσμένο (%s)"
 
-#: application/src/Stdlib/Cli.php:105 application/src/Stdlib/Cli.php:143
+#: application/src/Stdlib/Cli.php:105 application/src/Stdlib/Cli.php:160
 #, php-format
 msgid "Command \"%s\" failed with status code %s."
 msgstr "Η εντολή \"%s\" απέτυχε με κωδικό κατάστασης %s."
@@ -3465,27 +3464,27 @@ msgstr "Στοίχιση"
 msgid "Browse preview"
 msgstr "Προεπισκόπηση περιήγησης"
 
-#: application/src/Site/BlockLayout/BrowsePreview.php:37
+#: application/src/Site/BlockLayout/BrowsePreview.php:36
 msgid "Browse all"
 msgstr "Περιήγηση όλων"
 
-#: application/src/Site/BlockLayout/BrowsePreview.php:63
+#: application/src/Site/BlockLayout/BrowsePreview.php:62
 msgid "Display resources using this search query"
 msgstr "Εμφάνιση πόρων χρησιμοποιώντας αυτό το ερώτημα αναζήτησης"
 
-#: application/src/Site/BlockLayout/BrowsePreview.php:72
+#: application/src/Site/BlockLayout/BrowsePreview.php:71
 msgid "Limit"
 msgstr "Όριο"
 
-#: application/src/Site/BlockLayout/BrowsePreview.php:73
+#: application/src/Site/BlockLayout/BrowsePreview.php:72
 msgid "Maximum number of resources to display in the preview."
 msgstr "Μέγιστος αριθμός πόρων για εμφάνιση στην προεπισκόπηση."
 
-#: application/src/Site/BlockLayout/BrowsePreview.php:80
+#: application/src/Site/BlockLayout/BrowsePreview.php:79
 msgid "Components"
 msgstr "Στοιχεία"
 
-#: application/src/Site/BlockLayout/BrowsePreview.php:81
+#: application/src/Site/BlockLayout/BrowsePreview.php:80
 msgid ""
 "Components to display for each resource. If not set in Site Settings, "
 "Heading defaults to resource Title and Body to resource Description"
@@ -3494,27 +3493,27 @@ msgstr ""
 "του ιστότοπου, από προεπιλογή η επικεφαλίδα ορίζεται ως τίτλος του πόρου και"
 " το σώμα σε περιγραφή του"
 
-#: application/src/Site/BlockLayout/BrowsePreview.php:85
+#: application/src/Site/BlockLayout/BrowsePreview.php:84
 msgid "Heading"
 msgstr "Επικεφαλίδα"
 
-#: application/src/Site/BlockLayout/BrowsePreview.php:89
+#: application/src/Site/BlockLayout/BrowsePreview.php:88
 msgid "Body"
 msgstr "Σώμα"
 
-#: application/src/Site/BlockLayout/BrowsePreview.php:102
+#: application/src/Site/BlockLayout/BrowsePreview.php:101
 msgid "Preview title"
 msgstr "Τίτλος προεπισκόπησης"
 
-#: application/src/Site/BlockLayout/BrowsePreview.php:103
+#: application/src/Site/BlockLayout/BrowsePreview.php:102
 msgid "Heading above resource list, if any."
 msgstr "Επικεφαλίδα επάνω από τη λίστα πόρων, εάν υπάρχει."
 
-#: application/src/Site/BlockLayout/BrowsePreview.php:110
+#: application/src/Site/BlockLayout/BrowsePreview.php:109
 msgid "Link text"
 msgstr "Κείμενο συνδέσμου"
 
-#: application/src/Site/BlockLayout/BrowsePreview.php:111
+#: application/src/Site/BlockLayout/BrowsePreview.php:110
 msgid "Text for link to full browse view, if any."
 msgstr "Κείμενο για σύνδεση στην προβολή πλήρους περιήγησης, εάν υπάρχει."
 
@@ -3524,7 +3523,7 @@ msgstr "Αντικείμενο με μεταδεδομένα"
 
 #: application/src/Site/BlockLayout/Media.php:14
 msgid "Media embed"
-msgstr ""
+msgstr "Ενσωμάτωση πολυμέσων"
 
 #: application/src/Site/BlockLayout/LineBreak.php:14
 msgid "Line break"
@@ -3540,19 +3539,19 @@ msgstr "Αδιαφάνεια"
 
 #: application/src/Site/BlockLayout/PageDateTime.php:20
 msgid "Page date/time"
-msgstr ""
+msgstr "Ημερομηνία/ώρα σελίδας"
 
 #: application/src/Site/BlockLayout/PageDateTime.php:30
 msgid "Display date/time"
-msgstr ""
+msgstr "Εμφάνιση ημερομηνίας/ώρας"
 
 #: application/src/Site/BlockLayout/PageDateTime.php:32
 msgid "Created & modified"
-msgstr ""
+msgstr "Δημιουργήθηκε & τροποποιήθηκε"
 
 #: application/src/Site/BlockLayout/PageDateTime.php:42
 msgid "Date format"
-msgstr ""
+msgstr "Μορφή ημερομηνίας"
 
 #: application/src/Site/BlockLayout/PageDateTime.php:44
 #: application/src/Site/BlockLayout/PageDateTime.php:58
@@ -3564,7 +3563,7 @@ msgstr "Κανένα"
 #: application/src/Site/BlockLayout/PageDateTime.php:45
 #: application/src/Site/BlockLayout/PageDateTime.php:59
 msgid "Short"
-msgstr ""
+msgstr "Σύντομη"
 
 #: application/src/Site/BlockLayout/PageDateTime.php:46
 #: application/src/Site/BlockLayout/PageDateTime.php:60
@@ -3574,16 +3573,16 @@ msgstr "Μικρό"
 #: application/src/Site/BlockLayout/PageDateTime.php:47
 #: application/src/Site/BlockLayout/PageDateTime.php:61
 msgid "Long"
-msgstr ""
+msgstr "Μεγάλη"
 
 #: application/src/Site/BlockLayout/PageDateTime.php:48
 #: application/src/Site/BlockLayout/PageDateTime.php:62
 msgid "Full"
-msgstr ""
+msgstr "Πλήρης"
 
 #: application/src/Site/BlockLayout/PageDateTime.php:56
 msgid "Time format"
-msgstr ""
+msgstr "Μορφή ώρας"
 
 #: application/src/Site/BlockLayout/ListOfSites.php:24
 msgid "List of sites"
@@ -3651,23 +3650,23 @@ msgstr "Άγνωστο [%s]"
 
 #: application/src/Site/ResourcePageBlockLayout/MediaRender.php:11
 msgid "Media render"
-msgstr ""
+msgstr "Απόδοση πολυμέσων"
 
 #: application/src/Site/ResourcePageBlockLayout/MediaList.php:11
 msgid "Media list"
-msgstr ""
+msgstr "Κατάλογος πολυμέσων"
 
 #: application/src/Site/ResourcePageBlockLayout/Manager.php:210
 msgid "Main"
-msgstr ""
+msgstr "Κύριο"
 
 #: application/src/Site/ResourcePageBlockLayout/LightboxGallery.php:13
 msgid "Lightbox gallery"
-msgstr ""
+msgstr "Γκαλερί Lightbox"
 
 #: application/src/Site/ResourcePageBlockLayout/MediaEmbeds.php:11
 msgid "Media embeds"
-msgstr ""
+msgstr "Ενσωμάτωση πολυμέσων"
 
 #: application/src/Site/Navigation/Link/Url.php:11
 msgid "Custom URL"
@@ -3736,7 +3735,7 @@ msgstr ""
 "Σφάλμα κατά την επικύρωση του \"%1$s\". Δεν είναι δυνατή η αποθήκευση "
 "αρχείων με την επιλυμένη επέκταση \"%2$s\"."
 
-#: application/src/Mvc/MvcListeners.php:327
+#: application/src/Mvc/MvcListeners.php:325
 #, php-format
 msgid "The current theme is not active. Its current state is \"%s\"."
 msgstr ""
@@ -3769,38 +3768,40 @@ msgstr "Ερευνητής"
 
 #: application/src/ColumnType/IsPublic.php:11
 msgid "Is public"
-msgstr ""
+msgstr "Είναι δημόσιο"
 
 #: application/src/ColumnType/Value.php:25
 msgid "Value"
-msgstr ""
+msgstr "Τιμή"
 
 #: application/src/ColumnType/Value.php:56
 msgid "Max values"
-msgstr ""
+msgstr "Μέγιστες τιμές"
 
 #: application/src/ColumnType/Value.php:57
 msgid ""
 "Enter the maximum number of values to display. Set to blank to display all "
 "values."
 msgstr ""
+"Εισαγάγετε τον μέγιστο αριθμό τιμών για εμφάνιση. Ορίστε κενό για να "
+"εμφανιστούν όλες οι τιμές."
 
 #: application/src/ColumnType/IsOpen.php:11
 msgid "Is open"
-msgstr ""
+msgstr "Είναι ανοιχτό"
 
 #: application/src/ColumnType/ResourceTemplate.php:11
-#: application/src/Form/ResourceForm.php:34
+#: application/src/Form/ResourceForm.php:42
 msgid "Resource template"
 msgstr "Πρότυπο πόρου"
 
 #: application/src/ColumnType/Unknown.php:22
 msgid "[Unknown]"
-msgstr ""
+msgstr "[Άγνωστο]"
 
 #: application/src/ColumnType/Unknown.php:40
 msgid "Unknown column data"
-msgstr ""
+msgstr "Άγνωστα δεδομένα στήλης"
 
 #: application/src/Api/Adapter/ItemAdapter.php:152
 msgid "Item sets must be an array"
@@ -4031,15 +4032,15 @@ msgstr "σφάλμα"
 
 #: application/src/Media/Ingester/IiifPresentation.php:27
 msgid "IIIF presentation"
-msgstr ""
+msgstr "Παρουσίαση IIIF"
 
 #: application/src/Media/Ingester/IiifPresentation.php:39
 msgid "IIIF presentation URL"
-msgstr ""
+msgstr "URL παρουσίασης IIIF"
 
 #: application/src/Media/Ingester/IiifPresentation.php:40
 msgid "Enter the URL to a IIIF collection or manifest."
-msgstr ""
+msgstr "Εισαγάγετε τo URL μιας συλλογής ή δήλωση IIIF."
 
 #: application/src/Media/Ingester/IIIF.php:33
 msgid "IIIF image"
@@ -4053,6 +4054,8 @@ msgstr "URL εικόνας IIIF"
 msgid ""
 "Enter the URL to a IIIF image information file (ending with /info.json)."
 msgstr ""
+"Εισαγάγετε το URL για ένα αρχείο πληροφοριών εικόνας IIIF (που τελειώνει με "
+"/info.json)."
 
 #: application/src/Media/Ingester/Upload.php:69
 msgid "Upload file"
@@ -4314,22 +4317,22 @@ msgstr "reCAPTCHA κλειδί του ιστότοπου"
 msgid "reCAPTCHA secret key"
 msgstr "reCAPTCHA απόρρητο κλειδί"
 
-#: application/src/Form/ResourceForm.php:30
+#: application/src/Form/ResourceForm.php:38
 #: application/src/Form/ResourceBatchUpdateForm.php:70
 #: application/src/Form/UserForm.php:156
 msgid "Select a template"
 msgstr "Επιλογή προτύπου"
 
-#: application/src/Form/ResourceForm.php:35
+#: application/src/Form/ResourceForm.php:43
 msgid "A pre-defined template for resource creation."
 msgstr "Ένα προκαθορισμένο πρότυπο για τη δημιουργία πόρων."
 
-#: application/src/Form/ResourceForm.php:55
+#: application/src/Form/ResourceForm.php:63
 #: application/src/Form/ResourceBatchUpdateForm.php:93
 msgid "Select a class"
 msgstr "Επιλογή κατηγορίας"
 
-#: application/src/Form/ResourceForm.php:59
+#: application/src/Form/ResourceForm.php:67
 msgid ""
 "A type for the resource. Different types have different default properties "
 "attached to them."
@@ -4337,7 +4340,7 @@ msgstr ""
 "Ένα είδος για τον πόρο. Διαφορετικά είδη έχουν διαφορετικές προεπιλεγμένες "
 "ιδιότητες που συνδέονται με αυτούς."
 
-#: application/src/Form/ResourceForm.php:69
+#: application/src/Form/ResourceForm.php:77
 msgid ""
 "Omeka S automatically selects a thumbnail from among attached media for a "
 "resource. You may use an image of your choice instead by choosing an asset "
@@ -4426,22 +4429,18 @@ msgid "N-Triples (.nt)"
 msgstr "N-Triples (.nt)"
 
 #: application/src/Form/VocabularyForm.php:121
-msgid "Notation3 (.n3)"
-msgstr "Notation3 (.n3)"
-
-#: application/src/Form/VocabularyForm.php:122
 msgid "RDF/XML (.rdf)"
 msgstr "RDF/XML (.rdf)"
 
-#: application/src/Form/VocabularyForm.php:123
+#: application/src/Form/VocabularyForm.php:122
 msgid "Turtle (.ttl)"
 msgstr "Turtle (.ttl)"
 
-#: application/src/Form/VocabularyForm.php:135
+#: application/src/Form/VocabularyForm.php:134
 msgid "Preferred language"
 msgstr "Προτιμώμενη γλώσσα"
 
-#: application/src/Form/VocabularyForm.php:136
+#: application/src/Form/VocabularyForm.php:135
 msgid ""
 "Enter the preferred language of the labels and comments using an <a "
 "target=\"_blank\" href=\"https://www.w3.org/International/articles/language-"
@@ -4452,11 +4451,11 @@ msgstr ""
 "href=\"https://www.w3.org/International/articles/language-tags/\">ετικέτας "
 "γλώσσας IETF</a>. Προεπιλογές για το πρώτο διαθέσιμο."
 
-#: application/src/Form/VocabularyForm.php:147
+#: application/src/Form/VocabularyForm.php:146
 msgid "Label property"
 msgstr "Ιδιότητα ετικέτας"
 
-#: application/src/Form/VocabularyForm.php:148
+#: application/src/Form/VocabularyForm.php:147
 msgid ""
 "Enter the label property. This is typically only needed if the vocabulary "
 "uses an unconventional property for labels. Please use the full property URI"
@@ -4466,11 +4465,11 @@ msgstr ""
 "γλωσσάρι χρησιμοποιεί μια μη συμβατική ιδιότητα για ετικέτες. Χρησιμοποιήστε"
 " την πλήρη ιδιότητα URI που περικλείεται σε αγκύλες."
 
-#: application/src/Form/VocabularyForm.php:158
+#: application/src/Form/VocabularyForm.php:157
 msgid "Comment property"
 msgstr "Ιδιότητα σχολίου"
 
-#: application/src/Form/VocabularyForm.php:159
+#: application/src/Form/VocabularyForm.php:158
 msgid ""
 "Enter the comment property. This is typically only needed if the vocabulary "
 "uses an unconventional property for comments. Please use the full property "
@@ -4750,7 +4749,7 @@ msgstr ""
 #: application/src/Form/SiteSettingsForm.php:245
 #: application/src/Form/UserForm.php:253
 msgid "Item browse defaults"
-msgstr ""
+msgstr "Προεπιλογές περιήγησης αντικειμένων"
 
 #: application/src/Form/SiteSettingsForm.php:260
 msgid "Show attached pages"
@@ -4773,15 +4772,15 @@ msgstr "Εμφάνιση σχολίων που έχουν οριστεί για 
 
 #: application/src/Form/SiteSettingsForm.php:286
 msgid "Exclude resources not in site"
-msgstr ""
+msgstr "Εξαίρεση πόρων που δεν βρίσκονται στον ιστότοπο"
 
 #: application/src/Form/SiteSettingsForm.php:287
 msgid "Exclude resources that are not assigned to this site."
-msgstr ""
+msgstr "Εξαιρέστε πόρους που δεν έχουν εκχωρηθεί σε αυτόν τον ιστότοπο."
 
 #: application/src/Form/SiteSettingsForm.php:299
 msgid "Embed media on item pages (legacy)"
-msgstr ""
+msgstr "Ενσωμάτωση πολυμέσων σε σελίδες αντικειμένων (κληρονομικό)"
 
 #: application/src/Form/SiteSettingsForm.php:313
 msgid "Search type"
@@ -4814,23 +4813,23 @@ msgstr ""
 
 #: application/src/Form/SiteSettingsForm.php:352
 msgid "Advanced search vocabulary members"
-msgstr ""
+msgstr "Μέλη λεξιλογίου προχωρημένης αναζήτησης"
 
 #: application/src/Form/SiteSettingsForm.php:353
 msgid "Limit the search options for property and class"
-msgstr ""
+msgstr "Περιορίστε τις επιλογές αναζήτησης για ιδιότητα και κατηγορία"
 
 #: application/src/Form/SiteSettingsForm.php:354
 msgid "All vocabulary members"
-msgstr ""
+msgstr "Όλα τα μέλη του λεξιλογίου"
 
 #: application/src/Form/SiteSettingsForm.php:356
 msgid "Used by resources in this site"
-msgstr ""
+msgstr "Χρησιμοποιείται από πόρους σε αυτόν τον ιστότοπο"
 
 #: application/src/Form/SiteSettingsForm.php:357
 msgid "Used by any resource in the installation"
-msgstr ""
+msgstr "Χρησιμοποιείται από οποιονδήποτε πόρο στην εγκατάσταση"
 
 #: application/src/Form/SiteSettingsForm.php:371
 msgid "Templates"
@@ -4929,11 +4928,11 @@ msgstr "Αρχείο προτύπου πόρων"
 
 #: application/src/Form/UserForm.php:134
 msgid "Admin browse columns"
-msgstr ""
+msgstr "Στήλες περιήγησης διαχειριστή"
 
 #: application/src/Form/UserForm.php:135
 msgid "Admin browse defaults"
-msgstr ""
+msgstr "Προεπιλογές περιήγησης διαχειριστή"
 
 #: application/src/Form/UserForm.php:160
 msgid "Default resource template"
@@ -4941,7 +4940,7 @@ msgstr "Καθορισμένο πρότυπο πόρου"
 
 #: application/src/Form/UserForm.php:184
 msgid "Default item sets for items"
-msgstr ""
+msgstr "Προεπιλεγμένες ομάδες αντικειμένων για αντικείμενα"
 
 #: application/src/Form/UserForm.php:200
 msgid "Default sites for items"
@@ -4949,31 +4948,31 @@ msgstr "Καθορισμένοι ιστότοποι για αντικείμεν�
 
 #: application/src/Form/UserForm.php:209
 msgid "Item browse columns"
-msgstr ""
+msgstr "Στήλες περιήγησης αντικειμένου"
 
 #: application/src/Form/UserForm.php:220
 msgid "Item set browse columns"
-msgstr ""
+msgstr "Στήλες περιήγησης ομάδας αντικειμένων"
 
 #: application/src/Form/UserForm.php:231
 msgid "Media browse columns"
-msgstr ""
+msgstr "Στήλες περιήγησης πολυμέσων"
 
 #: application/src/Form/UserForm.php:242
 msgid "Site browse columns"
-msgstr ""
+msgstr "Στήλες περιήγησης ιστότοπου"
 
 #: application/src/Form/UserForm.php:267
 msgid "Item set browse defaults"
-msgstr ""
+msgstr "Προεπιλογές περιήγησης ομάδας αντικειμένων"
 
 #: application/src/Form/UserForm.php:281
 msgid "Media browse defaults"
-msgstr ""
+msgstr "Προεπιλογές περιήγησης πολυμέσων"
 
 #: application/src/Form/UserForm.php:295
 msgid "Site browse defaults"
-msgstr ""
+msgstr "Προεπιλογές περιήγησης ιστότοπου"
 
 #: application/src/Form/UserForm.php:311
 msgid "Current password"
@@ -5035,17 +5034,21 @@ msgstr "τίτλος μέσου"
 msgid "no title"
 msgstr "χωρίς τίτλο"
 
-#: application/src/View/Helper/Browse.php:155
+#: application/src/View/Helper/Browse.php:55
+msgid "Relevance"
+msgstr "Συνάφεια"
+
+#: application/src/View/Helper/Browse.php:162
 msgid "Add a column…"
-msgstr ""
+msgstr "Προσθήκη στήλης..."
 
-#: application/src/View/Helper/Browse.php:174
+#: application/src/View/Helper/Browse.php:181
 msgid "Column type"
-msgstr ""
+msgstr "Είδος στήλης"
 
-#: application/src/View/Helper/Browse.php:185
+#: application/src/View/Helper/Browse.php:192
 msgid "Header"
-msgstr ""
+msgstr "Κεφαλίδα"
 
 #: application/src/View/Helper/ResourceTemplateSelect.php:39
 msgid "Select template…"
@@ -5106,27 +5109,27 @@ msgstr ""
 msgid "Site resources successfully updated"
 msgstr "Οι πόροι του ιστότοπου ενημερώθηκαν με επιτυχία"
 
-#: application/src/Controller/SiteAdmin/IndexController.php:300
+#: application/src/Controller/SiteAdmin/IndexController.php:305
 msgid "User permissions successfully updated"
 msgstr "Τα δικαιώματα χρήστη ενημερώθηκαν με επιτυχία"
 
-#: application/src/Controller/SiteAdmin/IndexController.php:332
+#: application/src/Controller/SiteAdmin/IndexController.php:342
 msgid "Site theme successfully updated"
 msgstr "Το θέμα εμφάνισης του ιστότοπου ενημερώθηκε με επιτυχία"
 
-#: application/src/Controller/SiteAdmin/IndexController.php:407
+#: application/src/Controller/SiteAdmin/IndexController.php:417
 msgid "Theme settings successfully updated"
 msgstr "Οι ρυθμίσεις θέματος εμφάνισης ενημερώθηκαν με επιτυχία"
 
-#: application/src/Controller/SiteAdmin/IndexController.php:447
+#: application/src/Controller/SiteAdmin/IndexController.php:457
 msgid "Theme resource pages successfully updated"
-msgstr ""
+msgstr "Οι σελίδες πόρων του θέματος ενημερώθηκαν με επιτυχία"
 
-#: application/src/Controller/SiteAdmin/IndexController.php:470
+#: application/src/Controller/SiteAdmin/IndexController.php:480
 msgid "Site successfully deleted"
 msgstr "Ο ιστότοπος διαγράφηκε με επιτυχία"
 
-#: application/src/Controller/SiteAdmin/IndexController.php:493
+#: application/src/Controller/SiteAdmin/IndexController.php:503
 msgid "site"
 msgstr "ιστότοπος"
 
@@ -5221,45 +5224,45 @@ msgstr "Διαγραφή αντικειμένων. Αυτό μπορεί να π
 msgid "Item successfully created. %s"
 msgstr "Το αντικείμενο δημιουργήθηκε με επιτυχία. %s"
 
-#: application/src/Controller/Admin/ItemController.php:255
+#: application/src/Controller/Admin/ItemController.php:256
 msgid "Item successfully updated"
 msgstr "Το αντικείμενο ενημερώθηκε με επιτυχία"
 
-#: application/src/Controller/Admin/ItemController.php:283
+#: application/src/Controller/Admin/ItemController.php:284
 msgid "You must select at least one item to batch edit."
 msgstr ""
 "Πρέπει να επιλέξετε τουλάχιστον ένα αντικείμενο για μαζική επεξεργασία."
 
-#: application/src/Controller/Admin/ItemController.php:304
+#: application/src/Controller/Admin/ItemController.php:308
 msgid "Items successfully edited"
 msgstr "Η επεξεργασία των αντικειμένων ήταν επιτυχής"
 
-#: application/src/Controller/Admin/ItemController.php:360
+#: application/src/Controller/Admin/ItemController.php:364
 msgid "Editing items. This may take a while."
 msgstr "Επεξεργασία αντικειμένων. Αυτό μπορεί να πάρει λίγο χρόνο."
 
-#: application/src/Controller/Admin/UserController.php:113
+#: application/src/Controller/Admin/UserController.php:115
 #, php-format
 msgid "User successfully created. %s"
 msgstr "Ο χρήστης δημιουργήθηκε με επιτυχία. %s"
 
-#: application/src/Controller/Admin/UserController.php:187
+#: application/src/Controller/Admin/UserController.php:189
 msgid "User successfully updated"
 msgstr "Ο χρήστης ενημερώθηκε με επιτυχία"
 
-#: application/src/Controller/Admin/UserController.php:202
+#: application/src/Controller/Admin/UserController.php:204
 msgid "The current password entered was invalid"
 msgstr "Ο τρέχων κωδικός που εισαγάγατε δεν ήταν έγκυρος"
 
-#: application/src/Controller/Admin/UserController.php:206
+#: application/src/Controller/Admin/UserController.php:208
 msgid "Password successfully changed"
 msgstr "Ο κωδικός πρόσβασης άλλαξε με επιτυχία"
 
-#: application/src/Controller/Admin/UserController.php:234
+#: application/src/Controller/Admin/UserController.php:236
 msgid "Key(s) successfully deleted"
 msgstr "Το κλειδί/Τα κλειδιά διαγράφηκαν με επιτυχία"
 
-#: application/src/Controller/Admin/UserController.php:242
+#: application/src/Controller/Admin/UserController.php:244
 #, php-format
 msgid ""
 "API key successfully created.<br><br>Here is your key ID and credential for "
@@ -5273,45 +5276,45 @@ msgstr ""
 "σελίδα.<br><br>key_identity: <code>%1$s</code><br>key_credential: "
 "<code>%2$s</code >"
 
-#: application/src/Controller/Admin/UserController.php:268
+#: application/src/Controller/Admin/UserController.php:270
 msgid "user"
 msgstr "χρήστης"
 
-#: application/src/Controller/Admin/UserController.php:281
+#: application/src/Controller/Admin/UserController.php:283
 msgid "User successfully deleted"
 msgstr "Ο χρήστης διαγράφηκε με επιτυχία"
 
-#: application/src/Controller/Admin/UserController.php:303
+#: application/src/Controller/Admin/UserController.php:305
 msgid "You must select at least one user to batch delete."
 msgstr "Πρέπει να επιλέξετε τουλάχιστον έναν χρήστη για μαζική διαγραφή."
 
-#: application/src/Controller/Admin/UserController.php:310
+#: application/src/Controller/Admin/UserController.php:312
 msgid "You can’t delete yourself."
 msgstr "Δεν μπορείτε να διαγράψετε τον εαυτό σας."
 
-#: application/src/Controller/Admin/UserController.php:319
+#: application/src/Controller/Admin/UserController.php:321
 msgid "Users successfully deleted"
 msgstr "Οι χρήστες διαγράφηκαν με επιτυχία"
 
-#: application/src/Controller/Admin/UserController.php:345
+#: application/src/Controller/Admin/UserController.php:347
 msgid "Deleting users. This may take a while."
 msgstr "Διαγραφή χρηστών. Αυτό μπορεί να πάρει λίγο χρόνο."
 
-#: application/src/Controller/Admin/UserController.php:364
+#: application/src/Controller/Admin/UserController.php:366
 msgid "You must select at least one user to batch edit."
 msgstr "Πρέπει να επιλέξετε τουλάχιστον έναν χρήστη για μαζική επεξεργασία."
 
-#: application/src/Controller/Admin/UserController.php:371
+#: application/src/Controller/Admin/UserController.php:373
 msgid "For security reasons, you can’t batch edit yourself."
 msgstr ""
 "Για λόγους ασφαλείας, δεν μπορείτε να κάνετε μαζική επεξεργασία του εαυτού "
 "σας."
 
-#: application/src/Controller/Admin/UserController.php:392
+#: application/src/Controller/Admin/UserController.php:394
 msgid "Users successfully edited"
 msgstr "Η επεξεργασία των χρηστών ήταν επιτυχής"
 
-#: application/src/Controller/Admin/UserController.php:445
+#: application/src/Controller/Admin/UserController.php:447
 msgid "Editing users. This may take a while."
 msgstr "Επεξεργασία χρηστών. Αυτό μπορεί να πάρει λίγο χρόνο."
 
@@ -5388,11 +5391,11 @@ msgstr "Διαγραφή μέσων. Αυτό μπορεί να πάρει λί�
 msgid "You must select at least one media to batch edit."
 msgstr "Πρέπει να επιλέξετε τουλάχιστον ένα μέσο για μαζική επεξεργασία."
 
-#: application/src/Controller/Admin/MediaController.php:242
+#: application/src/Controller/Admin/MediaController.php:245
 msgid "Media successfully edited"
 msgstr "Η επεξεργασία των πολυμέσων ήταν επιτυχής"
 
-#: application/src/Controller/Admin/MediaController.php:298
+#: application/src/Controller/Admin/MediaController.php:301
 msgid "Editing media. This may take a while."
 msgstr "Επεξεργασία πολυμέσων. Αυτό μπορεί να πάρει λίγο χρόνο."
 
@@ -5444,11 +5447,11 @@ msgstr ""
 "Πρέπει να επιλέξετε τουλάχιστον μια ομάδα αντικειμένων για μαζική "
 "επεξεργασία."
 
-#: application/src/Controller/Admin/ItemSetController.php:276
+#: application/src/Controller/Admin/ItemSetController.php:279
 msgid "Item sets successfully edited"
 msgstr "Η επεξεργασία των ομάδων αντικειμένων ήταν επιτυχής"
 
-#: application/src/Controller/Admin/ItemSetController.php:332
+#: application/src/Controller/Admin/ItemSetController.php:335
 msgid "Editing item sets. This may take a while."
 msgstr "Επεξεργασία ομάδων αντικειμένων. Αυτό μπορεί να πάρει λίγο χρόνο."
 
@@ -5499,67 +5502,67 @@ msgstr "Το πρότυπο πόρων ενημερώθηκε με επιτυχ�
 msgid "Resource template successfully created. %s"
 msgstr "Το πρότυπο πόρων δημιουργήθηκε με επιτυχία. %s"
 
-#: application/config/module.config.php:675
+#: application/config/module.config.php:676
 msgid "Owner email"
-msgstr ""
+msgstr "Email ιδιοκτήτη"
 
-#: application/config/module.config.php:681
-#: application/config/module.config.php:697
-#: application/config/module.config.php:702
+#: application/config/module.config.php:682
+#: application/config/module.config.php:698
+#: application/config/module.config.php:703
 msgid "Item count"
-msgstr ""
-
-#: application/config/module.config.php:691
-msgid "Resource class count"
-msgstr ""
+msgstr "Μέτρηση αντικειμένων"
 
 #: application/config/module.config.php:692
-msgid "Property count"
-msgstr ""
+msgid "Resource class count"
+msgstr "Μέτρηση κατηγορίας πόρου"
 
-#: application/config/module.config.php:864
+#: application/config/module.config.php:693
+msgid "Property count"
+msgstr "Μέτρηση ιδιότητας"
+
+#: application/config/module.config.php:865
 msgid "Something went wrong"
 msgstr "Κάτι πήγε στραβά"
 
-#: application/config/module.config.php:869
+#: application/config/module.config.php:870
 msgid "You have unsaved changes."
 msgstr "Έχετε μη αποθηκευμένες αλλαγές."
 
-#: application/config/module.config.php:870
+#: application/config/module.config.php:871
 msgid "Restore item set"
 msgstr "Επαναφορά ομάδας αντικειμένων"
 
-#: application/config/module.config.php:871
+#: application/config/module.config.php:872
 msgid "Close icon set"
 msgstr "Κλείσιμο ομάδας εικονιδίων"
 
-#: application/config/module.config.php:872
+#: application/config/module.config.php:873
 msgid "Open icon set"
 msgstr "Άνοιγμα ομάδας εικονιδίων"
 
-#: application/config/module.config.php:874
+#: application/config/module.config.php:875
 msgid "Failed loading resource template from API"
 msgstr "Αποτυχία φόρτωσης προτύπου πόρων από το API"
 
-#: application/config/module.config.php:875
+#: application/config/module.config.php:876
 msgid "Restore property"
 msgstr "Επαναφορά ιδιότητας"
 
-#: application/config/module.config.php:877
+#: application/config/module.config.php:878
 msgid "Please enter a valid language tag"
 msgstr "Καταχωρίστε μια έγκυρη ετικέτα γλώσσας"
 
-#: application/config/module.config.php:879
+#: application/config/module.config.php:880
 msgid "Description"
 msgstr "Περιγραφή"
 
-#: application/config/module.config.php:880
-msgid "Unknown block layout"
-msgstr ""
-
 #: application/config/module.config.php:881
+msgid "Unknown block layout"
+msgstr "Άγνωστη διάταξη μπλοκ"
+
+#: application/config/module.config.php:882
 msgid "Required field must be completed"
-msgstr ""
+msgstr "Το υποχρεωτικό πεδίο πρέπει να συμπληρωθεί"
 
 #: application/config/navigation.config.php:201
 msgid "Site admin"

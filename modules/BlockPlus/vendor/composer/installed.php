@@ -3,7 +3,7 @@
         'name' => 'daniel-km/omeka-s-module-block-plus',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'b10e7d6b3494b2e555f4c28b0c4dc4091dab6266',
+        'reference' => '1d494222d883d1f1cdd64de7569daeaa2b4c0e12',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'andykirk/ckeditor-footnotes' => array(
-            'pretty_version' => '1.0.10',
-            'version' => '1.0.10.0',
-            'reference' => '',
+            'pretty_version' => '1.2.0',
+            'version' => '1.2.0.0',
+            'reference' => 'v1.2.0',
             'type' => 'omeka-addon-asset',
             'install_path' => __DIR__ . '/../../asset/vendor/ckeditor-footnotes',
             'aliases' => array(),
@@ -49,7 +49,7 @@
         'daniel-km/omeka-s-module-block-plus' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'b10e7d6b3494b2e555f4c28b0c4dc4091dab6266',
+            'reference' => '1d494222d883d1f1cdd64de7569daeaa2b4c0e12',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

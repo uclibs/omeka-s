@@ -39,23 +39,23 @@ use Laminas\Form\Form;
 use Laminas\Form\FormElementManager;
 use Omeka\Api\Representation\SiteRepresentation;
 use Omeka\Form\Element as OmekaElement;
+use Omeka\Settings\Settings;
 use Omeka\View\Helper\Setting;
-use Reference\Mvc\Controller\Plugin\References;
 
 class MainSearchForm extends Form
 {
     /**
-     * @var string
+     * @var \AdvancedSearch\View\Helper\EasyMeta
      */
-    protected $basePath;
+    protected $easyMeta;
 
     /**
-     * @var SiteRepresentation
+     * @var \Omeka\Settings\Settings
      */
-    protected $site;
+    protected $settings;
 
     /**
-     * @var Setting
+     * @var \Omeka\View\Helper\Setting
      */
     protected $siteSetting;
 
@@ -70,9 +70,24 @@ class MainSearchForm extends Form
     protected $entityManager;
 
     /**
-     * @var \Reference\Mvc\Controller\Plugin\References|null
+     * @var string
      */
-    protected $references;
+    protected $basePath;
+
+    /**
+     * @var \Omeka\Api\Representation\SiteRepresentation
+     */
+    protected $site;
+
+    /**
+     * @var \AdvancedSearch\Api\Representation\SearchConfigRepresentation
+     */
+    protected $searchConfig;
+
+    /**
+     * @var array
+     */
+    protected $elementAttributes = [];
 
     /**
      * @var array
@@ -108,12 +123,16 @@ class MainSearchForm extends Form
         }
         unset($name);
 
-        /** @var \AdvancedSearch\Api\Representation\SearchConfigRepresentation $searchConfig */
-        $searchConfig = $this->getOption('search_config');
-        $this->formSettings = $searchConfig ? $searchConfig->settings() : [];
+        $this->searchConfig = $this->getOption('search_config');
+
+        $this->formSettings = $this->searchConfig ? $this->searchConfig->settings() : [];
 
         // Check specific fields against all available fields.
         $availableFields = $this->getAvailableFields();
+
+        $this->elementAttributes = empty($this->formSettings['filters']['attribute_form'])
+            ? []
+            : ['form' => 'form-search'];
 
         // The main query is always the first element and submit the last one.
         // TODO Allow to order and to skip "q" (include it as a standard filter).
@@ -127,9 +146,8 @@ class MainSearchForm extends Form
                 ],
                 'attributes' => [
                     'id' => 'q',
-                    'form' => 'form-search',
                     'data-type-field' => 'q',
-                ],
+                ] + $this->elementAttributes,
             ])
         ;
 
@@ -138,7 +156,7 @@ class MainSearchForm extends Form
             $suggester = $this->formSettings['autosuggest']['suggester'] ?? null;
             if ($suggester) {
                 // TODO Use url helper.
-                $autoSuggestUrl = $this->basePath . ($this->site ? '/s/' . $this->site->slug() : '/admin') . '/' . ($searchConfig ? $searchConfig->path() : 'search') . '/suggest';
+                $autoSuggestUrl = $this->basePath . ($this->site ? '/s/' . $this->site->slug() : '/admin') . '/' . ($this->searchConfig ? $this->searchConfig->path() : 'search') . '/suggest';
             }
         }
         if ($autoSuggestUrl) {
@@ -209,6 +227,9 @@ class MainSearchForm extends Form
                     case 'item_set/o:id':
                         $element = $this->searchItemSet($filter);
                         break;
+                    case 'access':
+                        $element = $this->searchAccess($filter);
+                        break;
                     case 'item_sets_tree':
                         $element = $this->searchItemSetsTree($filter);
                         break;
@@ -245,10 +266,9 @@ class MainSearchForm extends Form
                     ],
                     'attributes' => [
                         'id' => 'reset',
-                        'form' => 'form-search',
                         'type' => 'reset',
                         'class' => 'search-reset',
-                    ],
+                    ] + $this->elementAttributes,
                 ]);
         }
 
@@ -265,10 +285,9 @@ class MainSearchForm extends Form
                     ],
                     'attributes' => [
                         'id' => 'submit',
-                        'form' => 'form-search',
                         'type' => 'submit',
                         'class' => 'search-submit',
-                    ],
+                    ] + $this->elementAttributes,
                 ]);
         }
 
@@ -318,8 +337,7 @@ class MainSearchForm extends Form
             ])
             ->setAttributes([
                 'id' => 'search-filters',
-                'form' => 'form-search',
-            ])
+            ] + $this->elementAttributes)
         ;
 
         return $element;
@@ -356,9 +374,8 @@ class MainSearchForm extends Form
                     'label' => 'From', // @translate
                 ],
                 'attributes' => [
-                    'form' => 'form-search',
                     'placeholder' => 'YYYY', // @translate
-                ],
+                ] + $this->elementAttributes,
             ])
             ->add([
                 'name' => 'to',
@@ -367,9 +384,8 @@ class MainSearchForm extends Form
                     'label' => 'To', // @translate
                 ],
                 'attributes' => [
-                    'form' => 'form-search',
                     'placeholder' => 'YYYY', // @translate
-                ],
+                ] + $this->elementAttributes,
             ])
         ;
 
@@ -509,11 +525,10 @@ class MainSearchForm extends Form
             ])
             ->setAttributes([
                 'id' => 'search-resource-type',
-                'form' => 'form-search',
                 'multiple' => true,
                 'class' => $filter['type'] === 'MultiCheckbox' ? '' : 'chosen-select',
                 'data-placeholder' => 'Select resource type…', // @translate
-            ])
+            ] + $this->elementAttributes)
         ;
 
         return $element;
@@ -530,9 +545,8 @@ class MainSearchForm extends Form
             ])
             ->setAttributes([
                 'id' => 'search-id',
-                'form' => 'form-search',
                 'data-field-type' => $filter['type'] === 'MultiText' ? 'multitext' : 'text',
-            ])
+            ] + $this->elementAttributes)
         ;
 
         return $element;
@@ -547,9 +561,8 @@ class MainSearchForm extends Form
             ])
             ->setAttributes([
                 'id' => 'search-is-public',
-                'form' => 'form-search',
                 'data-field-type' => 'checkbox',
-            ])
+            ] + $this->elementAttributes)
         ;
 
         return $element;
@@ -561,9 +574,8 @@ class MainSearchForm extends Form
         $fieldset
             ->setAttributes([
                 'id' => 'search-owners',
-                'form' => 'form-search',
                 'data-field-type' => 'owner',
-            ])
+            ] + $this->elementAttributes)
             ->add([
                 'name' => 'id',
                 'type' => $filter['type'] === 'MultiCheckbox'
@@ -576,11 +588,10 @@ class MainSearchForm extends Form
                 ],
                 'attributes' => [
                     'id' => 'search-owner-id',
-                    'form' => 'form-search',
                     'multiple' => true,
                     'class' => $filter['type'] === 'MultiCheckbox' ? '' : 'chosen-select',
                     'data-placeholder' => 'Select owners…', // @translate
-                ],
+                ] + $this->elementAttributes,
             ])
         ;
 
@@ -593,9 +604,8 @@ class MainSearchForm extends Form
         $fieldset
             ->setAttributes([
                 'id' => 'search-sites',
-                'form' => 'form-search',
                 'data-field-type' => 'site',
-            ])
+            ] + $this->elementAttributes)
             ->add([
                 'name' => 'id',
                 'type' => $filter['type'] === 'MultiCheckbox'
@@ -608,11 +618,10 @@ class MainSearchForm extends Form
                 ],
                 'attributes' => [
                     'id' => 'search-site-id',
-                    'form' => 'form-search',
                     'multiple' => true,
                     'class' => $filter['type'] === 'MultiCheckbox' ? '' : 'chosen-select',
                     'data-placeholder' => 'Select sites…', // @translate
-                ],
+                ] + $this->elementAttributes,
             ])
         ;
 
@@ -627,9 +636,8 @@ class MainSearchForm extends Form
         $fieldset = new Fieldset('class');
         $fieldset->setAttributes([
             'id' => 'search-classes',
-            'form' => 'form-search',
             'data-field-type' => 'class',
-        ]);
+        ] + $this->elementAttributes);
 
         /** @var \Omeka\Form\Element\ResourceClassSelect $element */
         $element = $this->formElementManager->get(OmekaElement\ResourceClassSelect::class);
@@ -677,11 +685,10 @@ class MainSearchForm extends Form
             ->setName('id')
             ->setAttributes([
                 'id' => 'search-class-id',
-                'form' => 'form-search',
                 'multiple' => true,
                 'class' => 'chosen-select',
                 'data-placeholder' => 'Select classes…', // @translate
-            ]);
+            ] + $this->elementAttributes);
 
         $fieldset
             ->add($element);
@@ -699,9 +706,8 @@ class MainSearchForm extends Form
         $fieldset = new Fieldset('template');
         $fieldset->setAttributes([
             'id' => 'search-templates',
-            'form' => 'form-search',
             'data-field-type' => 'template',
-        ]);
+        ] + $this->elementAttributes);
 
         /** @var \Omeka\Form\Element\ResourceTemplateSelect $element */
         $element = $this->formElementManager->get(OmekaElement\ResourceTemplateSelect::class);
@@ -716,11 +722,10 @@ class MainSearchForm extends Form
             ])
             ->setAttributes([
                 'id' => 'search-template-id',
-                'form' => 'form-search',
                 'multiple' => true,
                 'class' => 'chosen-select',
                 'data-placeholder' => 'Select templates…', // @translate
-            ]);
+            ] + $this->elementAttributes);
 
         $hasValues = false;
         if ($this->siteSetting && $this->siteSetting->__invoke('advancedsearch_restrict_templates', false)) {
@@ -740,11 +745,10 @@ class MainSearchForm extends Form
                             ],
                             'attributes' => [
                                 'id' => 'search-template-id',
-                                'form' => 'form-search',
                                 'multiple' => true,
                                 'class' => 'chosen-select',
                                 'data-placeholder' => 'Select templates…', // @translate
-                            ],
+                            ] + $this->elementAttributes,
                         ])
                     ;
                 }
@@ -767,9 +771,8 @@ class MainSearchForm extends Form
         $fieldset
             ->setAttributes([
                 'id' => 'search-item-sets',
-                'form' => 'form-search',
                 'data-field-type' => 'itemset',
-            ])
+            ] + $this->elementAttributes)
             ->add([
                 'name' => 'id',
                 'type' => $filter['type'] === 'MultiCheckbox'
@@ -782,27 +785,28 @@ class MainSearchForm extends Form
                 ],
                 'attributes' => [
                     'id' => 'search-item-set-id',
-                    'form' => 'form-search',
                     'multiple' => true,
                     'class' => $filter['type'] === 'MultiCheckbox' ? '' : 'chosen-select',
                     // End users understand "collections" more than "item sets".
                     'data-placeholder' => 'Select collections…', // @translate
-                ],
+                ] + $this->elementAttributes,
             ])
         ;
 
         return $fieldset;
     }
 
+    /**
+     * Manage hierachical item sets for module Item Sets Tree.
+     */
     protected function searchItemSetsTree(array $filter): ?ElementInterface
     {
         $fieldset = new Fieldset('item_sets_tree');
         $fieldset
             ->setAttributes([
                 'id' => 'search-item-sets-tree',
-                'form' => 'form-search',
                 'data-field-type' => 'itemset',
-            ])
+            ] + $this->elementAttributes)
             ->add([
                 'name' => 'id',
                 'type' => $filter['type'] === 'MultiCheckbox'
@@ -815,12 +819,52 @@ class MainSearchForm extends Form
                 ],
                 'attributes' => [
                     'id' => 'search-item-sets-tree',
-                    'form' => 'form-search',
                     'multiple' => true,
                     'class' => $filter['type'] === 'MultiCheckbox' ? '' : 'chosen-select',
                     // End users understand "collections" more than "item sets".
                     'data-placeholder' => 'Select collections…', // @translate
+                ] + $this->elementAttributes,
+            ])
+        ;
+
+        return $fieldset;
+    }
+
+    /**
+     * Manage access levels for module Access.
+     */
+    protected function searchAccess(array $filter): ?ElementInterface
+    {
+        $valueOptions = $this->settings->get('access_property_levels', [
+            'free' => 'free',
+            'reserved' => 'reserved',
+            // 'protected' => 'protected',
+            'forbidden' => 'forbidden',
+        ]);
+        unset($valueOptions['protected']);
+
+        $fieldset = new Fieldset('access');
+        $fieldset
+            ->setAttributes([
+                'id' => 'search-access',
+                'data-field-type' => 'access',
+            ] + $this->elementAttributes)
+            ->add([
+                'name' => 'id',
+                'type' => $filter['type'] === 'Radio'
+                    ? AdvancedSearchElement\OptionalRadio::class
+                    : AdvancedSearchElement\OptionalSelect::class,
+                'options' => [
+                    'label' => $filter['label'], // @translate
+                    'value_options' => $valueOptions,
+                    'empty_option' => '',
                 ],
+                'attributes' => [
+                    'id' => 'search-access',
+                    // 'multiple' => false,
+                    'class' => $filter['type'] === 'Radio' ? '' : 'chosen-select',
+                    'data-placeholder' => 'Select access…', // @translate
+                ] + $this->elementAttributes,
             ])
         ;
 
@@ -881,6 +925,9 @@ class MainSearchForm extends Form
      * @todo Use a suggester for big lists.
      * @todo Support any resources, not only item.
      *
+     * Note: In version previous 3.4.15, the module Reference was used, that
+     * managed languages, but a lot slower for big databases.
+     *
      * @todo Factorize with \AdvancedSearch\Querier\InternalQuerier::fillFacetResponse()
      * @see \AdvancedSearch\Querier\InternalQuerier::fillFacetResponse()
      */
@@ -910,42 +957,36 @@ class MainSearchForm extends Form
             ?? $multifields[$field]['fields']
             ?? $field;
 
-        if ($this->references) {
-            $list = $this->references->__invoke(
-                $fields,
-                $this->site ? ['site_id' => $this->site->id()] : [],
-                ['output' => 'associative']
-            )->list();
-            $list = array_keys(reset($list)['o:references']);
-        } else {
-            // Simplified from References::listDataForProperty().
-            $fields = reset($fields);
-            if (!is_array($fields)) {
-                $fields = [$fields];
-            }
-            $propertyIds = array_intersect_key($this->getPropertyIds(), array_flip($fields));
-            if (!$propertyIds) {
-                return [];
-            }
-            $qb = $this->entityManager->createQueryBuilder();
-            $expr = $qb->expr();
-            $qb
-                ->select('COALESCE(value.value, valueResource.title, value.uri) AS val')
-                ->from(\Omeka\Entity\Value::class, 'value')
-                // This join allow to check visibility automatically too.
-                ->innerJoin(\Omeka\Entity\Item::class, 'resource', Join::WITH, $expr->eq('value.resource', 'resource'))
-                // The values should be distinct for each type.
-                ->leftJoin(\Omeka\Entity\Item::class, 'valueResource', Join::WITH, $expr->eq('value.valueResource', 'valueResource'))
-                ->andWhere($expr->in('value.property', ':properties'))
-                ->setParameter('properties', implode(',', $propertyIds))
-                ->groupBy('val')
-                ->orderBy('val', 'asc')
-            ;
-            $list = array_column($qb->getQuery()->getScalarResult(), 'val', 'val');
-            // Fix false empty duplicate or values without title.
-            $list = array_keys(array_flip($list));
-            unset($list['']);
+        // Simplified from References::listDataForProperty().
+        /** @see \Reference\Mvc\Controller\Plugin\References::listDataForProperties() */
+        $fields = reset($fields);
+        if (!is_array($fields)) {
+            $fields = [$fields];
         }
+        $propertyIds = array_intersect_key($this->getPropertyIds(), array_flip($fields));
+        if (!$propertyIds) {
+            return [];
+        }
+
+        $qb = $this->entityManager->createQueryBuilder();
+        $expr = $qb->expr();
+        $qb
+            ->select('COALESCE(value.value, valueResource.title, value.uri) AS val')
+            ->from(\Omeka\Entity\Value::class, 'value')
+            // This join allow to check visibility automatically too.
+            ->innerJoin(\Omeka\Entity\Item::class, 'resource', Join::WITH, $expr->eq('value.resource', 'resource'))
+            // The values should be distinct for each type.
+            ->leftJoin(\Omeka\Entity\Item::class, 'valueResource', Join::WITH, $expr->eq('value.valueResource', 'valueResource'))
+            ->andWhere($expr->in('value.property', ':properties'))
+            ->setParameter('properties', implode(',', $propertyIds))
+            ->groupBy('val')
+            ->orderBy('val', 'asc')
+        ;
+        $list = array_column($qb->getQuery()->getScalarResult(), 'val', 'val');
+        // Fix false empty duplicate or values without title.
+        $list = array_keys(array_flip($list));
+        unset($list['']);
+
         return array_combine($list, $list);
     }
 
@@ -1013,14 +1054,8 @@ class MainSearchForm extends Form
 
     protected function getAvailableFields(): array
     {
-        /** @var \AdvancedSearch\Api\Representation\SearchConfigRepresentation $searchConfig */
-        $searchConfig = $this->getOption('search_config');
-        $searchEngine = $searchConfig->engine();
-        $searchAdapter = $searchEngine->adapter();
-        if (empty($searchAdapter)) {
-            return [];
-        }
-        return $searchAdapter->setSearchEngine($searchEngine)->getAvailableFields();
+        $adapter = $this->searchConfig->searchAdapter();
+        return $adapter ? $adapter->getAvailableFields() : [];
     }
 
     /**
@@ -1028,19 +1063,15 @@ class MainSearchForm extends Form
      */
     protected function getPropertyTerm($termOrId): ?string
     {
-        return $this->getOption('search_config')->getServiceLocator()->get('ViewHelperManager')
-            ->get('easyMeta')->propertyTerms($termOrId);
+        return $this->easyMeta->propertyTerms($termOrId);
     }
 
     /**
      * Get all property ids by term.
-     *
-     * @return array Associative array of ids by term.
      */
     protected function getPropertyIds(): array
     {
-        return $this->getOption('search_config')->getServiceLocator()->get('ViewHelperManager')
-            ->get('easyMeta')->propertyIds();
+        return $this->easyMeta->propertyIds();
     }
 
     public function setBasePath(string $basePath): Form
@@ -1049,9 +1080,21 @@ class MainSearchForm extends Form
         return $this;
     }
 
+    public function setEasyMeta($easyMeta): Form
+    {
+        $this->easyMeta = $easyMeta;
+        return $this;
+    }
+
     public function setSite(?SiteRepresentation $site): Form
     {
         $this->site = $site;
+        return $this;
+    }
+
+    public function setSettings(Settings $settings): Form
+    {
+        $this->settings = $settings;
         return $this;
     }
 
@@ -1070,12 +1113,6 @@ class MainSearchForm extends Form
     public function setEntityManager(EntityManager $entityManager): Form
     {
         $this->entityManager = $entityManager;
-        return $this;
-    }
-
-    public function setReferences(?References $references): Form
-    {
-        $this->references = $references;
         return $this;
     }
 }

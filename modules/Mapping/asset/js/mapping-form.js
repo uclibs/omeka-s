@@ -19,7 +19,7 @@ var addMarker = function(marker, markerId, markerLabel, markerMediaId) {
     popupContent.find('.mapping-marker-popup-label').val(markerLabel);
     if (markerMediaId) {
         var mediaThumbnail = $('<img>', {
-            src: $('.mapping-marker-image-select[value="' + markerMediaId + '"').data('mediaThumbnailUrl')
+            src: $('.mapping-marker-image-select[value="' + markerMediaId + '"]').data('mediaThumbnailUrl')
         });
         popupContent.find('.mapping-marker-popup-image').html(mediaThumbnail);
     }
@@ -129,7 +129,8 @@ var markersData = mappingMap.data('markers');
 
 // Initialize the map and set default view.
 var map = L.map('mapping-map', {
-    fullscreenControl: true
+    fullscreenControl: true,
+    worldCopyJump:true
 });
 map.setView([20, 0], 2);
 var mapMoved = false;

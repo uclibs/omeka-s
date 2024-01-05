@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'omeka/omeka-s',
-        'pretty_version' => 'v4.0.1',
-        'version' => '4.0.1.0',
-        'reference' => '944d036299924f75c39de05cdb9ecd9b7b12f704',
+        'pretty_version' => 'v4.0.4',
+        'version' => '4.0.4.0',
+        'reference' => 'a5ecedef623deaf2b7edba36cff39f62be929d23',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -529,7 +529,7 @@
         'omeka-s-themes/default' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => 'b9679ff37c977e337cb045201c1a81b4ebcf15d6',
+            'reference' => 'aafbfc2725d1e96f25f520913efaea896c5baf0c',
             'type' => 'omeka-s-theme',
             'install_path' => __DIR__ . '/../../themes/default',
             'aliases' => array(
@@ -547,9 +547,9 @@
             'dev_requirement' => false,
         ),
         'omeka/omeka-s' => array(
-            'pretty_version' => 'v4.0.1',
-            'version' => '4.0.1.0',
-            'reference' => '944d036299924f75c39de05cdb9ecd9b7b12f704',
+            'pretty_version' => 'v4.0.4',
+            'version' => '4.0.4.0',
+            'reference' => 'a5ecedef623deaf2b7edba36cff39f62be929d23',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

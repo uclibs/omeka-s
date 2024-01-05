@@ -195,7 +195,7 @@ class SearchConfigConfigureForm extends Form
                 'type' => AdvancedSearchElement\DataTextarea::class,
                 'options' => [
                     'label' => 'Filters', // @translate
-                    'info' => 'List of filters that will be displayed in the search form. Format is "field = Label = Type = options". The field should exist in all resources fields.', // @translate
+                    'info' => 'List of filters that will be displayed in the search form. Format is "field = Label = Type = Options". The field should exist in all resources fields.', // @translate
                     'as_key_value' => false,
                     'key_value_separator' => '=',
                     'data_keys' => [
@@ -218,6 +218,16 @@ dcterms:date = Date = DateRange
 dcterms:subject = Subject = MultiCheckbox = alpha | beta | gamma
 advanced = Filters = Advanced',
                     'rows' => 12,
+                ],
+            ])
+            ->add([
+                'name' => 'attribute_form',
+                'type' => Element\Checkbox::class,
+                'options' => [
+                    'label' => 'Add attribute "form" to input elements', // @translate
+                ],
+                'attributes' => [
+                    'id' => 'attribute_form',
                 ],
             ])
             ->add([
@@ -261,7 +271,7 @@ advanced = Filters = Advanced',
                 'type' => AdvancedSearchElement\DataTextarea::class,
                 'options' => [
                     'label' => 'Advanced filters', // @translate
-                    'info' => 'List of filters that will be displayed in the search form. Format is "term = Label". The field should exist in all resources fields.', // @translate
+                    'info' => 'List of filters that will be displayed in the search form. Format is "term = Label". The field should exist in all resources fields. Only properties are managed for internal search engine.', // @translate
                     'as_key_value' => true,
                     'key_value_separator' => '=',
                     'data_keys' => [
@@ -616,13 +626,17 @@ nlres = is not linked with resource with ID
                 'type' => AdvancedSearchElement\DataTextarea::class,
                 'options' => [
                     'label' => 'List of facets', // @translate
-                    'info' => 'List of facets that will be displayed in the search page. Format is "field = Label" and optionnally " = Select" or " = SelectRange". With internal sql engine, "SelectRange" orders values alphabetically. With Solr, "SelectRange" works only with date and numbers. "Tree" can be used for item sets when module ItemSetsTree is enabled and data indexed recursively.', // @translate
+                    'info' => 'List of facets that will be displayed in the search page. Format is "field = Label = Input type = Options". Input types may be "Select" or "SelectRange". With internal sql engine, "SelectRange" orders values alphabetically. With Solr, "SelectRange" works only with date and numbers. "Tree" can be used for item sets when module ItemSetsTree is enabled and data indexed recursively. Options are a comma separateted list of arguments. For now, the main type ("literal", "uri" or "resource") can be specified to output only this main type.', // @translate
                     'as_key_value' => true,
                     'key_value_separator' => '=',
                     'data_keys' => [
                         'name',
                         'label',
                         'type',
+                        'options',
+                    ],
+                    'data_array_keys' => [
+                        'options' => '|',
                     ],
                 ],
                 'attributes' => [
@@ -758,6 +772,32 @@ nlres = is not linked with resource with ID
                     'id' => 'facet_display_reset',
                     'required' => false,
                     'value' => 'above',
+                ],
+            ])
+            ->add([
+                'name' => 'label_submit',
+                'type' => Element\Text::class,
+                'options' => [
+                    'label' => 'Label for submit', // @translate
+                ],
+                'attributes' => [
+                    'id' => 'label_submit',
+                    'required' => false,
+                    'value' => 'Apply facets', // @translate
+                    'placeholder' => 'Apply facets', // @translate
+                ],
+            ])
+            ->add([
+                'name' => 'label_reset',
+                'type' => Element\Text::class,
+                'options' => [
+                    'label' => 'Label for reset', // @translate
+                ],
+                'attributes' => [
+                    'id' => 'label_reset',
+                    'required' => false,
+                    'value' => 'Reset facets', // @translate
+                    'placeholder' => 'Reset facets', // @translate
                 ],
             ])
             ->add([

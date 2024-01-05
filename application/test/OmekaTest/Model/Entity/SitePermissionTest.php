@@ -8,7 +8,7 @@ class SitePermissionTest extends TestCase
 {
     protected $sitePermission;
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->sitePermission = new SitePermission;
     }
