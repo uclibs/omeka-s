@@ -3,7 +3,6 @@
 namespace AdvancedSearch\Form\Admin;
 
 use AdvancedSearch\Form\Element as AdvancedSearchElement;
-use AdvancedSearch\View\Helper\EasyMeta;
 use Laminas\Form\Element;
 use Laminas\Form\Fieldset;
 use Omeka\Form\Element as OmekaElement;
@@ -195,6 +194,20 @@ class ApiFormConfigFieldset extends Fieldset
                 'type' => AdvancedSearchElement\OptionalSelect::class,
                 'options' => [
                     'label' => 'Item set id', // @translate
+                    'value_options' => $availableFields,
+                    'empty_option' => 'None', // @translate
+                    'use_hidden_element' => true,
+                ],
+                'attributes' => [
+                    'required' => false,
+                    'class' => 'chosen-select',
+                ],
+            ])
+            ->add([
+                'name' => 'is_open',
+                'type' => AdvancedSearchElement\OptionalSelect::class,
+                'options' => [
+                    'label' => 'Is open', // @translate
                     'value_options' => $availableFields,
                     'empty_option' => 'None', // @translate
                     'use_hidden_element' => true,

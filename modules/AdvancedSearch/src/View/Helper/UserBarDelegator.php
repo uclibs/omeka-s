@@ -2,7 +2,6 @@
 
 namespace AdvancedSearch\View\Helper;
 
-
 use Laminas\View\Renderer\RendererInterface;
 use Omeka\Api\Representation\SiteRepresentation;
 use Omeka\Entity\User;
@@ -17,8 +16,9 @@ use Omeka\View\Helper\UserBar;
  * @todo Update core to fill links simpler.
  *
  * Copy:
- * @see \AdvancedSearch\\View\Helper\UserBarDelegator
+ * @see \AdvancedSearch\View\Helper\UserBarDelegator
  * @see \Guest\View\Helper\UserBarDelegator
+ * @see \GuestPrivateRole\View\Helper\UserBarDelegator
  */
 class UserBarDelegator extends UserBar
 {
@@ -93,6 +93,8 @@ class UserBarDelegator extends UserBar
         $controller = $params['__CONTROLLER__'] ?? $params['controller'] ?? null;
         $controllers = [
             'AdvancedSearch\Controller\SearchController' => 'advanced-search', // @ŧranslate
+            // Deprecated.
+            'AdvancedSearch\Controller\IndexController' => 'advanced-search', // @ŧranslate
         ];
 
         if (!isset($controllers[$controller])) {
@@ -112,14 +114,15 @@ class UserBarDelegator extends UserBar
 
         // The resource is used only to create a class in partial.
         $links[] = [
-            'resource' => 'advanced-search',
+            // Don't use class "advanced-search" that is used in theme.
+            'resource' => 'advanced-search-config',
             'action' => 'browse',
             'text' => $translate('Search manager'), // @translate
             'url' => $url('admin/search'),
         ];
 
         $links[] = [
-            'resource' => 'advanced-search',
+            'resource' => 'advanced-search-config',
             'action' => 'browse',
             'text' => $translate('Search config'), // @translate
             'url' => $url('admin/search/config-id', ['id' => $params['id'], 'action' => 'configure']),

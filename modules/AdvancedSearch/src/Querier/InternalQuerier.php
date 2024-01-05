@@ -644,6 +644,15 @@ SQL;
                         : array_merge(is_array($this->args['item_set_id']) ? $this->args['item_set_id'] : [$this->args['item_set_id']], $values);
                     continue 2;
 
+                // Module Access: access level (free, reserved, protected, forbidden).
+                case 'access':
+                    $values = array_filter($flatArray($values));
+                    $this->args['access'] = empty($this->args['access'])
+                        ? $values
+                        : array_merge(is_array($this->args['access']) ? $this->args['access'] : [$this->args['access']], $values);
+                    continue 2;
+
+                // Module Item Sets Tree.
                 case 'item_sets_tree':
                     $values = array_filter(array_map('intval', $flatArray($values)));
                     $this->args['item_sets_tree'] = empty($this->args['item_sets_tree'])
@@ -761,6 +770,9 @@ SQL;
         }
     }
 
+    /**
+     * @todo In internal querier, advanced filters manage only properties for now.
+     */
     protected function filterQueryFilters(array $filters): void
     {
         $multifields = $this->engine->settingAdapter('multifields', []);
@@ -850,6 +862,7 @@ SQL;
             'resource_class_id' => 'o:resource_class',
             'resource_template_id' => 'o:resource_template',
             'item_set_id' => 'o:item_set',
+            'access' => 'access',
             'item_sets_tree' => 'item_sets_tree',
         ];
 
@@ -906,6 +919,7 @@ SQL;
                 'sort_order' => $facetOrders[$facetOrder]['sort_order'],
                 'filters' => [
                     'languages' => $facetLanguages,
+                    // 'main_types' => [],
                     'datatypes' => [],
                 ],
                 'values' => [],
@@ -919,7 +933,7 @@ SQL;
                 'output' => 'associative',
             ];
 
-            // TODO Make References manages individual options for each field (limit, order, languages, range).
+            // TODO Make References manages individual options for each field (limit, order, languages, range, main data types, data types).
             $values = $references
                 ->setMetadata($fields)
                 ->setQuery($facetData)
@@ -938,15 +952,25 @@ SQL;
                 $isFacetRange = $facets[$facetField]['type'] === 'SelectRange';
                 // Like Solr, get all facet values, so all existing values.
                 /** @see https://solr.apache.org/guide/solr/latest/query-guide/faceting.html */
+                // TODO Remove these double queries for facet range when individual options will be managed.
                 if ($isFacetRange) {
-                    // TODO Remove this double query for facet range when individual options will be managed.
-                    $values = $references
-                        ->setMetadata([$fields[$facetField]])
+                    $localValues = $references
+                        ->setMetadata([$facetField => $fields[$facetField]])
                         ->setQuery($facetData)
                         ->setOptions($optionsFacetRange)
                         ->list();
+                } elseif (!empty($facets[$facetField]['options']) && $facets[$facetField]['options'] !== ['value', 'uri', 'resource']) {
+                    $localOptions = $options;
+                    $localOptions['filters']['main_types'] = $facets[$facetField]['options'];
+                    $localValues = $references
+                        ->setMetadata([$facetField => $fields[$facetField]])
+                        ->setQuery($facetData)
+                        ->setOptions($localOptions)
+                        ->list();
+                } else {
+                    $localValues = $values;
                 }
-                foreach ($values[$facetField]['o:references'] ?? [] as $value => $count) {
+                foreach ($localValues[$facetField]['o:references'] ?? [] as $value => $count) {
                     if (empty($facetCountsByField[$facetField][$value])) {
                         $facetCountsByField[$facetField][$value] = [
                             'value' => $value,
