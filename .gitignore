@@ -1,4 +1,6 @@
+.htaccess
 config/database.ini
 modules1424
 files/*
 !files/index.html
+config/local.config.php
