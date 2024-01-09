@@ -1,0 +1,137 @@
+2024-01-08T18:12:08+00:00 ERR (3): Laminas\View\Exception\RuntimeException: Laminas\View\Renderer\PhpRenderer::render: Unable to render template "common/accessible-mega-menu.phtml"; resolver could not resolve to a file in /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php:511
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Partial.php(63): Laminas\View\Renderer\PhpRenderer->render(NULL, NULL)
+#1 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(794): Laminas\View\Helper\Partial->__invoke('common/accessib...', Array)
+#2 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(405): Laminas\View\Helper\Navigation\Menu->renderPartialModel(Array, Object(Laminas\Navigation\Navigation), 'common/accessib...')
+#3 /var/www/omekas/themes/centerrow/view/layout/layout.phtml(65): Laminas\View\Helper\Navigation\Menu->renderPartial()
+#4 /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php(519): include('/var/www/omekas...')
+#5 /var/www/omekas/vendor/laminas/laminas-view/src/View.php(194): Laminas\View\Renderer\PhpRenderer->render(NULL)
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/View/Http/DefaultRenderingStrategy.php(98): Laminas\View\View->render(Object(Laminas\View\Model\ViewModel))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\View\Http\DefaultRenderingStrategy->render(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(171): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(360): Laminas\EventManager\EventManager->triggerEvent(Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(341): Laminas\Mvc\Application->completeRequest(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#12 {main} {"userId":1}
+2024-01-08T23:39:25+00:00 ERR (3): Laminas\View\Exception\RuntimeException: Laminas\View\Renderer\PhpRenderer::render: Unable to render template "common/accessible-mega-menu.phtml"; resolver could not resolve to a file in /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php:511
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Partial.php(63): Laminas\View\Renderer\PhpRenderer->render(NULL, NULL)
+#1 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(794): Laminas\View\Helper\Partial->__invoke('common/accessib...', Array)
+#2 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(405): Laminas\View\Helper\Navigation\Menu->renderPartialModel(Array, Object(Laminas\Navigation\Navigation), 'common/accessib...')
+#3 /var/www/omekas/themes/centerrow/view/layout/layout.phtml(65): Laminas\View\Helper\Navigation\Menu->renderPartial()
+#4 /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php(519): include('/var/www/omekas...')
+#5 /var/www/omekas/vendor/laminas/laminas-view/src/View.php(194): Laminas\View\Renderer\PhpRenderer->render(NULL)
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/View/Http/DefaultRenderingStrategy.php(98): Laminas\View\View->render(Object(Laminas\View\Model\ViewModel))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\View\Http\DefaultRenderingStrategy->render(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(171): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(360): Laminas\EventManager\EventManager->triggerEvent(Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(341): Laminas\Mvc\Application->completeRequest(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#12 {main}
+2024-01-08T23:39:36+00:00 ERR (3): Laminas\View\Exception\RuntimeException: Laminas\View\Renderer\PhpRenderer::render: Unable to render template "common/accessible-mega-menu.phtml"; resolver could not resolve to a file in /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php:511
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Partial.php(63): Laminas\View\Renderer\PhpRenderer->render(NULL, NULL)
+#1 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(794): Laminas\View\Helper\Partial->__invoke('common/accessib...', Array)
+#2 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(405): Laminas\View\Helper\Navigation\Menu->renderPartialModel(Array, Object(Laminas\Navigation\Navigation), 'common/accessib...')
+#3 /var/www/omekas/themes/centerrow/view/layout/layout.phtml(65): Laminas\View\Helper\Navigation\Menu->renderPartial()
+#4 /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php(519): include('/var/www/omekas...')
+#5 /var/www/omekas/vendor/laminas/laminas-view/src/View.php(194): Laminas\View\Renderer\PhpRenderer->render(NULL)
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/View/Http/DefaultRenderingStrategy.php(98): Laminas\View\View->render(Object(Laminas\View\Model\ViewModel))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\View\Http\DefaultRenderingStrategy->render(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(171): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(360): Laminas\EventManager\EventManager->triggerEvent(Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(341): Laminas\Mvc\Application->completeRequest(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#12 {main}
+2024-01-08T23:39:48+00:00 ERR (3): Laminas\View\Exception\RuntimeException: Laminas\View\Renderer\PhpRenderer::render: Unable to render template "common/accessible-mega-menu.phtml"; resolver could not resolve to a file in /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php:511
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Partial.php(63): Laminas\View\Renderer\PhpRenderer->render(NULL, NULL)
+#1 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(794): Laminas\View\Helper\Partial->__invoke('common/accessib...', Array)
+#2 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(405): Laminas\View\Helper\Navigation\Menu->renderPartialModel(Array, Object(Laminas\Navigation\Navigation), 'common/accessib...')
+#3 /var/www/omekas/themes/centerrow/view/layout/layout.phtml(65): Laminas\View\Helper\Navigation\Menu->renderPartial()
+#4 /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php(519): include('/var/www/omekas...')
+#5 /var/www/omekas/vendor/laminas/laminas-view/src/View.php(194): Laminas\View\Renderer\PhpRenderer->render(NULL)
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/View/Http/DefaultRenderingStrategy.php(98): Laminas\View\View->render(Object(Laminas\View\Model\ViewModel))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\View\Http\DefaultRenderingStrategy->render(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(171): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(360): Laminas\EventManager\EventManager->triggerEvent(Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(341): Laminas\Mvc\Application->completeRequest(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#12 {main}
+2024-01-08T23:40:02+00:00 ERR (3): Laminas\View\Exception\RuntimeException: Laminas\View\Renderer\PhpRenderer::render: Unable to render template "common/accessible-mega-menu.phtml"; resolver could not resolve to a file in /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php:511
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Partial.php(63): Laminas\View\Renderer\PhpRenderer->render(NULL, NULL)
+#1 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(794): Laminas\View\Helper\Partial->__invoke('common/accessib...', Array)
+#2 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(405): Laminas\View\Helper\Navigation\Menu->renderPartialModel(Array, Object(Laminas\Navigation\Navigation), 'common/accessib...')
+#3 /var/www/omekas/themes/centerrow/view/layout/layout.phtml(65): Laminas\View\Helper\Navigation\Menu->renderPartial()
+#4 /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php(519): include('/var/www/omekas...')
+#5 /var/www/omekas/vendor/laminas/laminas-view/src/View.php(194): Laminas\View\Renderer\PhpRenderer->render(NULL)
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/View/Http/DefaultRenderingStrategy.php(98): Laminas\View\View->render(Object(Laminas\View\Model\ViewModel))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\View\Http\DefaultRenderingStrategy->render(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(171): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(360): Laminas\EventManager\EventManager->triggerEvent(Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(341): Laminas\Mvc\Application->completeRequest(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#12 {main}
+2024-01-08T23:40:28+00:00 ERR (3): Laminas\View\Exception\RuntimeException: Laminas\View\Renderer\PhpRenderer::render: Unable to render template "common/accessible-mega-menu.phtml"; resolver could not resolve to a file in /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php:511
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Partial.php(63): Laminas\View\Renderer\PhpRenderer->render(NULL, NULL)
+#1 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(794): Laminas\View\Helper\Partial->__invoke('common/accessib...', Array)
+#2 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(405): Laminas\View\Helper\Navigation\Menu->renderPartialModel(Array, Object(Laminas\Navigation\Navigation), 'common/accessib...')
+#3 /var/www/omekas/themes/centerrow/view/layout/layout.phtml(65): Laminas\View\Helper\Navigation\Menu->renderPartial()
+#4 /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php(519): include('/var/www/omekas...')
+#5 /var/www/omekas/vendor/laminas/laminas-view/src/View.php(194): Laminas\View\Renderer\PhpRenderer->render(NULL)
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/View/Http/DefaultRenderingStrategy.php(98): Laminas\View\View->render(Object(Laminas\View\Model\ViewModel))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\View\Http\DefaultRenderingStrategy->render(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(171): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(360): Laminas\EventManager\EventManager->triggerEvent(Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(341): Laminas\Mvc\Application->completeRequest(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#12 {main}
+2024-01-08T23:40:40+00:00 ERR (3): Laminas\View\Exception\RuntimeException: Laminas\View\Renderer\PhpRenderer::render: Unable to render template "common/accessible-mega-menu.phtml"; resolver could not resolve to a file in /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php:511
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Partial.php(63): Laminas\View\Renderer\PhpRenderer->render(NULL, NULL)
+#1 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(794): Laminas\View\Helper\Partial->__invoke('common/accessib...', Array)
+#2 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(405): Laminas\View\Helper\Navigation\Menu->renderPartialModel(Array, Object(Laminas\Navigation\Navigation), 'common/accessib...')
+#3 /var/www/omekas/themes/centerrow/view/layout/layout.phtml(65): Laminas\View\Helper\Navigation\Menu->renderPartial()
+#4 /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php(519): include('/var/www/omekas...')
+#5 /var/www/omekas/vendor/laminas/laminas-view/src/View.php(194): Laminas\View\Renderer\PhpRenderer->render(NULL)
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/View/Http/DefaultRenderingStrategy.php(98): Laminas\View\View->render(Object(Laminas\View\Model\ViewModel))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\View\Http\DefaultRenderingStrategy->render(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(171): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(360): Laminas\EventManager\EventManager->triggerEvent(Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(341): Laminas\Mvc\Application->completeRequest(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#12 {main}
+2024-01-08T23:40:51+00:00 ERR (3): Omeka\Api\Exception\NotFoundException: Omeka\Entity\ItemSet entity with criteria {"id":3343} not found in /var/www/omekas/application/src/Api/Adapter/AbstractEntityAdapter.php:714
+Stack trace:
+#0 /var/www/omekas/application/src/Api/Adapter/AbstractEntityAdapter.php(432): Omeka\Api\Adapter\AbstractEntityAdapter->findEntity(Array, Object(Omeka\Api\Request))
+#1 /var/www/omekas/application/src/Api/Manager.php(230): Omeka\Api\Adapter\AbstractEntityAdapter->read(Object(Omeka\Api\Request))
+#2 /var/www/omekas/application/src/Api/Manager.php(115): Omeka\Api\Manager->execute(Object(Omeka\Api\Request))
+#3 /var/www/omekas/application/src/Mvc/Controller/Plugin/Api.php(136): Omeka\Api\Manager->read('item_sets', 3343, Array, Array)
+#4 /var/www/omekas/modules/AdvancedSearch/src/Controller/SearchController.php(61): Omeka\Mvc\Controller\Plugin\Api->read('item_sets', 3343)
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): AdvancedSearch\Controller\SearchController->searchAction()
+#6 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#8 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#10 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#12 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#14 {main}
+2024-01-08T23:40:51+00:00 ERR (3): Laminas\View\Exception\RuntimeException: Laminas\View\Renderer\PhpRenderer::render: Unable to render template "common/accessible-mega-menu.phtml"; resolver could not resolve to a file in /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php:511
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Partial.php(63): Laminas\View\Renderer\PhpRenderer->render(NULL, NULL)
+#1 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(794): Laminas\View\Helper\Partial->__invoke('common/accessib...', Array)
+#2 /var/www/omekas/vendor/laminas/laminas-view/src/Helper/Navigation/Menu.php(405): Laminas\View\Helper\Navigation\Menu->renderPartialModel(Array, Object(Laminas\Navigation\Navigation), 'common/accessib...')
+#3 /var/www/omekas/themes/centerrow/view/layout/layout.phtml(65): Laminas\View\Helper\Navigation\Menu->renderPartial()
+#4 /var/www/omekas/vendor/laminas/laminas-view/src/Renderer/PhpRenderer.php(519): include('/var/www/omekas...')
+#5 /var/www/omekas/vendor/laminas/laminas-view/src/View.php(194): Laminas\View\Renderer\PhpRenderer->render(NULL)
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/View/Http/DefaultRenderingStrategy.php(98): Laminas\View\View->render(Object(Laminas\View\Model\ViewModel))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\View\Http\DefaultRenderingStrategy->render(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(171): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(360): Laminas\EventManager\EventManager->triggerEvent(Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(341): Laminas\Mvc\Application->completeRequest(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#12 {main}
