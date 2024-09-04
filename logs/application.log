@@ -135,3 +135,154 @@ Stack trace:
 #10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(341): Laminas\Mvc\Application->completeRequest(Object(Laminas\Mvc\MvcEvent))
 #11 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
 #12 {main}
+2024-08-07T20:03:56+00:00 ERR (3): Error: Class "Log\Stdlib\PsrMessage" not found in /var/www/omekas/modules/EasyAdmin/src/Controller/AddonsController.php:55
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): EasyAdmin\Controller\AddonsController->indexAction()
+#1 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#2 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#3 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#4 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#5 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#6 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#7 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#9 {main}
+2024-08-07T20:14:18+00:00 ERR (3): Error: Failed opening required '/var/www/omekas/modules/Common/TraitModule.php' (include_path='.:/usr/share/pear:/usr/share/php') in /var/www/omekas/modules/EasyAdmin/Module.php:33
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-loader/src/ModuleAutoloader.php(258): require_once()
+#1 /var/www/omekas/vendor/laminas/laminas-loader/src/ModuleAutoloader.php(210): Laminas\Loader\ModuleAutoloader->loadModuleFromDir('/var/www/omekas...', 'EasyAdmin\\Modul...')
+#2 /var/www/omekas/application/src/Module/Manager.php(354): Laminas\Loader\ModuleAutoloader->autoload('EasyAdmin\\Modul...')
+#3 /var/www/omekas/application/src/Module/Manager.php(304): Omeka\Module\Manager->getModuleObject(Object(Omeka\Module\Module))
+#4 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(250): Omeka\Module\Manager->upgrade(Object(Omeka\Module\Module))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->upgradeAction()
+#6 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#8 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#10 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#12 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#14 {main}
+2024-08-07T20:14:38+00:00 ERR (3): Error: Class "EasyAdminBU\Module" not found in /var/www/omekas/application/src/Module/Manager.php:354
+Stack trace:
+#0 /var/www/omekas/application/src/Module/Manager.php(225): Omeka\Module\Manager->getModuleObject(Object(Omeka\Module\Module))
+#1 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#2 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->installAction()
+#3 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#4 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#11 {main}
+2024-08-07T20:16:15+00:00 ERR (3): Error: Failed opening required '/var/www/omekas/modules/Common/TraitModule.php' (include_path='.:/usr/share/pear:/usr/share/php') in /var/www/omekas/modules/EasyAdmin/Module.php:33
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-loader/src/ModuleAutoloader.php(258): require_once()
+#1 /var/www/omekas/vendor/laminas/laminas-loader/src/ModuleAutoloader.php(210): Laminas\Loader\ModuleAutoloader->loadModuleFromDir('/var/www/omekas...', 'EasyAdmin\\Modul...')
+#2 /var/www/omekas/application/src/Module/Manager.php(354): Laminas\Loader\ModuleAutoloader->autoload('EasyAdmin\\Modul...')
+#3 /var/www/omekas/application/src/Module/Manager.php(304): Omeka\Module\Manager->getModuleObject(Object(Omeka\Module\Module))
+#4 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(250): Omeka\Module\Manager->upgrade(Object(Omeka\Module\Module))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->upgradeAction()
+#6 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#8 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#10 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#12 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#14 {main}
+2024-08-07T20:16:38+00:00 ERR (3): Error: Class "EasyAdminBU\Module" not found in /var/www/omekas/application/src/Module/Manager.php:354
+Stack trace:
+#0 /var/www/omekas/application/src/Module/Manager.php(225): Omeka\Module\Manager->getModuleObject(Object(Omeka\Module\Module))
+#1 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#2 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->installAction()
+#3 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#4 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#11 {main}
+2024-08-07T20:19:30+00:00 ERR (3): Error: Failed opening required '/var/www/omekas/modules/Common/TraitModule.php' (include_path='.:/usr/share/pear:/usr/share/php') in /var/www/omekas/modules/EasyAdmin/Module.php:33
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-loader/src/ModuleAutoloader.php(258): require_once()
+#1 /var/www/omekas/vendor/laminas/laminas-loader/src/ModuleAutoloader.php(210): Laminas\Loader\ModuleAutoloader->loadModuleFromDir('/var/www/omekas...', 'EasyAdmin\\Modul...')
+#2 /var/www/omekas/application/src/Module/Manager.php(354): Laminas\Loader\ModuleAutoloader->autoload('EasyAdmin\\Modul...')
+#3 /var/www/omekas/application/src/Module/Manager.php(304): Omeka\Module\Manager->getModuleObject(Object(Omeka\Module\Module))
+#4 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(250): Omeka\Module\Manager->upgrade(Object(Omeka\Module\Module))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->upgradeAction()
+#6 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#8 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#10 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#12 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#14 {main}
+2024-08-07T20:21:25+00:00 ERR (3): Error: Failed opening required '/var/www/omekas/modules/Common/TraitModule.php' (include_path='.:/usr/share/pear:/usr/share/php') in /var/www/omekas/modules/EasyAdmin/Module.php:33
+Stack trace:
+#0 /var/www/omekas/vendor/laminas/laminas-loader/src/ModuleAutoloader.php(258): require_once()
+#1 /var/www/omekas/vendor/laminas/laminas-loader/src/ModuleAutoloader.php(210): Laminas\Loader\ModuleAutoloader->loadModuleFromDir('/var/www/omekas...', 'EasyAdmin\\Modul...')
+#2 /var/www/omekas/application/src/Module/Manager.php(354): Laminas\Loader\ModuleAutoloader->autoload('EasyAdmin\\Modul...')
+#3 /var/www/omekas/application/src/Module/Manager.php(304): Omeka\Module\Manager->getModuleObject(Object(Omeka\Module\Module))
+#4 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(250): Omeka\Module\Manager->upgrade(Object(Omeka\Module\Module))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->upgradeAction()
+#6 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#8 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#10 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#12 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#13 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#14 {main}
+2024-08-07T20:28:03+00:00 ERR (3): Omeka\Module\Exception\ModuleCannotInstallException: The module Common should be upgraded to version 3.4.61 or later. in /var/www/omekas/modules/EasyAdmin/data/scripts/upgrade.php:39
+Stack trace:
+#0 /var/www/omekas/modules/Common/TraitModule.php(139): require_once()
+#1 /var/www/omekas/application/src/Module/Manager.php(307): EasyAdmin\Module->upgrade('3.4.15', '3.4.20', Object(Laminas\ServiceManager\ServiceManager))
+#2 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(250): Omeka\Module\Manager->upgrade(Object(Omeka\Module\Module))
+#3 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->upgradeAction()
+#4 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#5 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#7 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#9 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#10 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#11 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#12 {main}
+2024-08-07T20:54:19+00:00 ERR (3): Error: Class "BUEasyAdmin\Module" not found in /var/www/omekas/application/src/Module/Manager.php:354
+Stack trace:
+#0 /var/www/omekas/application/src/Module/Manager.php(225): Omeka\Module\Manager->getModuleObject(Object(Omeka\Module\Module))
+#1 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#2 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->installAction()
+#3 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#4 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#11 {main}
+2024-08-07T20:55:04+00:00 ERR (3): Error: Class "_EasyAdmin\Module" not found in /var/www/omekas/application/src/Module/Manager.php:354
+Stack trace:
+#0 /var/www/omekas/application/src/Module/Manager.php(225): Omeka\Module\Manager->getModuleObject(Object(Omeka\Module\Module))
+#1 /var/www/omekas/application/src/Controller/Admin/ModuleController.php(117): Omeka\Module\Manager->install(Object(Omeka\Module\Module))
+#2 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractActionController.php(71): Omeka\Controller\Admin\ModuleController->installAction()
+#3 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\Controller\AbstractActionController->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#4 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#5 /var/www/omekas/vendor/laminas/laminas-mvc/src/Controller/AbstractController.php(97): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#6 /var/www/omekas/vendor/laminas/laminas-mvc/src/DispatchListener.php(132): Laminas\Mvc\Controller\AbstractController->dispatch(Object(Laminas\Http\PhpEnvironment\Request), Object(Laminas\Http\PhpEnvironment\Response))
+#7 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(319): Laminas\Mvc\DispatchListener->onDispatch(Object(Laminas\Mvc\MvcEvent))
+#8 /var/www/omekas/vendor/laminas/laminas-eventmanager/src/EventManager.php(179): Laminas\EventManager\EventManager->triggerListeners(Object(Laminas\Mvc\MvcEvent), Object(Closure))
+#9 /var/www/omekas/vendor/laminas/laminas-mvc/src/Application.php(325): Laminas\EventManager\EventManager->triggerEventUntil(Object(Closure), Object(Laminas\Mvc\MvcEvent))
+#10 /var/www/omekas/index.php(21): Laminas\Mvc\Application->run()
+#11 {main}

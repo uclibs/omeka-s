@@ -4,8 +4,9 @@ modules1424
 files/*
 !files/index.html
 config/local.config.php
-/modules
-/themes
+modules
+themes
 .ideas
-modules/
-themes/
+modules-backup/
+themes-backup/
+backup/
