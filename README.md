@@ -8,18 +8,18 @@ Libraries Omeka S installation.
 As of October 5, 2026:
 
 -   **Omeka S production version:** 4.2.1
--   **GitHub `production` branch:** `6bd872ff` ---
-    `Upgrade production to Omeka S 4.2.1`
--   **GitHub `qa` branch:** `6bd872ff` --- currently identical to
-    `production`
+-   **GitHub `production` branch:** approved production code
+-   **GitHub `qa` branch:** integration/staging branch; normally
+    synchronized with `production` after a release
 -   **GitHub default branch:** `qa`
 -   **Production server:** `libapps2`
 -   **Production application:** `/var/www/omekas`
 -   **Test server:** `libappstest`
 -   **Test application:** `/var/www/omekas`
 
-The production and QA branches are intentionally synchronized at the
-current known-good baseline.
+The `qa` branch begins from the known-good production baseline. It may
+move ahead of `production` while approved changes are undergoing final
+integration and testing.
 
 The server-specific database configuration is **not stored in Git**. In
 particular, `config/database.ini` must remain specific to each server.
@@ -41,8 +41,11 @@ experiments.
 `qa` is the final integration/staging branch.
 
 Normally, after a production release, `qa` and `production` should point
-to the same known-good code. New work should not be performed directly
-on `qa` when it can be isolated in a feature branch.
+to the same known-good code. As new work is approved for integration,
+`qa` may move ahead of `production` until the next production release.
+
+New experimental work should not be performed directly on `qa` when it
+can be isolated in a feature branch.
 
 ### Feature/test branches
 
@@ -57,7 +60,7 @@ Examples:
 -   `omeka-4-3-upgrade`
 
 A feature branch should normally begin from the current `qa` branch,
-provided `qa` is synchronized with the known-good production baseline.
+provided `qa` contains the intended baseline.
 
 This keeps experimental work identifiable and prevents an unfinished
 test from becoming an unexplained difference between test and
@@ -157,8 +160,8 @@ For a module change, check at least:
 
 ### 6. Merge the successful feature into `qa`
 
-When the feature works on `libappstest`, merge it into `qa` (preferably
-through a GitHub pull request when practical).
+When the feature works on `libappstest`, merge it into `qa`, preferably
+through a GitHub pull request when practical.
 
 Then perform a final QA check using the integrated `qa` branch.
 
@@ -240,6 +243,11 @@ Instead:
 If an experiment fails, discard the feature branch and restore
 `libappstest` to the clean `qa` baseline.
 
+`libappstest` should normally reflect the code being tested from an
+identified Git branch. Any intentional difference from the production
+module baseline should therefore be represented by that branch and its
+commits.
+
 ------------------------------------------------------------------------
 
 ## Example: testing a Block Plus update
@@ -267,9 +275,9 @@ If the test succeeds:
 
     update-blockplus -> qa -> final QA -> production
 
-This prevents a newer Block Plus installation (or dependencies such as
-Common) from remaining on the test server without a corresponding Git
-history explaining why it is there.
+This prevents a newer Block Plus installation or its dependencies from
+remaining on the test server without a corresponding Git history
+explaining why it is there.
 
 ------------------------------------------------------------------------
 
@@ -323,11 +331,9 @@ At the October 5, 2026 production baseline:
 -   SingleSignOn: **3.4.12**
 -   Verovio: **3.3.0.7**
 
-At the time this workflow was documented, `libappstest` had drifted from
-that baseline, including Block Plus 3.4.45 and Common 3.4.92. The
-intention is to return the test environment to the clean QA/production
-baseline before beginning future module tests under named feature
-branches.
+`libappstest` should normally reflect the code being tested from an
+identified Git branch. Any intentional module difference from production
+should be represented by that branch and its commits.
 
 ------------------------------------------------------------------------
 
