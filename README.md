@@ -1,86 +1,346 @@
-# Omeka S
+# UC Libraries Omeka S Git and Deployment Workflow
 
-Omeka S is a web publication system for universities, galleries, libraries, archives, and museums. It consists of a local network of independently curated exhibits sharing a collaboratively built pool of items, media, and their metadata.
+This document describes the working Git and server workflow for the UC
+Libraries Omeka S installation.
 
-See the [user manual](https://omeka.org/s/docs/user-manual) for more information.
+## Current baseline
 
-## Installation
+As of October 5, 2026:
 
-### Requirements
+-   **Omeka S production version:** 4.2.1
+-   **GitHub `production` branch:** `6bd872ff` ---
+    `Upgrade production to Omeka S 4.2.1`
+-   **GitHub `qa` branch:** `6bd872ff` --- currently identical to
+    `production`
+-   **GitHub default branch:** `qa`
+-   **Production server:** `libapps2`
+-   **Production application:** `/var/www/omekas`
+-   **Test server:** `libappstest`
+-   **Test application:** `/var/www/omekas`
 
-Omeka S is a LAMP (Linux, Apache, MySQL, PHP) application. See [the manual](https://omeka.org/s/docs/user-manual/install/#system-requirements) for detailed system requirements.
+The production and QA branches are intentionally synchronized at the
+current known-good baseline.
 
-### Installing from GitHub
+The server-specific database configuration is **not stored in Git**. In
+particular, `config/database.ini` must remain specific to each server.
 
-1. Make sure [Node.js](https://nodejs.org/) and [npm](https://nodejs.org/) are installed
-1. Clone this repository in your Apache web directory:
-   * `$ git clone https://github.com/omeka/omeka-s.git`
-1. Change into the Omeka S directory:
-   * `$ cd omeka-s`
-1. Perform first-time setup:
-   * `$ npm install`
-   * `$ npx gulp init`
-1. Open `config/database.ini` and add your MySQL username, password, database name, and host name. The user and database must be created before this step.
-1. Make sure the `files/` directory is writable by Apache.
-1. In your web browser, navigate to the omeka-s directory, where you can complete installation.
+------------------------------------------------------------------------
 
-### Installing from released zip file
+## Branch roles
 
-1. Download the latest release from the [release page](https://github.com/omeka/omeka-s/releases) (download the first asset listed)
-1. Open `config/database.ini` and add your MySQL username, password, database name, and host name. The user and database must be created before this step.
-1. Make sure the `files/` directory is writable by Apache.
-1. In your web browser, navigate to the omeka-s directory, where you can complete installation.
+### `production`
 
-You can find Omeka-specific code under `application/`.
+`production` represents the code that is approved for and running in
+production.
 
-## Updating
+Treat this as the **known-good baseline**. Do not use `production` for
+experiments.
 
-*Make a backup copy of your entire site and its database!*
+### `qa`
 
-### Updating from GitHub
+`qa` is the final integration/staging branch.
 
-1. `git pull` as usual. Use the `master` branch for the latest releases.
-2. From the Omeka S root directory, run `npx gulp deps` to make sure dependencies are up to date.
-3. Compare changes in `/config/local.config.php` and `/config/local.config.php.dist`. Some default configurations might have changed, so you might need to reconcile changes to the distributed configuration with your local configuration (e.g., a path to PHP specific to your server, dev mode settings, etc.)
-4. In your web browser, go to your site and run any migrations that are needed.
+Normally, after a production release, `qa` and `production` should point
+to the same known-good code. New work should not be performed directly
+on `qa` when it can be isolated in a feature branch.
 
-### Updating from released zip file
-1. Download the latest release from the [release page](https://github.com/omeka/omeka-s/releases)
-2. Make a copy of your `/config` directory. You will need to restore your `local.config.php` and `database.ini` files from that copy.
-3. Make a copy of your `/modules` and `/themes` directories.
-4. Make a copy of your `/files` directory.
-5. Remove all Omeka S files, and replace them with the files from the updated zip file.
-6. Replace your original `/config/local.config.php` file, and the `/modules`, `/themes`, and `/files` directories that you copied.
-7. In your web browser, go to your site and run any migrations that are needed.
+### Feature/test branches
 
-## Creating a zipped release
+Create a separate branch for each module update, new module, Omeka
+upgrade, or other significant change.
 
-Run `npx gulp zip` to create a zipped version of Omeka S and store it in `/build`. Use the `--no-dev` flag to omit Composer dev dependencies for a smaller package suitable for end-users. Official releases follow this same process from a new, clean checkout.
+Examples:
 
-## Libraries
+-   `update-blockplus`
+-   `test-new-module`
+-   `update-css-editor`
+-   `omeka-4-3-upgrade`
 
-Omeka uses the following libraries, among others:
+A feature branch should normally begin from the current `qa` branch,
+provided `qa` is synchronized with the known-good production baseline.
 
-* [Laminas](https://getlaminas.org/)
-* [Doctrine 2](http://www.doctrine-project.org/)
-* [EasyRdf](http://www.easyrdf.org/)
-* [PHPUnit](https://phpunit.de/)
-* [jQuery](http://jquery.com/)
+This keeps experimental work identifiable and prevents an unfinished
+test from becoming an unexplained difference between test and
+production.
 
-## Development Standards
+### `main`
 
-Omeka development adheres to the [Laminas Coding Style Guide](https://docs.laminas.dev/laminas-coding-standard/v2/coding-style-guide/) and uses the [git-flow](http://nvie.com/posts/a-successful-git-branching-model/) branching model and the [Semantic Versioning 2.0.0](https:/semver.org/spec/v2.0.0.html) version scheme.
+The existing `main` branch is **not currently part of this deployment
+workflow**.
 
-See the [developer documentation](https://omeka.org/s/docs/developer/) for more information.
+Do not assume that UC's `main` branch is the equivalent of the `master`
+branch mentioned in upstream Omeka documentation. The upstream
+documentation describes the Omeka project's own branch/release
+conventions; UC's repository has its own history and deployment
+workflow.
 
-# Copyright
+Do not reorganize or repurpose `main` without first reviewing its
+history and deciding explicitly what role it should have.
 
-Omeka is Copyright © 2015-present Corporation for Digital Scholarship, Vienna, Virginia, USA http://digitalscholar.org
+------------------------------------------------------------------------
 
-The Corporation for Digital Scholarship distributes the Omeka source code under the GNU General Public License, version 3 (GPLv3). The full text of this license is given in the license file.
+## Normal workflow for a new change
 
-The Omeka name is a registered trademark of the Corporation for Digital Scholarship.
+The normal path is:
 
-Third-party copyright in this distribution is noted where applicable.
+    production (known good)
+          |
+          v
+         qa
+          |
+          v
+    feature/test branch
+          |
+          v
+      libappstest
+          |
+       testing
+          |
+          v
+         qa
+          |
+    final validation
+          |
+          v
+      production
 
-All rights not expressly granted are reserved.
+### 1. Start with a clean QA baseline
+
+Before beginning new work, verify that `qa` contains the intended
+baseline.
+
+After a completed production release, `qa` will normally match
+`production`.
+
+### 2. Create a feature branch
+
+For example:
+
+    git switch qa
+    git pull origin qa
+    git switch -c update-blockplus
+
+Use a descriptive branch name so that it is obvious why the test server
+differs from production.
+
+### 3. Make the change on the feature branch
+
+Install or update the module, theme, Omeka code, or other files required
+for the test.
+
+Commit those changes to the feature branch.
+
+Do **not** commit server-specific database credentials or runtime data.
+
+### 4. Deploy the feature branch to `libappstest`
+
+Use `libappstest` to test the feature branch.
+
+It is normal for the test server to differ from production **while an
+identified feature branch is being tested**.
+
+The important rule is that the difference must be represented in Git,
+rather than existing only as unexplained files on the test server.
+
+### 5. Test the change
+
+Verify both the specific change and the rest of the Omeka site.
+
+For a module change, check at least:
+
+-   Omeka admin loads normally.
+-   Public sites load normally.
+-   The module installs/activates without errors.
+-   Existing pages using the module still work.
+-   Any required module dependencies are documented.
+-   No unexpected database migration or configuration change occurred.
+
+### 6. Merge the successful feature into `qa`
+
+When the feature works on `libappstest`, merge it into `qa` (preferably
+through a GitHub pull request when practical).
+
+Then perform a final QA check using the integrated `qa` branch.
+
+### 7. Promote QA to production
+
+When QA is approved, merge/promote `qa` into `production`.
+
+Production should receive only changes that have already been tested.
+
+Do not force-push `production` as part of the normal workflow.
+
+### 8. Return to a clean baseline
+
+After a successful production deployment, bring `qa` back into
+synchronization with `production` if necessary.
+
+At that point:
+
+    qa == production
+
+The next experiment begins on a new feature branch.
+
+Old feature branches can be deleted after they are no longer needed and
+their changes are safely represented in `qa`/`production`.
+
+------------------------------------------------------------------------
+
+## Server-specific files: preserve these
+
+The production and test servers use different databases.
+
+**Never overwrite one server's `config/database.ini` with the other
+server's copy.**
+
+At minimum, preserve and verify:
+
+    config/database.ini
+    config/local.config.php
+
+`config/database.ini` is intentionally excluded from Git.
+
+Before a deployment that replaces application files, back up the target
+server's configuration and verify it afterward.
+
+### Production
+
+Production must retain the production database configuration on:
+
+    libapps2:/var/www/omekas/config/database.ini
+
+### Test
+
+Test must retain the test database configuration on:
+
+    libappstest:/var/www/omekas/config/database.ini
+
+The application code can match while the database configuration remains
+different.
+
+------------------------------------------------------------------------
+
+## Modules and test-server experiments
+
+Do not install or update a module only on `libappstest` and leave the
+change undocumented.
+
+That creates filesystem drift: months later it becomes unclear whether
+the difference was intentional, approved, abandoned, or required.
+
+Instead:
+
+1.  Create a named feature branch.
+2.  Put the module change in that branch.
+3.  Deploy that branch to `libappstest`.
+4.  Test it.
+5.  Merge it to `qa` only if approved.
+6.  Promote it to `production` only after QA succeeds.
+
+If an experiment fails, discard the feature branch and restore
+`libappstest` to the clean `qa` baseline.
+
+------------------------------------------------------------------------
+
+## Example: testing a Block Plus update
+
+Assume production and QA contain Block Plus 3.4.20 and a newer release
+needs testing.
+
+Create a branch:
+
+    git switch qa
+    git pull origin qa
+    git switch -c update-blockplus
+
+Update Block Plus and any genuinely required dependencies on that
+branch.
+
+Deploy `update-blockplus` to `libappstest`.
+
+If the test fails:
+
+    discard/revert the experiment
+    restore libappstest from qa
+
+If the test succeeds:
+
+    update-blockplus -> qa -> final QA -> production
+
+This prevents a newer Block Plus installation (or dependencies such as
+Common) from remaining on the test server without a corresponding Git
+history explaining why it is there.
+
+------------------------------------------------------------------------
+
+## Omeka upgrades
+
+An Omeka core upgrade should also be treated as a feature/release change
+rather than performed first on `production`.
+
+A future upgrade can use a branch such as:
+
+    omeka-4-3-upgrade
+
+Test the upgrade on `libappstest`, including modules and themes. Once
+verified, merge it into `qa`, perform final QA, and then promote it to
+`production`.
+
+If using an Omeka released ZIP rather than a Git pull, remember that
+replacing the application directory can remove `.git`. The deployment
+procedure must therefore deliberately preserve the Git workflow rather
+than assuming the deployed application directory remains a Git checkout.
+
+------------------------------------------------------------------------
+
+## Important Git safety rules
+
+-   `production` is the known-good release branch.
+-   `qa` is the integration/final-test branch.
+-   Experiments belong in named feature branches.
+-   Do not use `main` merely because upstream documentation mentions
+    `master`.
+-   Do not commit `config/database.ini`.
+-   Do not commit uploaded/runtime `files/` or logs merely to make
+    servers look identical.
+-   Do not force-push `production` during normal development.
+-   Use `--force-with-lease` only for an intentional branch-history
+    correction and only after verifying why it is necessary.
+-   Before a destructive deployment, preserve the target server's
+    environment-specific configuration.
+-   A test-server difference should always have an identifiable reason
+    in Git.
+
+------------------------------------------------------------------------
+
+## Current known module baseline
+
+At the October 5, 2026 production baseline:
+
+-   Block Plus: **3.4.20**
+-   Common: **not present**
+-   ActivityLog: **1.0.1**
+-   SingleSignOn: **3.4.12**
+-   Verovio: **3.3.0.7**
+
+At the time this workflow was documented, `libappstest` had drifted from
+that baseline, including Block Plus 3.4.45 and Common 3.4.92. The
+intention is to return the test environment to the clean QA/production
+baseline before beginning future module tests under named feature
+branches.
+
+------------------------------------------------------------------------
+
+## In short
+
+For everyday work, remember:
+
+    FEATURE BRANCH -> LIBAPPSTEST -> QA -> PRODUCTION
+
+And after a release:
+
+    QA == PRODUCTION
+
+That gives UC Libraries a clean production baseline, a controlled QA
+stage, and a safe place to experiment without losing track of what
+changed or why.
