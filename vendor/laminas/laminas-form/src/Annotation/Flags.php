@@ -23,17 +23,11 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute]
 final class Flags
 {
-    /** @var array */
-    protected $flags;
-
     /**
      * Receive and process the contents of an annotation
-     *
-     * @param array $flags
      */
-    public function __construct(array $flags)
+    public function __construct(private array $flags)
     {
-        $this->flags = $flags;
     }
 
     /**

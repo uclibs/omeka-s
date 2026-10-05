@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Laminas\View\Helper\Navigation;
 
-use Interop\Container\ContainerInterface;
+use Interop\Container\ContainerInterface; // phpcs:ignore
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceManager;
 use Laminas\View\HelperPluginManager;
@@ -15,6 +15,8 @@ use Laminas\View\HelperPluginManager;
  * Enforces that helpers retrieved are instances of
  * Navigation\HelperInterface. Additionally, it registers a number of default
  * helpers.
+ *
+ * @deprecated This class has been moved to the `Laminas\Navigation` component and will be removed in 3.0
  *
  * @psalm-import-type ServiceManagerConfiguration from ServiceManager
  */
@@ -35,10 +37,10 @@ class PluginManager extends HelperPluginManager
         'sitemap'     => Sitemap::class,
 
         // Legacy Zend Framework aliases
-        \Zend\View\Helper\Navigation\Breadcrumbs::class => Breadcrumbs::class,
-        \Zend\View\Helper\Navigation\Links::class       => Links::class, // phpcs:ignore
-        \Zend\View\Helper\Navigation\Menu::class        => Menu::class,
-        \Zend\View\Helper\Navigation\Sitemap::class     => Sitemap::class,
+        'Zend\View\Helper\Navigation\Breadcrumbs' => Breadcrumbs::class,
+        'Zend\View\Helper\Navigation\Links'       => Links::class, // phpcs:ignore
+        'Zend\View\Helper\Navigation\Menu'        => Menu::class,
+        'Zend\View\Helper\Navigation\Sitemap'     => Sitemap::class,
 
         // v2 normalized FQCNs
         'zendviewhelpernavigationbreadcrumbs' => Breadcrumbs::class,
@@ -67,12 +69,11 @@ class PluginManager extends HelperPluginManager
 
     /**
      * @param ContainerInterface $configOrContainerInstance
-     * @param array $v3config
      * @psalm-param ServiceManagerConfiguration $v3config
      */
     public function __construct($configOrContainerInstance = null, array $v3config = [])
     {
-        /** @psalm-suppress UnusedClosureParam, MissingClosureParamType */
+        /** @psalm-suppress MissingClosureParamType */
         $this->initializers[] = function (ContainerInterface $container, $instance): void {
             if (! $instance instanceof AbstractHelper) {
                 return;

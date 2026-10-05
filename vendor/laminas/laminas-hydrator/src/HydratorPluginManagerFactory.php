@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace Laminas\Hydrator;
 
 use Laminas\ServiceManager\Config;
+use Laminas\ServiceManager\ServiceManager;
 use Psr\Container\ContainerInterface;
 
 use function class_exists;
 use function is_array;
 use function sprintf;
 
+/**
+ * @psalm-import-type ServiceManagerConfiguration from ServiceManager
+ * @final
+ */
 class HydratorPluginManagerFactory
 {
     /**
@@ -23,11 +28,13 @@ class HydratorPluginManagerFactory
      *
      * @see https://docs.mezzio.dev/mezzio/v3/features/container/config/
      *
+     * @param ServiceManagerConfiguration|null $options
+     *
      * @throws Exception\DomainException If laminas-servicemanager is not installed.
      */
     public function __invoke(ContainerInterface $container, string $name, ?array $options = []): HydratorPluginManager
     {
-        if (! class_exists(Config::class)) {
+        if (! class_exists(ServiceManager::class)) {
             throw new Exception\DomainException(sprintf(
                 '%s requires the laminas/laminas-servicemanager package, which is not installed.'
                 . ' If you do not want to install that package, you can use the %s instead;'
@@ -39,7 +46,7 @@ class HydratorPluginManagerFactory
             ));
         }
 
-        $pluginManager = new HydratorPluginManager($container, $options ?: []);
+        $pluginManager = new HydratorPluginManager($container, $options ?? []);
 
         // If this is in a laminas-mvc application, the ServiceListener will inject
         // merged configuration during bootstrap.
@@ -58,6 +65,8 @@ class HydratorPluginManagerFactory
         if (! isset($config['hydrators']) || ! is_array($config['hydrators'])) {
             return $pluginManager;
         }
+
+        /** @psalm-var ServiceManagerConfiguration $config['hydrators'] */
 
         // Wire service configuration for hydrators
         (new Config($config['hydrators']))->configureServiceManager($pluginManager);

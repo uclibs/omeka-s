@@ -16,7 +16,7 @@ interface ElementAttributeRemovalInterface
     /**
      * Remove many attributes at once
      *
-     * @param array $keys
+     * @param list<string> $keys
      * @return $this
      */
     public function removeAttributes(array $keys);

@@ -16,6 +16,16 @@ class JobAdapter extends AbstractEntityAdapter
         'ended' => 'ended',
     ];
 
+    protected $scalarFields = [
+        'id' => 'id',
+        // 'pid' => 'pid',
+        'status' => 'status',
+        'class' => 'class',
+        'started' => 'started',
+        'ended' => 'ended',
+        'owner' => 'owner',
+    ];
+
     public function getResourceName()
     {
         return 'jobs';
@@ -40,7 +50,7 @@ class JobAdapter extends AbstractEntityAdapter
     {
         if (is_string($query['sort_by'])) {
             if ('owner_email' == $query['sort_by']) {
-                $ownerAlias = $this->createAlias();
+                $ownerAlias = $qb->createAlias();
                 $qb->leftJoin('omeka_root.owner', $ownerAlias)
                     ->addOrderBy("$ownerAlias.email", $query['sort_order']);
             } else {
@@ -54,13 +64,13 @@ class JobAdapter extends AbstractEntityAdapter
         if (isset($query['class'])) {
             $qb->andWhere($qb->expr()->eq(
                 'omeka_root.class',
-                $this->createNamedParameter($qb, $query['class']))
+                $qb->createNamedParameter($query['class']))
             );
         }
         if (isset($query['status'])) {
             $qb->andWhere($qb->expr()->eq(
                 'omeka_root.status',
-                $this->createNamedParameter($qb, $query['status']))
+                $qb->createNamedParameter($query['status']))
             );
         }
     }

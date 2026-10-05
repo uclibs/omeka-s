@@ -48,10 +48,11 @@ final class VarExporter
     public const NO_CLOSURES = 1 << 6;
 
     /**
-     * Formats numeric arrays containing only scalar values on a single line.
+     * Formats lists (0-based numeric arrays) containing only scalar values on a single line.
      * Types considered scalar here are int, bool, float, string and null.
+     * This option is a subset of INLINE_ARRAY, and has no effect when INLINE_ARRAY is used.
      */
-    public const INLINE_NUMERIC_SCALAR_ARRAY = 1 << 7;
+    public const INLINE_SCALAR_LIST = 1 << 7;
 
     /**
      * Export static vars defined via `use` as variables.
@@ -64,16 +65,24 @@ final class VarExporter
     public const TRAILING_COMMA_IN_ARRAY = 1 << 9;
 
     /**
+     * Disallows exporting enums.
+     */
+    public const NO_ENUMS = 1 << 10;
+
+    /**
+     * Formats all arrays on a single line.
+     */
+    public const INLINE_ARRAY = 1 << 11;
+
+    /**
      * @param mixed $var       The variable to export.
      * @param int   $options   A bitmask of options. Possible values are `VarExporter::*` constants.
      *                         Combine multiple options with a bitwise OR `|` operator.
      * @param int $indentLevel The base output indentation level.
      *
-     * @return string
-     *
      * @throws ExportException
      */
-    public static function export($var, int $options = 0, int $indentLevel = 0) : string
+    public static function export(mixed $var, int $options = 0, int $indentLevel = 0) : string
     {
         $exporter = new GenericExporter($options, $indentLevel);
         $lines = $exporter->export($var, [], []);
@@ -82,14 +91,15 @@ final class VarExporter
             $export = implode(PHP_EOL, $lines);
         } else {
             $firstLine = array_shift($lines);
-            $lines = array_map(function ($line) use ($indentLevel) {
-                return str_repeat('    ', $indentLevel) . $line;
-            }, $lines);
+            $lines = array_map(
+                fn($line) => str_repeat('    ', $indentLevel) . $line,
+                $lines,
+            );
 
             $export = $firstLine . PHP_EOL . implode(PHP_EOL, $lines);
         }
 
-        if ($options & self::ADD_RETURN) {
+        if (($options & self::ADD_RETURN) !== 0) {
             return 'return ' . $export . ';' . PHP_EOL;
         }
 

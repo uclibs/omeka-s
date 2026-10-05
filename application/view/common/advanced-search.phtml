@@ -5,21 +5,22 @@
  *   - $resourceType: The resource type; options are item, media, itemSet
  *   - $partialExcludelist: An array of partials to exclude
  */
-$query = isset($query) ? $query : null;
-$resourceType = isset($resourceType) ? $resourceType : 'item';
+$query = $query ?? null;
+$resourceType = $resourceType ?? 'item';
 $partialExcludelist = (isset($partialExcludelist) && is_array($partialExcludelist)) ? $partialExcludelist : [];
 
 $this->headLink()->prependStylesheet($this->assetUrl('css/advanced-search.css', 'Omeka'));
 $this->headScript()->appendFile($this->assetUrl('js/advanced-search.js', 'Omeka'));
 
 $partials = [];
-$addPartial = function($partial) use (&$partials, $partialExcludelist) {
+$addPartial = function ($partial) use (&$partials, $partialExcludelist) {
     if (!in_array($partial, $partialExcludelist)) {
         // Add the partial if it is not in the exclude list.
         $partials[] = $partial;
     }
 };
 
+$addPartial('common/advanced-search/sort');
 $addPartial('common/advanced-search/fulltext');
 $addPartial('common/advanced-search/properties');
 $addPartial('common/advanced-search/resource-class');
@@ -48,7 +49,6 @@ if ($this->status()->isSiteRequest()) {
     $addPartial('common/advanced-search/resource-template-restrict');
 }
 $addPartial('common/advanced-search/ids');
-$addPartial('common/advanced-search/sort');
 
 $filterResults = $this->trigger(
     'view.advanced_search',

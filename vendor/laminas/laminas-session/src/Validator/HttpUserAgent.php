@@ -2,10 +2,15 @@
 
 namespace Laminas\Session\Validator;
 
+/**
+ * @final
+ */
 class HttpUserAgent implements ValidatorInterface
 {
     /**
      * Internal data
+     *
+     * @deprecated This property will be removed in version 3.0
      *
      * @var string
      */
@@ -19,7 +24,7 @@ class HttpUserAgent implements ValidatorInterface
      */
     public function __construct($data = null)
     {
-        if (empty($data)) {
+        if ($data === null || $data === '') {
             $data = $_SERVER['HTTP_USER_AGENT'] ?? null;
         }
         $this->data = $data;
@@ -40,6 +45,8 @@ class HttpUserAgent implements ValidatorInterface
 
     /**
      * Retrieve token for validating call
+     *
+     * @deprecated This method will be removed in version 3.0
      *
      * @return string
      */

@@ -5,10 +5,15 @@ namespace Laminas\Session\Validator;
 use Laminas\Http\PhpEnvironment\RemoteAddress;
 use Laminas\Session\Validator\ValidatorInterface as SessionValidator;
 
+/**
+ * @final
+ */
 class RemoteAddr implements SessionValidator
 {
     /**
      * Internal data.
+     *
+     * @deprecated This property will be removed in version 3.0
      *
      * @var string
      */
@@ -48,7 +53,7 @@ class RemoteAddr implements SessionValidator
      */
     public function __construct($data = null)
     {
-        if (empty($data)) {
+        if ($data === null || $data === '') {
             $data = $this->getIpAddress();
         }
         $this->data = $data;
@@ -92,7 +97,6 @@ class RemoteAddr implements SessionValidator
     /**
      * Set list of trusted proxy addresses
      *
-     * @param  array $trustedProxies
      * @return void
      */
     public static function setTrustedProxies(array $trustedProxies)
@@ -127,6 +131,8 @@ class RemoteAddr implements SessionValidator
 
     /**
      * Retrieve token for validating call
+     *
+     * @deprecated This method will be removed in version 3.0
      *
      * @return string
      */

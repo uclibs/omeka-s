@@ -51,12 +51,12 @@ class Format
     private static $formats = [];
 
     private $name = [];
-    private $label = null;
-    private $uri = null;
+    private $label;
+    private $uri;
     private $mimeTypes = [];
     private $extensions = [];
-    private $parserClass = null;
-    private $serialiserClass = null;
+    private $parserClass;
+    private $serialiserClass;
 
     /** Get a list of format names
      *
@@ -148,15 +148,15 @@ class Format
      */
     public static function getFormat($query)
     {
-        if (!is_string($query) || (is_string($query) && 0 == strlen($query))) {
+        if (!\is_string($query) || (\is_string($query) && 0 == \strlen($query))) {
             throw new \InvalidArgumentException('$query should be a string and cannot be null or empty');
         }
 
         foreach (self::$formats as $format) {
-            if ($query == $format->name ||
-                $query == $format->uri ||
-                \array_key_exists($query, $format->mimeTypes) ||
-                \in_array($query, $format->extensions)) {
+            if ($query == $format->name
+                || $query == $format->uri
+                || \array_key_exists($query, $format->mimeTypes)
+                || \in_array($query, $format->extensions)) {
                 return $format;
             }
         }
@@ -184,7 +184,7 @@ class Format
         $mimeTypes = [],
         $extensions = []
     ) {
-        if (!is_string($name) || (is_string($name) && 0 == strlen($name))) {
+        if (!\is_string($name) || (\is_string($name) && 0 == \strlen($name))) {
             throw new \InvalidArgumentException('$name should be a string and cannot be null or empty');
         }
 
@@ -269,6 +269,8 @@ class Format
             return self::getFormat('json');
         } elseif (preg_match('/<rdf:/i', $short)) {
             return self::getFormat('rdfxml');
+        } elseif (str_contains($short, '<Ontology xmlns=')) {
+            return self::getFormat('rdfxml');
         } elseif (preg_match('|http://www.w3.org/2005/sparql-results|', $short)) {
             return self::getFormat('sparql-xml');
         } elseif (preg_match('/\WRDFa\W/i', $short)) {
@@ -278,7 +280,11 @@ class Format
             return self::getFormat('rdfa');
         } elseif (preg_match('/@prefix\s|@base\s/', $short)) {
             return self::getFormat('turtle');
-        } elseif (preg_match('/prefix\s|base\s/i', $short)) {
+        } elseif (
+            preg_match('/prefix\s|base\s/i', $short)
+            // see FormatTest::testGuessFormatTurtleByPrefix for an example
+            && false === str_contains($short, '<?xml')
+        ) {
             return self::getFormat('turtle');
         } elseif (preg_match('/^\s*<.+> <.+>/m', $short)) {
             return self::getFormat('ntriples');

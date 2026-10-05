@@ -3,10 +3,13 @@
 namespace DoctrineExtensions\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
+use Zend_Date;
+use Zend_Locale_Format;
 
-if (!class_exists('Zend_Date')) {
+use function class_exists;
+
+if (! class_exists('Zend_Date')) {
     require_once 'Zend/Date.php';
 }
 
@@ -17,45 +20,55 @@ if (!class_exists('Zend_Date')) {
  */
 class ZendDateType extends Type
 {
-    const ZENDDATE = 'zenddate';
+    public const ZENDDATE = 'zenddate';
 
+    /**
+     * {@inheritDoc}
+     */
     public function getName()
     {
         return self::ZENDDATE;
     }
 
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    /**
+     * {@inheritDoc}
+     */
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
         return $platform->getDateTimeTypeDeclarationSQL($fieldDeclaration);
     }
 
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    /**
+     * {@inheritDoc}
+     */
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        return ($value !== null)
-            ? $value->toString(\Zend_Locale_Format::convertPhpToIsoFormat(
+        return $value !== null
+            ? $value->toString(Zend_Locale_Format::convertPhpToIsoFormat(
                 $platform->getDateTimeFormatString()
             ))
             : null;
     }
 
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    /**
+     * {@inheritDoc}
+     */
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?Zend_Date
     {
         if ($value === null) {
-            return;
+            return null;
         }
 
-        $dateTimeFormatString = \Zend_Locale_Format::convertPhpToIsoFormat(
+        $dateTimeFormatString = Zend_Locale_Format::convertPhpToIsoFormat(
             $platform->getDateTimeFormatString()
         );
 
-        $val = new \Zend_Date($value, $dateTimeFormatString);
-        if (!$val) {
-            throw ConversionException::conversionFailed($value, $this->getName());
-        }
-
-        return $val;
+        return new Zend_Date($value, $dateTimeFormatString);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function requiresSQLCommentHint(AbstractPlatform $platform)
     {
         return true;

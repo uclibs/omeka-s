@@ -19,13 +19,6 @@ use function sprintf;
 class Scheme implements RouteInterface
 {
     /**
-     * Scheme to match.
-     *
-     * @var string
-     */
-    protected $scheme;
-
-    /**
      * Default values.
      *
      * @var array
@@ -33,14 +26,25 @@ class Scheme implements RouteInterface
     protected $defaults;
 
     /**
+     * @internal
+     * @deprecated Since 3.9.0 This property will be removed or made private in version 4.0
+     *
+     * @var int|null
+     */
+    public $priority;
+
+    /**
      * Create a new scheme route.
      *
      * @param  string $scheme
-     * @param  array  $defaults
      */
-    public function __construct($scheme, array $defaults = [])
-    {
-        $this->scheme   = $scheme;
+    public function __construct(
+        /**
+         * Scheme to match.
+         */
+        protected $scheme,
+        array $defaults = []
+    ) {
         $this->defaults = $defaults;
     }
 
@@ -49,7 +53,7 @@ class Scheme implements RouteInterface
      *
      * @see    \Laminas\Router\RouteInterface::factory()
      *
-     * @param  array|Traversable $options
+     * @param  iterable $options
      * @return Scheme
      * @throws Exception\InvalidArgumentException
      */
@@ -103,8 +107,6 @@ class Scheme implements RouteInterface
      *
      * @see    \Laminas\Router\RouteInterface::assemble()
      *
-     * @param  array $params
-     * @param  array $options
      * @return mixed
      */
     public function assemble(array $params = [], array $options = [])

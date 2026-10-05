@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Laminas\Form;
 
-use Interop\Container\ContainerInterface;
+use Laminas\Filter\FilterPluginManager;
+use Laminas\Form\Factory;
 use Laminas\InputFilter\InputFilterInterface;
+use Laminas\InputFilter\InputFilterPluginManager;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\Validator\ValidatorPluginManager;
+use Psr\Container\ContainerInterface;
 
 use function is_array;
 use function is_string;
@@ -14,13 +18,13 @@ use function is_string;
 final class FormAbstractServiceFactory implements AbstractFactoryInterface
 {
     /** @var null|array */
-    protected $config;
+    private $config;
 
     /** @var string Top-level configuration key indicating forms configuration */
-    protected $configKey = 'forms';
+    private string $configKey = 'forms';
 
     /** @var null|Factory Form factory used to create forms */
-    protected $factory;
+    private ?Factory $factory = null;
 
     /**
      * Create a form (v3)
@@ -91,8 +95,6 @@ final class FormAbstractServiceFactory implements AbstractFactoryInterface
 
     /**
      * Retrieve the form factory, creating it if necessary
-     *
-     * @param  ContainerInterface $services
      */
     protected function getFormFactory(ContainerInterface $container): Factory
     {
@@ -101,8 +103,8 @@ final class FormAbstractServiceFactory implements AbstractFactoryInterface
         }
 
         $elements = null;
-        if ($container->has('FormElementManager')) {
-            $elements = $container->get('FormElementManager');
+        if ($container->has(FormElementManager::class)) {
+            $elements = $container->get(FormElementManager::class);
         }
 
         $this->factory = new Factory($elements);
@@ -132,9 +134,9 @@ final class FormAbstractServiceFactory implements AbstractFactoryInterface
 
         if (
             is_string($config['input_filter'])
-            && $container->has('InputFilterManager')
+            && $container->has(InputFilterPluginManager::class)
         ) {
-            $inputFilters = $container->get('InputFilterManager');
+            $inputFilters = $container->get(InputFilterPluginManager::class);
             if ($inputFilters->has($config['input_filter'])) {
                 $config['input_filter'] = $inputFilters->get($config['input_filter']);
                 return;
@@ -142,7 +144,15 @@ final class FormAbstractServiceFactory implements AbstractFactoryInterface
         }
 
         $inputFilterFactory = $formFactory->getInputFilterFactory();
-        $inputFilterFactory->getDefaultFilterChain()->setPluginManager($container->get('FilterManager'));
-        $inputFilterFactory->getDefaultValidatorChain()->setPluginManager($container->get('ValidatorManager'));
+
+        $filterChain = $inputFilterFactory->getDefaultFilterChain();
+        $filterChain->setPluginManager(
+            $container->get(FilterPluginManager::class)
+        );
+
+        $validatorChain = $inputFilterFactory->getDefaultValidatorChain();
+        $validatorChain->setPluginManager(
+            $container->get(ValidatorPluginManager::class)
+        );
     }
 }

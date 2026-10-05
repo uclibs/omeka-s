@@ -16,7 +16,14 @@
         "forum": "https://discourse.laminas.dev"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "8.1.99"
+        },
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ocramius/package-versions": true
+        }
     },
     "extra": {
         "laminas": {
@@ -25,23 +32,23 @@
         }
     },
     "require": {
-        "php": "^7.3 || ~8.0.0 || ~8.1.0",
-        "laminas/laminas-eventmanager": "^3.4",
-        "laminas/laminas-stdlib": "^3.6"
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+        "laminas/laminas-eventmanager": "^3.12",
+        "laminas/laminas-servicemanager": "^3.22",
+        "laminas/laminas-stdlib": "^3.18"
     },
     "require-dev": {
-        "container-interop/container-interop": "^1.1",
-        "laminas/laminas-cache": "3.0.x-dev",
-        "laminas/laminas-cache-storage-adapter-memory": "2.0.x-dev",
-        "laminas/laminas-coding-standard": "~2.2.1",
-        "laminas/laminas-db": "^2.13.4",
-        "laminas/laminas-http": "^2.15",
-        "laminas/laminas-servicemanager": "^3.7",
-        "laminas/laminas-validator": "^2.15",
-        "mongodb/mongodb": "v1.9.x-dev",
-        "php-mock/php-mock-phpunit": "^1.1.2 || ^2.0",
-        "phpspec/prophecy-phpunit": "^2.0",
-        "phpunit/phpunit": "^9.5.9"
+        "ext-xdebug": "*",
+        "laminas/laminas-cache": "^3.12.2",
+        "laminas/laminas-cache-storage-adapter-memory": "^2.3",
+        "laminas/laminas-coding-standard": "~3.1.0",
+        "laminas/laminas-db": "^2.20.0",
+        "laminas/laminas-http": "^2.20",
+        "laminas/laminas-validator": "^2.64.1",
+        "mongodb/mongodb": "~2.1.0",
+        "phpunit/phpunit": "^10.5.38",
+        "psalm/plugin-phpunit": "^0.19.0",
+        "vimeo/psalm": "^5.26.1"
     },
     "suggest": {
         "laminas/laminas-cache": "Laminas\\Cache component",
@@ -72,9 +79,11 @@
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
         "test": "phpunit --colors=always",
-        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
+        "static-analysis": "psalm --shepherd --stats"
     },
     "conflict": {
-        "zendframework/zend-session": "*"
+        "zendframework/zend-session": "*",
+        "amphp/amp":"<2.6.4"
     }
 }

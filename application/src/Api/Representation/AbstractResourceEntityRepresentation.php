@@ -67,6 +67,8 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
 
     public function getJsonLd()
     {
+        $settings = $this->getServiceLocator()->get('Omeka\Settings');
+
         // Set the date time value objects.
         $dateTime = [
             'o:created' => [
@@ -77,8 +79,8 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
         ];
         if ($this->modified()) {
             $dateTime['o:modified'] = [
-               '@value' => $this->getDateTime($this->modified()),
-               '@type' => 'http://www.w3.org/2001/XMLSchema#dateTime',
+                '@value' => $this->getDateTime($this->modified()),
+                '@type' => 'http://www.w3.org/2001/XMLSchema#dateTime',
             ];
         }
 
@@ -109,8 +111,11 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
         // According to the JSON-LD spec, the value of the @reverse key "MUST be
         // a JSON object containing members representing reverse properties."
         // Here, we include the key only if the resource has reverse properties.
-        $reverse = $this->subjectValuesForReverse();
-        $reverse = $reverse ? ['@reverse' => $reverse] : [];
+        $reverse = [];
+        if ($this->id() && !$settings->get('disable_jsonld_reverse')) {
+            $reverse = $this->subjectValuesForReverse();
+            $reverse = $reverse ? ['@reverse' => $reverse] : [];
+        }
 
         return array_merge(
             [
@@ -397,7 +402,7 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
         $results = $this->getAdapter()->getSubjectValues($this->resource, $page, $perPage, $propertyId, $resourceType, $siteId);
         $subjectValues = [];
         foreach ($results as $result) {
-            $index = sprintf('%s-%s', $result['property_id'], $result['resource_template_property_id']);
+            $index = $result['property_alternate_label'] ?: $result['property_label'];
             $result['val'] = new ValueRepresentation($result['val'], $this->getServiceLocator());
             $subjectValues[$index][] = $result;
         }
@@ -428,6 +433,19 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
     }
 
     /**
+     * Get the total count of this resource's subject values.
+     *
+     * @param int|string|null $propertyId Filter by property ID
+     * @param string|null $resourceType Filter by resource type
+     * @param int|null $siteId Filter by site ID
+     * @return int
+     */
+    public function subjectValueTotalCount($propertyId = null, $resourceType = null, $siteId = null)
+    {
+        return $this->getAdapter()->getSubjectValueTotalCount($this->resource, $propertyId, $resourceType, $siteId);
+    }
+
+    /**
      * Get value representations where this resource is the RDF subject.
      *
      * @return array
@@ -452,6 +470,8 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
      *
      * - viewName: Name of view script, or a view model. Default "common/resource-values"
      * - siteId: A site ID
+     * - properties: an array of property terms to include in the markup (excludes all others)
+     * - excludeProperties: an array of property terms to exclude from the markup (includes all others)
      *
      * @param array $options
      * @return string
@@ -460,9 +480,19 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
     {
         $options['viewName'] ??= 'common/resource-values';
         $options['siteId'] ??= null;
+        $options['properties'] ??= [];
+        $options['excludeProperties'] ??= [];
 
         $services = $this->getServiceLocator();
         $values = $this->values();
+
+        // Filter values by the "properties" and "excludeProperties" options.
+        if ($options['properties']) {
+            $values = array_intersect_key($values, array_flip($options['properties']));
+        }
+        if ($options['excludeProperties']) {
+            $values = array_diff_key($values, array_flip($options['excludeProperties']));
+        }
 
         if ($options['siteId']) {
             // Exclude resources that are not assigned to the site if the
@@ -486,7 +516,7 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
         }
 
         $eventManager = $this->getEventManager();
-        $args = $eventManager->prepareArgs(['values' => $values]);
+        $args = $eventManager->prepareArgs(['values' => $values, 'options' => $options]);
         $eventManager->trigger('rep.resource.display_values', $this, $args);
 
         $template = $this->resourceTemplate();
@@ -528,8 +558,32 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
         $viewName = $options['viewName'] ?? 'common/linked-resources';
         $page = $options['page'] ?? null;
         $perPage = $options['perPage'] ?? null;
-        $resourceProperty = $options['resourceProperty'] ?? null;
         $siteId = $options['siteId'] ?? null;
+
+        $subjectValuePropertiesItems = $adapter->getSubjectValueProperties($this->resource, 'items', $siteId);
+        $subjectValuePropertiesItemSets = $adapter->getSubjectValueProperties($this->resource, 'item_sets', $siteId);
+        $subjectValuePropertiesMedia = $adapter->getSubjectValueProperties($this->resource, 'media', $siteId);
+
+        if (!$subjectValuePropertiesItems && !$subjectValuePropertiesItemSets && !$subjectValuePropertiesMedia) {
+            // This resource has no subject values;
+            return null;
+        }
+
+        $resourcePropertiesAll = [
+            'items' => $subjectValuePropertiesItems,
+            'item_sets' => $subjectValuePropertiesItemSets,
+            'media' => $subjectValuePropertiesMedia,
+        ];
+        // Find the default resource property by detecting the first resource
+        // type that has properties.
+        $defaultResourceProperty = null;
+        foreach ($resourcePropertiesAll as $resourceType => $resourceProperties) {
+            if ($resourceProperties) {
+                $defaultResourceProperty = sprintf('%s:', $resourceType);
+                break;
+            }
+        }
+        $resourceProperty = $options['resourceProperty'] ?? $defaultResourceProperty;
 
         $resourceType = $adapter->getResourceName();
         $propertyId = null;
@@ -539,18 +593,7 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
         }
 
         $totalCount = $adapter->getSubjectValueTotalCount($this->resource, $propertyId, $resourceType, $siteId);
-        if (!$totalCount) {
-            return;
-        }
         $subjectValues = $this->subjectValues($page, $perPage, $propertyId, $resourceType, $siteId);
-        if (!$subjectValues) {
-            return;
-        }
-        $resourcePropertiesAll = [
-            'items' => $adapter->getSubjectValueProperties($this->resource, 'items', $siteId),
-            'item_sets' => $adapter->getSubjectValueProperties($this->resource, 'item_sets', $siteId),
-            'media' => $adapter->getSubjectValueProperties($this->resource, 'media', $siteId),
-        ];
 
         $partial = $this->getViewHelper('partial');
         return $partial($viewName, [
@@ -681,7 +724,7 @@ abstract class AbstractResourceEntityRepresentation extends AbstractEntityRepres
         $thumbnailType = 'square',
         $titleDefault = null,
         $action = null,
-        array $attributes = null,
+        ?array $attributes = null,
         $lang = null
     ) {
         $escape = $this->getViewHelper('escapeHtml');

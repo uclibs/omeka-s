@@ -54,9 +54,9 @@ class FormMultiCheckbox extends FormInput
     /**
      * The unchecked value used when "UseHiddenElement" is turned on
      *
-     * @var string
+     * @var null|string
      */
-    protected $uncheckedValue = '';
+    protected $uncheckedValue;
 
     /**
      * Form input helper instance
@@ -130,10 +130,6 @@ class FormMultiCheckbox extends FormInput
 
     /**
      * Render options
-     *
-     * @param  array                $options
-     * @param  array                $selectedOptions
-     * @param  array                $attributes
      */
     protected function renderOptions(
         MultiCheckboxElement $element,
@@ -141,7 +137,6 @@ class FormMultiCheckbox extends FormInput
         array $selectedOptions,
         array $attributes
     ): string {
-        $escapeHtmlHelper      = $this->getEscapeHtmlHelper();
         $labelHelper           = $this->getLabelHelper();
         $labelClose            = $labelHelper->closeTag();
         $labelPosition         = $this->getLabelPosition();
@@ -216,28 +211,15 @@ class FormMultiCheckbox extends FormInput
                 $closingBracket
             );
 
-            if (null !== ($translator = $this->getTranslator())) {
-                $label = $translator->translate(
-                    $label,
-                    $this->getTranslatorTextDomain()
-                );
-            }
-
-            if (! $element instanceof LabelAwareInterface || ! $element->getLabelOption('disable_html_escape')) {
-                $label = $escapeHtmlHelper($label);
-            }
+            $label = $this->translateLabel($label);
+            $label = $this->escapeLabel($element, $label);
 
             $labelOpen = $labelHelper->openTag($labelAttributes);
             $template  = $labelOpen . '%s%s' . $labelClose;
-            switch ($labelPosition) {
-                case self::LABEL_PREPEND:
-                    $markup = sprintf($template, $label, $input);
-                    break;
-                case self::LABEL_APPEND:
-                default:
-                    $markup = sprintf($template, $input, $label);
-                    break;
-            }
+            $markup    = match ($labelPosition) {
+                self::LABEL_PREPEND => sprintf($template, $label, $input),
+                default => sprintf($template, $input, $label),
+            };
 
             $combinedMarkup[] = $markup;
         }
@@ -252,7 +234,7 @@ class FormMultiCheckbox extends FormInput
     {
         $closingBracket = $this->getInlineClosingBracket();
 
-        $uncheckedValue = $element->getUncheckedValue() ?: $this->uncheckedValue;
+        $uncheckedValue = $element->getUncheckedValue() ?? $this->uncheckedValue;
 
         $hiddenAttributes = [
             'name'  => $element->getName(),
@@ -269,7 +251,6 @@ class FormMultiCheckbox extends FormInput
     /**
      * Sets the attributes applied to option label.
      *
-     * @param  array|null $attributes
      * @return $this
      */
     public function setLabelAttributes(?array $attributes)
@@ -364,7 +345,7 @@ class FormMultiCheckbox extends FormInput
      *
      * @return $this
      */
-    public function setUncheckedValue(string $value)
+    public function setUncheckedValue(?string $value)
     {
         $this->uncheckedValue = $value;
         return $this;
@@ -373,7 +354,7 @@ class FormMultiCheckbox extends FormInput
     /**
      * Returns the unchecked value used when "UseHiddenElement" is turned on.
      */
-    public function getUncheckedValue(): string
+    public function getUncheckedValue(): ?string
     {
         return $this->uncheckedValue;
     }
@@ -412,11 +393,11 @@ class FormMultiCheckbox extends FormInput
             return $this->inputHelper;
         }
 
-        if (method_exists($this->view, 'plugin')) {
+        if (null !== $this->view && method_exists($this->view, 'plugin')) {
             $this->inputHelper = $this->view->plugin('form_input');
         }
 
-        if (! $this->inputHelper instanceof FormInput) {
+        if (null === $this->inputHelper) {
             $this->inputHelper = new FormInput();
         }
 

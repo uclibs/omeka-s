@@ -25,11 +25,9 @@ final class FilterComposite implements FilterInterface
      */
     public const CONDITION_AND = 2;
 
-    /** @var ArrayObject */
-    protected $andFilter;
+    private ArrayObject $andFilter;
 
-    /** @var ArrayObject */
-    protected $orFilter;
+    private ArrayObject $orFilter;
 
     /**
      * We can pass a list of OR/AND filters through construct
@@ -168,7 +166,7 @@ final class FilterComposite implements FilterInterface
      * @throws InvalidArgumentException If $filter is neither a
      *     callable nor FilterInterface.
      */
-    private function validateFilter($filter, string $name): void
+    private function validateFilter(mixed $filter, string $name): void
     {
         if (! is_callable($filter) && ! $filter instanceof FilterInterface) {
             throw new InvalidArgumentException(sprintf(

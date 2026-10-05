@@ -34,20 +34,6 @@ use function substr;
 class Wildcard implements RouteInterface
 {
     /**
-     * Delimiter between keys and values.
-     *
-     * @var string
-     */
-    protected $keyValueDelimiter;
-
-    /**
-     * Delimiter before parameters.
-     *
-     * @var string
-     */
-    protected $paramDelimiter;
-
-    /**
      * Default values.
      *
      * @var array
@@ -66,13 +52,19 @@ class Wildcard implements RouteInterface
      *
      * @param  string $keyValueDelimiter
      * @param  string $paramDelimiter
-     * @param  array  $defaults
      */
-    public function __construct($keyValueDelimiter = '/', $paramDelimiter = '/', array $defaults = [])
-    {
-        $this->keyValueDelimiter = $keyValueDelimiter;
-        $this->paramDelimiter    = $paramDelimiter;
-        $this->defaults          = $defaults;
+    public function __construct(
+        /**
+         * Delimiter between keys and values.
+         */
+        protected $keyValueDelimiter = '/',
+        /**
+         * Delimiter before parameters.
+         */
+        protected $paramDelimiter = '/',
+        array $defaults = []
+    ) {
+        $this->defaults = $defaults;
     }
 
     /**
@@ -80,7 +72,7 @@ class Wildcard implements RouteInterface
      *
      * @see    \Laminas\Router\RouteInterface::factory()
      *
-     * @param  array|Traversable $options
+     * @param  iterable $options
      * @return Wildcard
      * @throws Exception\InvalidArgumentException
      */
@@ -170,8 +162,6 @@ class Wildcard implements RouteInterface
      *
      * @see    \Laminas\Router\RouteInterface::assemble()
      *
-     * @param  array $params
-     * @param  array $options
      * @return mixed
      */
     public function assemble(array $params = [], array $options = [])

@@ -7,15 +7,12 @@ namespace Laminas\Hydrator\Strategy;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Laminas\Hydrator\Strategy\DateTimeFormatterStrategy;
 
 class DateTimeImmutableFormatterStrategy implements StrategyInterface
 {
-    /** @var DateTimeFormatterStrategy  */
-    private $dateTimeStrategy;
-
-    public function __construct(DateTimeFormatterStrategy $dateTimeStrategy)
+    public function __construct(private DateTimeFormatterStrategy $dateTimeStrategy)
     {
-        $this->dateTimeStrategy = $dateTimeStrategy;
     }
 
     /**

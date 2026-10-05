@@ -554,6 +554,8 @@ class Turtle extends Ntriples
     {
         $label = $this->parseQuotedString();
 
+        $this->skipWSC();
+
         // Check for presence of a language tag or datatype
         $c = $this->peek();
 
@@ -904,6 +906,9 @@ class Turtle extends Ntriples
                 $value = $prefix;
 
                 if ('true' == $value || 'false' == $value) {
+                    // Unread last character
+                    $this->unread($c);
+
                     return [
                         'type' => 'literal',
                         'value' => $value,
@@ -939,6 +944,14 @@ class Turtle extends Ntriples
                     $localName .= $c;
                 }
                 $c = $this->read();
+            }
+
+            // Last char of name must not be a dot
+            if (mb_substr($localName, -1) === '.') {
+                $localName = substr_replace($localName, '', -1);
+                $this->unread($c); // step back
+                $this->unread('.'); // return dot to input buffer
+                $c = $this->read(); // read, because below the unread($c) is done for all cases
             }
         }
 
@@ -1182,42 +1195,51 @@ class Turtle extends Ntriples
         return "\x20" == $c || "\x09" == $c || "\x0A" == $c || "\x0D" == $c;
     }
 
-    /** @ignore */
+    /**
+     * @param non-empty-string $c
+     *
+     * @ignore
+     */
     public static function isPrefixStartChar($c)
     {
         // ord - Convert the first byte of a string to a value between 0 and 255
-        $o = \ord($c);
+        $o = \ord($c[0]);
 
         return
-            $o >= 0x41 && $o <= 0x5A ||     // A-Z
-            $o >= 0x61 && $o <= 0x7A ||     // a-z
-            $o >= 0x00C0 && $o <= 0x00D6 ||
-            $o >= 0x00D8 && $o <= 0x00F6;
+            $o >= 0x41 && $o <= 0x5A     // A-Z
+            || $o >= 0x61 && $o <= 0x7A     // a-z
+            || $o >= 0x00C0 && $o <= 0x00D6
+            || $o >= 0x00D8 && $o <= 0x00F6;
     }
 
     /** @ignore */
     public static function isNameStartChar($c)
     {
         return
-            '\\' == $c ||
-            '_' == $c ||
-            ':' == $c ||
-            '%' == $c ||
-            ctype_digit($c) ||
-            self::isPrefixStartChar($c);
+            '\\' == $c
+            || '_' == $c
+            || ':' == $c
+            || '%' == $c
+            || ctype_digit($c)
+            || self::isPrefixStartChar($c);
     }
 
-    /** @ignore */
+    /**
+     * @param non-empty-string $c
+     *
+     * @ignore
+     */
     public static function isNameChar($c)
     {
         // ord - Convert the first byte of a string to a value between 0 and 255
-        $o = \ord($c);
+        $o = \ord($c[0]);
 
         return
-            self::isNameStartChar($c) ||
-            $o >= 0x30 && $o <= 0x39 ||     // 0-9
-            '-' == $c ||
-            0x00B7 == $o;
+            self::isNameStartChar($c)
+            || $o >= 0x30 && $o <= 0x39     // 0-9
+            || '-' == $c
+            || '.' == $c                    // dots are allowed in the middle of a name, not as start char
+            || 0x00B7 == $o;
     }
 
     /** @ignore */
@@ -1238,13 +1260,13 @@ class Turtle extends Ntriples
         $o = \ord($c);
 
         return
-            '_' == $c ||
-            $o >= 0x30 && $o <= 0x39 ||     // 0-9
-            self::isPrefixStartChar($c) ||
-            '-' == $c ||
-            0x00B7 == $o ||
-            $c >= 0x0300 && $c <= 0x036F ||
-            $c >= 0x203F && $c <= 0x2040;
+            '_' == $c
+            || $o >= 0x30 && $o <= 0x39     // 0-9
+            || self::isPrefixStartChar($c)
+            || '-' == $c
+            || 0x00B7 == $o
+            || $c >= 0x0300 && $c <= 0x036F
+            || $c >= 0x203F && $c <= 0x2040;
     }
 
     /** @ignore */
@@ -1253,8 +1275,8 @@ class Turtle extends Ntriples
         $o = \ord($c);
 
         return
-            $o >= 0x41 && $o <= 0x5A ||   // A-Z
-            $o >= 0x61 && $o <= 0x7A;     // a-z
+            $o >= 0x41 && $o <= 0x5A   // A-Z
+            || $o >= 0x61 && $o <= 0x7A;     // a-z
     }
 
     /** @ignore */
@@ -1263,9 +1285,9 @@ class Turtle extends Ntriples
         $o = \ord($c);
 
         return
-            $o >= 0x41 && $o <= 0x5A ||   // A-Z
-            $o >= 0x61 && $o <= 0x7A ||   // a-z
-            $o >= 0x30 && $o <= 0x39 ||   // 0-9
-            '-' == $c;
+            $o >= 0x41 && $o <= 0x5A   // A-Z
+            || $o >= 0x61 && $o <= 0x7A   // a-z
+            || $o >= 0x30 && $o <= 0x39   // 0-9
+            || '-' == $c;
     }
 }

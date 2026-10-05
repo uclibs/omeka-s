@@ -51,14 +51,14 @@ use EasyRdf\Utils;
  */
 class Rapper extends Ntriples
 {
-    private $rapperCmd = null;
+    private $rapperCmd;
 
     /**
      * Constructor
      *
      * @param string $rapperCmd optional path to the rapper command to use
      *
-     * @throws \EasyRdf\Exception
+     * @throws Exception
      */
     public function __construct($rapperCmd = 'rapper')
     {
@@ -73,8 +73,8 @@ class Rapper extends Ntriples
     /**
      * Serialise an EasyRdf\Graph to the RDF format of choice.
      *
-     * @param \EasyRdf\Graph $graph  an EasyRdf\Graph object
-     * @param string         $format the name of the format to convert to
+     * @param Graph  $graph  an EasyRdf\Graph object
+     * @param string $format the name of the format to convert to
      *
      * @return string the RDF in the new desired format
      *

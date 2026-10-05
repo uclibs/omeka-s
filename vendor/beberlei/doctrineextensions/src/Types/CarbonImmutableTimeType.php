@@ -2,32 +2,19 @@
 
 namespace DoctrineExtensions\Types;
 
-use Carbon\CarbonImmutable;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\TimeType;
+use Doctrine\DBAL\Types\TimeImmutableType;
 
-class CarbonImmutableTimeType extends TimeType
+class CarbonImmutableTimeType extends TimeImmutableType
 {
-    const CARBONTIME = 'carbontime_immutable';
+    use CarbonImmutableTypeImplementation;
 
+    public const CARBONTIME = 'carbontime_immutable';
+
+    /**
+     * {@inheritDoc}
+     */
     public function getName()
     {
-        return static::CARBONTIME;
-    }
-
-    public function convertToPHPValue($value, AbstractPlatform $platform)
-    {
-        $result = parent::convertToPHPValue($value, $platform);
-
-        if ($result instanceof \DateTime) {
-            return CarbonImmutable::instance($result);
-        }
-
-        return $result;
-    }
-
-    public function requiresSQLCommentHint(AbstractPlatform $platform)
-    {
-        return true;
+        return self::CARBONTIME;
     }
 }

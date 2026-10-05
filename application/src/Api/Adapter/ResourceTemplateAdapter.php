@@ -14,6 +14,15 @@ class ResourceTemplateAdapter extends AbstractEntityAdapter
         'label' => 'label',
     ];
 
+    protected $scalarFields = [
+        'id' => 'id',
+        'label' => 'label',
+        'owner' => 'owner',
+        'resource_class' => 'resourceClass',
+        'title_property' => 'titleProperty',
+        'description_property' => 'descriptionProperty',
+    ];
+
     public function getResourceName()
     {
         return 'resource_templates';
@@ -33,7 +42,7 @@ class ResourceTemplateAdapter extends AbstractEntityAdapter
     {
         if (is_string($query['sort_by'])) {
             if ('resource_class_label' == $query['sort_by']) {
-                $resourceClassAlias = $this->createAlias();
+                $resourceClassAlias = $qb->createAlias();
                 $qb->leftJoin(
                     'omeka_root.resourceClass',
                     $resourceClassAlias
@@ -51,7 +60,7 @@ class ResourceTemplateAdapter extends AbstractEntityAdapter
         if (isset($query['label'])) {
             $qb->andWhere($qb->expr()->eq(
                 "omeka_root.label",
-                $this->createNamedParameter($qb, $query['label']))
+                $qb->createNamedParameter($query['label']))
             );
         }
     }

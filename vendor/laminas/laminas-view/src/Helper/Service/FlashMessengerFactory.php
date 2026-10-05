@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Laminas\View\Helper\Service;
 
-use Interop\Container\ContainerInterface;
+use Interop\Container\ContainerInterface; // phpcs:ignore
 use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Helper\FlashMessenger;
 
+/** @final */
 class FlashMessengerFactory implements FactoryInterface
 {
     /**

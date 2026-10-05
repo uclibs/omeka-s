@@ -42,7 +42,7 @@ use function is_array;
 final class ElementAnnotationsListener extends AbstractAnnotationsListener
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function attach(EventManagerInterface $events, $priority = 1)
     {
@@ -146,6 +146,7 @@ final class ElementAnnotationsListener extends AbstractAnnotationsListener
 
             $elementSpec['spec']['options']['target_element']                                 = $specification;
             $elementSpec['spec']['options']['target_element']['options']['input_filter_spec'] = $inputFilter;
+            $elementSpec['spec']['options']['target_element']['options']['target_type']       = $class;
 
             if (isset($specification['hydrator'])) {
                 $elementSpec['spec']['hydrator'] = $specification['hydrator'];
@@ -156,7 +157,8 @@ final class ElementAnnotationsListener extends AbstractAnnotationsListener
             if (! isset($inputFilter['type'])) {
                 $inputFilter['type'] = InputFilter::class;
             }
-            $e->setParam('inputSpec', $inputFilter);
+            $inputSpec = $e->getParam('inputSpec');
+            $inputSpec->exchangeArray($inputFilter);
             unset($specification['input_filter']);
 
             // Compose specification as a fieldset into parent form/fieldset
@@ -165,8 +167,8 @@ final class ElementAnnotationsListener extends AbstractAnnotationsListener
             }
 
             if (isset($elementSpec['spec']['options'])) {
-                $specification['options'] = $specification['options'] ?? [];
-                $specification['options'] = array_merge($elementSpec['spec']['options'], $specification['options']);
+                $specification['options'] ??= [];
+                $specification['options']   = array_merge($elementSpec['spec']['options'], $specification['options']);
             }
 
             // Add element spec:

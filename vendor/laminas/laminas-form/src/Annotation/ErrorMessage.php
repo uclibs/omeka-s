@@ -20,15 +20,11 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute]
 final class ErrorMessage
 {
-    /** @var string */
-    protected $message;
-
     /**
      * Receive and process the contents of an annotation
      */
-    public function __construct(string $message)
+    public function __construct(private string $message)
     {
-        $this->message = $message;
     }
 
     /**

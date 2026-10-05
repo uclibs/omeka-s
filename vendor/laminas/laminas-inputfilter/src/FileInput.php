@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Laminas\InputFilter;
 
+use Laminas\InputFilter\FileInput\FileInputDecoratorInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
+use function assert;
 use function is_array;
 
 /**
@@ -29,12 +33,11 @@ class FileInput extends Input
     /** @var bool */
     protected $autoPrependUploadValidator = true;
 
-    /** @var FileInput\FileInputDecoratorInterface */
-    private $implementation;
+    private ?FileInputDecoratorInterface $implementation = null;
 
     /**
-     * @param array|UploadedFile $value
-     * @return Input
+     * @inheritDoc
+     * @param array|UploadedFileInterface $value
      */
     public function setValue($value)
     {
@@ -43,7 +46,7 @@ class FileInput extends Input
         return $this;
     }
 
-    /** @return self */
+    /** @return $this */
     public function resetValue()
     {
         $this->implementation = null;
@@ -52,7 +55,7 @@ class FileInput extends Input
 
     /**
      * @param  bool $value Enable/Disable automatically prepending an Upload validator
-     * @return FileInput
+     * @return $this
      */
     public function setAutoPrependUploadValidator($value)
     {
@@ -134,11 +137,12 @@ class FileInput extends Input
             return true;
         }
 
+        assert($this->implementation !== null);
         return $this->implementation->isValid($context);
     }
 
     /**
-     * @return FileInput
+     * @return $this
      */
     public function merge(InputInterface $input)
     {
@@ -150,8 +154,6 @@ class FileInput extends Input
     }
 
     /**
-     * @deprecated 2.4.8 See note on parent class. Removal does not affect this class.
-     *
      * No-op, NotEmpty validator does not apply for FileInputs.
      * See also: BaseInputFilter::isValid()
      *
@@ -164,7 +166,7 @@ class FileInput extends Input
 
     /**
      * @param mixed $value
-     * @return FileInput\FileInputDecoratorInterface
+     * @return FileInputDecoratorInterface
      */
     private function createDecoratorImplementation($value)
     {

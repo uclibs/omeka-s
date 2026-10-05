@@ -24,13 +24,13 @@ use function is_array;
 use function is_object;
 use function sprintf;
 
+/**
+ * @template TFilteredValues
+ * @implements FormInterface<TFilteredValues>
+ */
 class Form extends Fieldset implements FormInterface
 {
-    /**
-     * Seed attributes
-     *
-     * @var array
-     */
+    /** @var array<string, scalar|null>  */
     protected $attributes = [
         'method' => 'POST',
     ];
@@ -333,15 +333,10 @@ class Form extends Fieldset implements FormInterface
 
         $filter = $this->getInputFilter();
 
-        switch ($this->bindAs) {
-            case FormInterface::VALUES_RAW:
-                $data = $filter->getRawValues();
-                break;
-            case FormInterface::VALUES_NORMALIZED:
-            default:
-                $data = $filter->getValues();
-                break;
-        }
+        $data = match ($this->bindAs) {
+            FormInterface::VALUES_RAW => $filter->getRawValues(),
+            default => $filter->getValues(),
+        };
 
         $data            = $this->prepareBindData($data, $this->data);
         $validationGroup = $this->getValidationGroup();
@@ -361,8 +356,6 @@ class Form extends Fieldset implements FormInterface
     /**
      * Parse filtered values and return only posted fields for binding
      *
-     * @param  array $values
-     * @param  array $match
      * @return array
      */
     protected function prepareBindData(array $values, array $match): array
@@ -498,7 +491,7 @@ class Form extends Fieldset implements FormInterface
      * By default, retrieves normalized values; pass one of the
      * FormInterface::VALUES_* constants to shape the behavior.
      *
-     * @return array|object
+     * @inheritDoc
      * @throws Exception\DomainException
      */
     public function getData(int $flag = FormInterface::VALUES_NORMALIZED)
@@ -560,11 +553,11 @@ class Form extends Fieldset implements FormInterface
     protected function prepareValidationGroup(Fieldset $formOrFieldset, array $data, array &$validationGroup): void
     {
         foreach ($validationGroup as $key => &$value) {
-            if (! $formOrFieldset->has((string) $key)) {
+            $fieldset = $formOrFieldset->iterator->get((string) $key);
+
+            if (! $fieldset) {
                 continue;
             }
-
-            $fieldset = $formOrFieldset->iterator->get((string) $key);
 
             if ($fieldset instanceof Collection) {
                 if (! isset($data[$key]) && $fieldset->getCount() === 0) {
@@ -593,6 +586,7 @@ class Form extends Fieldset implements FormInterface
     /**
      * Set the input filter used by this form
      *
+     * @param InputFilterInterface<TFilteredValues> $inputFilter
      * @return $this
      */
     public function setInputFilter(InputFilterInterface $inputFilter)
@@ -610,6 +604,8 @@ class Form extends Fieldset implements FormInterface
 
     /**
      * Retrieve input filter used by this form
+     *
+     * @return InputFilterInterface<TFilteredValues>
      */
     public function getInputFilter(): InputFilterInterface
     {
@@ -708,6 +704,7 @@ class Form extends Fieldset implements FormInterface
             || $inputFilter instanceof CollectionInputFilter
         ) {
             foreach ($elements as $name => $element) {
+                $name = (string) $name;
                 if ($this->preferFormInputFilter && $inputFilter->has($name)) {
                     continue;
                 }
@@ -865,8 +862,7 @@ class Form extends Fieldset implements FormInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
+     * @inheritDoc
      * @param bool $onlyBase
      */
     public function populateValues(iterable $data, bool $onlyBase = false): void

@@ -3,11 +3,18 @@
 namespace DoctrineExtensions\Query\Mysql;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
-use Doctrine\ORM\Query\Lexer;
+use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
+
+use function implode;
+use function sprintf;
+use function strtolower;
 
 class MatchAgainst extends FunctionNode
 {
-    /** @var array list of \Doctrine\ORM\Query\AST\PathExpression */
+    /** @var array<int, PathExpression> */
     protected $pathExp = null;
 
     /** @var string */
@@ -19,76 +26,80 @@ class MatchAgainst extends FunctionNode
     /** @var bool */
     protected $queryExpansion = false;
 
-    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    public function parse(Parser $parser): void
     {
         // match
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
         // first Path Expression is mandatory
-        $this->pathExp = [];
+        $this->pathExp   = [];
         $this->pathExp[] = $parser->StateFieldPathExpression();
 
         // Subsequent Path Expressions are optional
         $lexer = $parser->getLexer();
-        while ($lexer->isNextToken(Lexer::T_COMMA)) {
-            $parser->match(Lexer::T_COMMA);
+        while ($lexer->isNextToken(TokenType::T_COMMA)) {
+            $parser->match(TokenType::T_COMMA);
             $this->pathExp[] = $parser->StateFieldPathExpression();
         }
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
 
         // against
-        if (strtolower($lexer->lookahead['value']) !== 'against') {
+        if (strtolower($lexer->lookahead->value) !== 'against') {
             $parser->syntaxError('against');
         }
 
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
         $this->against = $parser->StringPrimary();
 
-        if (strtolower($lexer->lookahead['value']) === 'boolean') {
-            $parser->match(Lexer::T_IDENTIFIER);
+        if (strtolower($lexer->lookahead->value) === 'boolean') {
+            $parser->match(TokenType::T_IDENTIFIER);
             $this->booleanMode = true;
-        } elseif (strtolower($lexer->lookahead['value']) === 'in') {
-            $parser->match(Lexer::T_IDENTIFIER);
+        } elseif (strtolower($lexer->lookahead->value) === 'in') {
+            $parser->match(TokenType::T_IDENTIFIER);
 
-            if (strtolower($lexer->lookahead['value']) !== 'boolean') {
+            if (strtolower($lexer->lookahead->value) !== 'boolean') {
                 $parser->syntaxError('boolean');
             }
-            $parser->match(Lexer::T_IDENTIFIER);
 
-            if (strtolower($lexer->lookahead['value']) !== 'mode') {
+            $parser->match(TokenType::T_IDENTIFIER);
+
+            if (strtolower($lexer->lookahead->value) !== 'mode') {
                 $parser->syntaxError('mode');
             }
-            $parser->match(Lexer::T_IDENTIFIER);
+
+            $parser->match(TokenType::T_IDENTIFIER);
 
             $this->booleanMode = true;
         }
 
-        if (strtolower($lexer->lookahead['value']) === 'expand') {
-            $parser->match(Lexer::T_IDENTIFIER);
+        if (strtolower($lexer->lookahead->value) === 'expand') {
+            $parser->match(TokenType::T_IDENTIFIER);
             $this->queryExpansion = true;
-        } elseif (strtolower($lexer->lookahead['value']) === 'with') {
-            $parser->match(Lexer::T_IDENTIFIER);
+        } elseif (strtolower($lexer->lookahead->value) === 'with') {
+            $parser->match(TokenType::T_IDENTIFIER);
 
-            if (strtolower($lexer->lookahead['value']) !== 'query') {
+            if (strtolower($lexer->lookahead->value) !== 'query') {
                 $parser->syntaxError('query');
             }
-            $parser->match(Lexer::T_IDENTIFIER);
 
-            if (strtolower($lexer->lookahead['value']) !== 'expansion') {
+            $parser->match(TokenType::T_IDENTIFIER);
+
+            if (strtolower($lexer->lookahead->value) !== 'expansion') {
                 $parser->syntaxError('expansion');
             }
-            $parser->match(Lexer::T_IDENTIFIER);
+
+            $parser->match(TokenType::T_IDENTIFIER);
 
             $this->queryExpansion = true;
         }
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 
-    public function getSql(\Doctrine\ORM\Query\SqlWalker $walker)
+    public function getSql(SqlWalker $walker): string
     {
         $fields = [];
 

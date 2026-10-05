@@ -6,12 +6,11 @@ namespace Laminas\Form\View\Helper;
 
 use Laminas\Form\ElementInterface;
 use Laminas\Form\Exception;
-use Laminas\Form\LabelAwareInterface;
 
-use function get_class;
 use function gettype;
 use function is_array;
 use function is_object;
+use function is_string;
 use function sprintf;
 use function strtolower;
 
@@ -89,17 +88,8 @@ class FormButton extends FormInput
             }
         }
 
-        if (null !== ($translator = $this->getTranslator())) {
-            $buttonContent = $translator->translate(
-                $buttonContent,
-                $this->getTranslatorTextDomain()
-            );
-        }
-
-        if (! $element instanceof LabelAwareInterface || ! $element->getLabelOption('disable_html_escape')) {
-            $escapeHtmlHelper = $this->getEscapeHtmlHelper();
-            $buttonContent    = $escapeHtmlHelper($buttonContent);
-        }
+        $buttonContent = $this->translateLabel($buttonContent);
+        $buttonContent = $this->escapeLabel($element, $buttonContent);
 
         return $openTag . $buttonContent . $this->closeTag();
     }
@@ -126,7 +116,7 @@ class FormButton extends FormInput
             throw new Exception\InvalidArgumentException(sprintf(
                 '%s expects an array or Laminas\Form\ElementInterface instance; received "%s"',
                 __METHOD__,
-                is_object($attributesOrElement) ? get_class($attributesOrElement) : gettype($attributesOrElement)
+                is_object($attributesOrElement) ? $attributesOrElement::class : gettype($attributesOrElement)
             ));
         }
 
@@ -164,7 +154,7 @@ class FormButton extends FormInput
     protected function getType(ElementInterface $element): string
     {
         $type = $element->getAttribute('type');
-        if (empty($type)) {
+        if (! is_string($type) || $type === '') {
             return 'submit';
         }
 

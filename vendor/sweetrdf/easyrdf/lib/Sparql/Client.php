@@ -52,12 +52,12 @@ use EasyRdf\Utils;
 class Client
 {
     /** The query/read address of the SPARQL Endpoint */
-    private $queryUri = null;
+    private $queryUri;
 
     private $queryUri_has_params = false;
 
     /** The update/write address of the SPARQL Endpoint */
-    private $updateUri = null;
+    private $updateUri;
 
     /** Create a new SPARQL endpoint client
      *
@@ -73,7 +73,7 @@ class Client
 
         $parseUrlResult = parse_url($queryUri, \PHP_URL_QUERY) ?? '';
 
-        if (0 < strlen($parseUrlResult)) {
+        if ('' !== $parseUrlResult) {
             $this->queryUri_has_params = true;
         } else {
             $this->queryUri_has_params = false;
@@ -188,7 +188,7 @@ class Client
      *
      * @param string $query The update query string to be executed
      *
-     * @return \EasyRdf\Http\Response HTTP response
+     * @return Http\Response HTTP response
      */
     public function update($query)
     {
@@ -308,8 +308,8 @@ class Client
         // Check for undefined prefixes
         $prefixes = '';
         foreach (RdfNamespace::namespaces() as $prefix => $uri) {
-            if (false !== strpos($query, "{$prefix}:") &&
-                false === strpos($query, "PREFIX {$prefix}:")
+            if (str_contains($query, "{$prefix}:")
+                  && !str_contains($query, "PREFIX {$prefix}:")
             ) {
                 $prefixes .= "PREFIX {$prefix}: <{$uri}>\n";
             }
@@ -324,7 +324,7 @@ class Client
      * @param string $processed_query
      * @param string $type            Should be either "query" or "update"
      *
-     * @return Http\Response|\Zend\Http\Response
+     * @return Http\Response|\Zend\Http\Response|\Laminas\Http\Client
      *
      * @throws Exception
      */
@@ -337,6 +337,13 @@ class Client
         $sparql_results_types = [
             'application/sparql-results+json' => 1.0,
             'application/sparql-results+xml' => 0.8,
+        ];
+        $sparql_graph_types = [
+            'application/ld+json' => 1.0,
+            'application/rdf+xml' => 0.9,
+            'text/turtle' => 0.8,
+            'application/n-quads' => 0.7,
+            'application/n-triples' => 0.7,
         ];
 
         if ('update' == $type) {
@@ -368,7 +375,7 @@ class Client
                 $accept = Format::formatAcceptHeader($sparql_results_types);
             } elseif ('CONSTRUCT' === $query_verb || 'DESCRIBE' === $query_verb) {
                 // only "graph"
-                $accept = Format::getHttpAcceptHeader();
+                $accept = Format::formatAcceptHeader($sparql_graph_types);
             } else {
                 // both
                 $accept = Format::getHttpAcceptHeader($sparql_results_types);
@@ -396,10 +403,10 @@ class Client
             throw new Exception('unexpected request-type: '.$type);
         }
 
-        if ($client instanceof \Zend\Http\Client) {
-            return $client->send();
-        } else {
+        if ($client instanceof Http\Client) {
             return $client->request();
+        } else {
+            return $client->send();
         }
     }
 
@@ -416,7 +423,7 @@ class Client
     {
         list($content_type) = Utils::parseMimeType($response->getHeader('Content-Type'));
 
-        if (0 === strpos($content_type, 'application/sparql-results')) {
+        if (str_starts_with($content_type, 'application/sparql-results')) {
             $result = new Result($response->getBody(), $content_type);
 
             return $result;
@@ -428,7 +435,7 @@ class Client
     }
 
     /**
-     * Proxy function to allow usage of our Client as well as Zend\Http v2.
+     * Proxy function to allow usage of our Client as well as Zend\Http v2 and Laminas\Http.
      *
      * Zend\Http\Client only accepts an array as first parameter, but our Client wants a name-value pair.
      *
@@ -438,10 +445,10 @@ class Client
      */
     protected function setHeaders($client, $name, $value)
     {
-        if ($client instanceof \Zend\Http\Client) {
-            $client->setHeaders([$name => $value]);
-        } else {
+        if ($client instanceof Http\Client) {
             $client->setHeaders($name, $value);
+        } else {
+            $client->setHeaders([$name => $value]);
         }
     }
 }

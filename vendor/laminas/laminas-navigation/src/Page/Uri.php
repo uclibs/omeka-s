@@ -6,13 +6,16 @@ namespace Laminas\Navigation\Page;
 
 use Laminas\Http\Request;
 use Laminas\Navigation\Exception;
+use Laminas\Permissions\Acl\Resource\ResourceInterface;
 
 use function array_merge;
 use function is_string;
-use function substr;
+use function str_ends_with;
 
 /**
  * Represents a page that is defined by specifying a URI
+ *
+ * @final
  */
 class Uri extends AbstractPage
 {
@@ -72,7 +75,7 @@ class Uri extends AbstractPage
 
         $fragment = $this->getFragment();
         if (null !== $fragment) {
-            if ('#' === substr($uri, -1)) {
+            if (str_ends_with($uri, '#')) {
                 return $uri . $fragment;
             } else {
                 return $uri . '#' . $fragment;
@@ -131,7 +134,28 @@ class Uri extends AbstractPage
     /**
      * Returns an array representation of the page
      *
+     * @see ResourceInterface
+     *
      * @return array
+     * @psalm-return array{
+     *     label: string|null,
+     *     fragment: string|null,
+     *     id: string|null,
+     *     class: string|null,
+     *     title: string|null,
+     *     target: string|null,
+     *     rel: array|null,
+     *     rev: array|null,
+     *     order: int|null,
+     *     resource: ResourceInterface|string|null,
+     *     privilege: string|null,
+     *     permission: mixed|null,
+     *     active: bool,
+     *     visible: bool,
+     *     pages: list<array>,
+     *     uri: string|null,
+     *     ...
+     * }
      */
     public function toArray()
     {

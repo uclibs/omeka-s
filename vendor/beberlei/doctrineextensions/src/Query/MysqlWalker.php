@@ -4,12 +4,12 @@ namespace DoctrineExtensions\Query;
 
 use Doctrine\ORM\Query\SqlWalker;
 
+use function str_replace;
+
 class MysqlWalker extends SqlWalker
 {
-    /**
-     * @inheritdoc
-     */
-    public function walkSelectClause($selectClause)
+    /** @inheritdoc */
+    public function walkSelectClause($selectClause): string
     {
         $sql = parent::walkSelectClause($selectClause);
 
@@ -26,10 +26,8 @@ class MysqlWalker extends SqlWalker
         return $sql;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function walkGroupByClause($groupByClause)
+    /** @inheritdoc */
+    public function walkGroupByClause($groupByClause): string
     {
         $sql = parent::walkGroupByClause($groupByClause);
 

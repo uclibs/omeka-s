@@ -11,6 +11,7 @@ use ReflectionParameter;
 
 use function array_filter;
 use function array_key_exists;
+use function method_exists;
 use function sprintf;
 
 /**
@@ -25,7 +26,7 @@ final class OptionalParametersFilter implements FilterInterface
      *
      * @var bool[]
      */
-    protected static $propertiesCache = [];
+    private static array $propertiesCache = [];
 
     /**
      * {@inheritDoc}
@@ -46,16 +47,17 @@ final class OptionalParametersFilter implements FilterInterface
         try {
             $reflectionMethod = $instance !== null
                 ? new ReflectionMethod($instance, $property)
-                : new ReflectionMethod($property);
-        } catch (ReflectionException $exception) {
+                : (method_exists(ReflectionMethod::class, 'createFromMethodName')
+                    ? ReflectionMethod::createFromMethodName($property)
+                    : new ReflectionMethod($property)
+                );
+        } catch (ReflectionException) {
             throw new InvalidArgumentException(sprintf('Method %s does not exist', $property));
         }
 
         $mandatoryParameters = array_filter(
             $reflectionMethod->getParameters(),
-            function (ReflectionParameter $parameter) {
-                return ! $parameter->isOptional();
-            }
+            static fn(ReflectionParameter $parameter): bool => ! $parameter->isOptional()
         );
 
         return static::$propertiesCache[$cacheName] = empty($mandatoryParameters);

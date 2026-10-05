@@ -3,7 +3,9 @@
 namespace DoctrineExtensions\Query\Mysql;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
-use Doctrine\ORM\Query\Lexer;
+use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
 
 /**
  * @author Rafael Kassner <kassner@gmail.com>
@@ -16,29 +18,30 @@ class Week extends FunctionNode
 
     public $mode;
 
-    public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         $sql = 'WEEK(' . $sqlWalker->walkArithmeticPrimary($this->date);
-        if ($this->mode != null) {
+        if ($this->mode !== null) {
             $sql .= ', ' . $sqlWalker->walkLiteral($this->mode);
         }
+
         $sql .= ')';
 
         return $sql;
     }
 
-    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    public function parse(Parser $parser): void
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
         $this->date = $parser->ArithmeticPrimary();
 
-        if (Lexer::T_COMMA === $parser->getLexer()->lookahead['type']) {
-            $parser->match(Lexer::T_COMMA);
+        if ($parser->getLexer()->lookahead->type === TokenType::T_COMMA) {
+            $parser->match(TokenType::T_COMMA);
             $this->mode = $parser->Literal();
         }
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 }

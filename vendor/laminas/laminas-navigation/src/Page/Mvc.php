@@ -6,15 +6,14 @@ namespace Laminas\Navigation\Page;
 
 use Laminas\Mvc\Router as MvcRouter;
 use Laminas\Navigation\Exception;
+use Laminas\Permissions\Acl\Resource\ResourceInterface;
 use Laminas\Router\RouteMatch;
 use Laminas\Router\RouteStackInterface;
 
 use function array_intersect_assoc;
 use function array_merge;
 use function count;
-use function get_class;
-use function gettype;
-use function is_object;
+use function get_debug_type;
 use function is_string;
 use function sprintf;
 use function strlen;
@@ -26,6 +25,8 @@ use function strlen;
  * The two constants defined were originally provided via the laminas-mvc class
  * ModuleRouteListener; to remove the requirement on that component, they are
  * reproduced here.
+ *
+ * @final
  */
 class Mvc extends AbstractPage
 {
@@ -250,16 +251,13 @@ class Mvc extends AbstractPage
             $params['action'] = $param;
         }
 
-        switch (true) {
-            case $this->getRoute() !== null || static::getDefaultRoute() !== null:
-                $name = $this->getRoute() ?? static::getDefaultRoute();
-                break;
-            case $this->getRouteMatch() !== null:
-                $name = $this->getRouteMatch()->getMatchedRouteName();
-                break;
-            default:
-                throw new Exception\DomainException('No route name could be found');
-        }
+        $name = match (true) {
+            $this->getRoute() !== null || static::getDefaultRoute() !== null
+                => $this->getRoute() ?? static::getDefaultRoute(),
+            $this->getRouteMatch() !== null
+                => $this->getRouteMatch()->getMatchedRouteName(),
+            default => throw new Exception\DomainException('No route name could be found'),
+        };
 
         $options = ['name' => $name];
 
@@ -384,7 +382,7 @@ class Mvc extends AbstractPage
      */
     public function setParams(?array $params = null)
     {
-        $this->params    = empty($params) ? [] : $params;
+        $this->params    = $params ?? [];
         $this->hrefCache = null;
         return $this;
     }
@@ -459,7 +457,7 @@ class Mvc extends AbstractPage
                 __METHOD__,
                 RouteMatch::class,
                 MvcRouter\RouteMatch::class,
-                is_object($matches) ? get_class($matches) : gettype($matches)
+                get_debug_type($matches)
             ));
         }
         $this->routeMatch = $matches;
@@ -517,7 +515,7 @@ class Mvc extends AbstractPage
                 __METHOD__,
                 RouteStackInterface::class,
                 MvcRouter\RouteStackInterface::class,
-                is_object($router) ? get_class($router) : gettype($router)
+                get_debug_type($router)
             ));
         }
         $this->router = $router;
@@ -573,7 +571,33 @@ class Mvc extends AbstractPage
     /**
      * Returns an array representation of the page
      *
-     * @return array  associative array containing all page properties
+     * @see ResourceInterface
+     *
+     * @return array
+     * @psalm-return array{
+     *     label: string|null,
+     *     fragment: string|null,
+     *     id: string|null,
+     *     class: string|null,
+     *     title: string|null,
+     *     target: string|null,
+     *     rel: array|null,
+     *     rev: array|null,
+     *     order: int|null,
+     *     resource: ResourceInterface|string|null,
+     *     privilege: string|null,
+     *     permission: mixed|null,
+     *     active: bool,
+     *     visible: bool,
+     *     pages: list<array>,
+     *     action: string|null,
+     *     controller: string|null,
+     *     params: array,
+     *     route: string,
+     *     router: RouteStackInterface|MvcRouter\RouteStackInterface|null,
+     *     route_match: RouteMatch,
+     *     ...
+     * }
      */
     public function toArray()
     {

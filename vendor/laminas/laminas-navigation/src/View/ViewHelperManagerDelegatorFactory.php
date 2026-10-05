@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Laminas\Navigation\View;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\DelegatorFactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\HelperPluginManager;
+use Psr\Container\ContainerInterface;
 
 /**
  * Inject the laminas-view HelperManager with laminas-navigation view helper configuration.
@@ -15,6 +15,8 @@ use Laminas\View\HelperPluginManager;
  * This approach is used for backwards compatibility. The HelperConfig class performs
  * work to ensure that the navigation helper and all its sub-helpers are injected
  * with the view helper manager and application container.
+ *
+ * @final
  */
 class ViewHelperManagerDelegatorFactory implements DelegatorFactoryInterface
 {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Laminas\Form\Element;
 
 use DateTime as PhpDateTime;
+use DateTimeInterface;
 use Exception;
 use Laminas\Form\Exception\InvalidArgumentException;
 use Laminas\Form\FormInterface;
@@ -63,7 +64,7 @@ class DateSelect extends MonthSelect
     /**
      * Get both the year and month elements
      *
-     * @return array
+     * @return list<Select>
      */
     public function getElements(): array
     {
@@ -73,7 +74,7 @@ class DateSelect extends MonthSelect
     /**
      * Set the day attributes
      *
-     * @param  array $dayAttributes
+     * @param array<string, scalar|null> $dayAttributes
      * @return $this
      */
     public function setDayAttributes(array $dayAttributes)
@@ -85,7 +86,7 @@ class DateSelect extends MonthSelect
     /**
      * Get the day attributes
      *
-     * @return array
+     * @return array<string, scalar|null>
      */
     public function getDayAttributes(): array
     {
@@ -102,7 +103,7 @@ class DateSelect extends MonthSelect
         if (is_string($value)) {
             try {
                 $value = new PhpDateTime($value);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 throw new InvalidArgumentException('Value should be a parsable string or an instance of DateTime');
             }
         }
@@ -111,7 +112,7 @@ class DateSelect extends MonthSelect
             $value = new PhpDateTime();
         }
 
-        if ($value instanceof PhpDateTime) {
+        if ($value instanceof DateTimeInterface) {
             $value = [
                 'year'  => $value->format('Y'),
                 'month' => $value->format('m'),
@@ -169,15 +170,11 @@ class DateSelect extends MonthSelect
     }
 
     /**
-     * Should return an array specification compatible with
-     * {@link Laminas\InputFilter\Factory::createInput()}.
-     *
-     * @return array
+     * @inheritDoc
      */
     public function getInputSpecification(): array
     {
-        return [
-            'name'       => $this->getName(),
+        $spec = [
             'required'   => false,
             'filters'    => [
                 ['name' => 'DateSelect'],
@@ -186,6 +183,13 @@ class DateSelect extends MonthSelect
                 $this->getValidator(),
             ],
         ];
+
+        $name = $this->getName();
+        if ($name !== null) {
+            $spec['name'] = $name;
+        }
+
+        return $spec;
     }
 
     /**

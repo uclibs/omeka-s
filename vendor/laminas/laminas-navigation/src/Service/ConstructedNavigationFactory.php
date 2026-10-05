@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace Laminas\Navigation\Service;
 
-use Interop\Container\ContainerInterface;
 use Laminas\Config\Config;
+use Psr\Container\ContainerInterface;
 
 /**
  * Constructed factory to set pages during construction.
+ *
+ * @final
  */
 class ConstructedNavigationFactory extends AbstractNavigationFactory
 {
-    /** @var string|Config|array */
-    protected $config;
-
     /**
      * @param string|Config|array $config
      */
-    public function __construct($config)
+    public function __construct(protected $config)
     {
-        $this->config = $config;
     }
 
     /**

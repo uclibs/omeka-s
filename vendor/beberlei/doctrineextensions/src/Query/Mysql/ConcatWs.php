@@ -3,21 +3,26 @@
 namespace DoctrineExtensions\Query\Mysql;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
-use Doctrine\ORM\Query\Lexer;
+use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
 
-/**
- * @author Andrew Mackrodt <andrew@ajmm.org>
- */
+use function count;
+use function implode;
+use function sprintf;
+use function strtolower;
+
+/** @author Andrew Mackrodt <andrew@ajmm.org> */
 class ConcatWs extends FunctionNode
 {
     private $values = [];
 
     private $notEmpty = false;
 
-    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    public function parse(Parser $parser): void
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
         // Add the concat separator to the values array.
         $this->values[] = $parser->ArithmeticExpression();
@@ -27,33 +32,33 @@ class ConcatWs extends FunctionNode
 
         $lexer = $parser->getLexer();
 
-        while (count($this->values) < 3 || $lexer->lookahead['type'] == Lexer::T_COMMA) {
-            $parser->match(Lexer::T_COMMA);
+        while (count($this->values) < 3 || $lexer->lookahead->type === TokenType::T_COMMA) {
+            $parser->match(TokenType::T_COMMA);
             $peek = $lexer->glimpse();
 
-            $this->values[] = $peek['value'] == '('
+            $this->values[] = $peek->value === '('
                     ? $parser->FunctionDeclaration()
                     : $parser->ArithmeticExpression();
         }
 
-        while ($lexer->lookahead['type'] == Lexer::T_IDENTIFIER) {
-            switch (strtolower($lexer->lookahead['value'])) {
+        while ($lexer->lookahead->type === TokenType::T_IDENTIFIER) {
+            switch (strtolower($lexer->lookahead->value)) {
                 case 'notempty':
-                    $parser->match(Lexer::T_IDENTIFIER);
+                    $parser->match(TokenType::T_IDENTIFIER);
                     $this->notEmpty = true;
 
-                break;
+                    break;
                 default: // Identifier not recognized (causes exception).
-                    $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+                    $parser->match(TokenType::T_CLOSE_PARENTHESIS);
 
-                break;
+                    break;
             }
         }
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 
-    public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         // Create an array to hold the query elements.
         $queryBuilder = ['CONCAT_WS('];
@@ -68,7 +73,7 @@ class ConcatWs extends FunctionNode
             $nodeSql = $sqlWalker->walkArithmeticPrimary($this->values[$i]);
 
             if ($this->notEmpty) {
-                // Exclude empty strings from the concatenation.
+        // Exclude empty strings from the concatenation.
                 $nodeSql = sprintf("NULLIF(%s, '')", $nodeSql);
             }
 

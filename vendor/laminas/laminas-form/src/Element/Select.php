@@ -13,14 +13,14 @@ use Laminas\Validator\ValidatorInterface;
 
 use function array_key_exists;
 use function is_array;
+use function is_iterable;
+use function trigger_error;
+
+use const E_USER_DEPRECATED;
 
 class Select extends Element implements InputProviderInterface
 {
-    /**
-     * Seed attributes
-     *
-     * @var array
-     */
+    /** @var array<string, scalar|null>  */
     protected $attributes = [
         'type' => 'select',
     ];
@@ -56,7 +56,6 @@ class Select extends Element implements InputProviderInterface
     }
 
     /**
-     * @param  array $options
      * @return $this
      */
     public function setValueOptions(array $options)
@@ -135,17 +134,16 @@ class Select extends Element implements InputProviderInterface
         return $this;
     }
 
-    /**
-     * Set a single element attribute
-     *
-     * @param  mixed  $value
-     * @return $this
-     */
+    /** @inheritDoc */
     public function setAttribute(string $key, $value)
     {
-        // Do not include the options in the list of attributes
-        // TODO: Deprecate this
-        if ($key === 'options') {
+        /** @psalm-suppress DocblockTypeContradiction */
+        if ($key === 'options' && is_iterable($value)) {
+            trigger_error(
+                'Providing multi-select value options via attributes is deprecated and will be removed in '
+                . 'version 4.0 of this library',
+                E_USER_DEPRECATED,
+            );
             $this->setValueOptions($value);
             return $this;
         }
@@ -257,14 +255,18 @@ class Select extends Element implements InputProviderInterface
     /**
      * Provide default input rules for this element
      *
-     * @return array
+     * @inheritDoc
      */
     public function getInputSpecification(): array
     {
         $spec = [
-            'name'     => $this->getName(),
             'required' => true,
         ];
+
+        $name = $this->getName();
+        if ($name !== null) {
+            $spec['name'] = $name;
+        }
 
         if ($this->useHiddenElement() && $this->isMultiple()) {
             $unselectedValue = $this->getUnselectedValue();
@@ -318,11 +320,11 @@ class Select extends Element implements InputProviderInterface
     }
 
     /**
-     * @param mixed $key
-     * @param mixed $optionSpec
      * @return mixed
+     * @param (int|string) $key
+     * @psalm-param array-key $key
      */
-    protected function getOptionValue($key, $optionSpec)
+    protected function getOptionValue(mixed $key, mixed $optionSpec)
     {
         return is_array($optionSpec) ? $optionSpec['value'] : $key;
     }

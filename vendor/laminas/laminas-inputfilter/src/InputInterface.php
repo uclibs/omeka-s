@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Laminas\InputFilter;
 
 use Laminas\Filter\FilterChain;
@@ -8,61 +10,57 @@ use Laminas\Validator\ValidatorChain;
 interface InputInterface
 {
     /**
-     * @deprecated 2.4.8 Add Laminas\Validator\NotEmpty validator to the ValidatorChain and set this to `true`.
-     *
      * @param bool $allowEmpty
-     * @return self
+     * @return $this
      */
     public function setAllowEmpty($allowEmpty);
 
     /**
      * @param bool $breakOnFailure
-     * @return self
+     * @return $this
      */
     public function setBreakOnFailure($breakOnFailure);
 
     /**
      * @param string|null $errorMessage
-     * @return self
+     * @return $this
      */
     public function setErrorMessage($errorMessage);
 
     /**
-     * @return self
+     * @return $this
      */
     public function setFilterChain(FilterChain $filterChain);
 
     /**
      * @param string $name
-     * @return self
+     * @return $this
      */
     public function setName($name);
 
     /**
      * @param bool $required
-     * @return self
+     * @return $this
      */
     public function setRequired($required);
 
     /**
-     * @return self
+     * @return $this
      */
     public function setValidatorChain(ValidatorChain $validatorChain);
 
     /**
      * @param mixed $value
-     * @return self
+     * @return $this
      */
     public function setValue($value);
 
     /**
-     * @return self
+     * @return $this
      */
     public function merge(InputInterface $input);
 
     /**
-     * @deprecated 2.4.8 Add Laminas\Validator\NotEmpty validator to the ValidatorChain.
-     *
      * @return bool
      */
     public function allowEmpty();
@@ -113,7 +111,7 @@ interface InputInterface
     public function isValid();
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     public function getMessages();
 }

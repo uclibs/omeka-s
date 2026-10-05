@@ -1,17 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Laminas\Mvc\I18n\Router;
 
 use Laminas\I18n\Translator\TranslatorAwareInterface;
 use Laminas\I18n\Translator\TranslatorInterface as Translator;
 use Laminas\Router\Exception;
+use Laminas\Router\Http\RouteInterface;
 use Laminas\Router\Http\TreeRouteStack;
-use Laminas\Router\RouteInterface;
+use Laminas\Router\RouteMatch;
 use Laminas\Stdlib\RequestInterface as Request;
 use Traversable;
 
+use function iterator_to_array;
+
 /**
  * Translator aware tree route stack.
+ *
+ * @template TRoute of RouteInterface
+ * @extends TreeRouteStack<TRoute>
  */
 class TranslatorAwareTreeRouteStack extends TreeRouteStack implements TranslatorAwareInterface
 {
@@ -42,7 +50,7 @@ class TranslatorAwareTreeRouteStack extends TreeRouteStack implements Translator
      * Overrides TreeRouteStack::factory() in order to inject the configured
      * translator_text_domain, if present, prior to returning the instance.
      *
-     * @param array $options
+     * @param iterable $options
      * @return self
      */
     public static function factory($options = [])
@@ -65,7 +73,7 @@ class TranslatorAwareTreeRouteStack extends TreeRouteStack implements Translator
      * match(): defined by RouteInterface
      *
      * @see    RouteInterface::match()
-     * @param  Request      $request
+     *
      * @param  integer|null $pathOffset
      * @param  array        $options
      * @return RouteMatch|null
@@ -87,6 +95,7 @@ class TranslatorAwareTreeRouteStack extends TreeRouteStack implements Translator
      * assemble(): defined by RouteInterface interface.
      *
      * @see    RouteInterface::assemble()
+     *
      * @param  array $params
      * @param  array $options
      * @return mixed
@@ -110,11 +119,11 @@ class TranslatorAwareTreeRouteStack extends TreeRouteStack implements Translator
      * setTranslator(): defined by TranslatorAwareInterface.
      *
      * @see    TranslatorAwareInterface::setTranslator()
-     * @param  Translator $translator
+     *
      * @param  string     $textDomain
      * @return TreeRouteStack
      */
-    public function setTranslator(Translator $translator = null, $textDomain = null)
+    public function setTranslator(?Translator $translator = null, $textDomain = null)
     {
         $this->translator = $translator;
 
@@ -129,6 +138,7 @@ class TranslatorAwareTreeRouteStack extends TreeRouteStack implements Translator
      * getTranslator(): defined by TranslatorAwareInterface.
      *
      * @see    TranslatorAwareInterface::getTranslator()
+     *
      * @return Translator
      */
     public function getTranslator()
@@ -140,6 +150,7 @@ class TranslatorAwareTreeRouteStack extends TreeRouteStack implements Translator
      * hasTranslator(): defined by TranslatorAwareInterface.
      *
      * @see    TranslatorAwareInterface::hasTranslator()
+     *
      * @return bool
      */
     public function hasTranslator()
@@ -151,6 +162,7 @@ class TranslatorAwareTreeRouteStack extends TreeRouteStack implements Translator
      * setTranslatorEnabled(): defined by TranslatorAwareInterface.
      *
      * @see    TranslatorAwareInterface::setTranslatorEnabled()
+     *
      * @param  bool $enabled
      * @return TreeRouteStack
      */
@@ -164,6 +176,7 @@ class TranslatorAwareTreeRouteStack extends TreeRouteStack implements Translator
      * isTranslatorEnabled(): defined by TranslatorAwareInterface.
      *
      * @see    TranslatorAwareInterface::isTranslatorEnabled()
+     *
      * @return bool
      */
     public function isTranslatorEnabled()
@@ -175,6 +188,7 @@ class TranslatorAwareTreeRouteStack extends TreeRouteStack implements Translator
      * setTranslatorTextDomain(): defined by TranslatorAwareInterface.
      *
      * @see    TranslatorAwareInterface::setTranslatorTextDomain()
+     *
      * @param  string $textDomain
      * @return self
      */
@@ -188,6 +202,7 @@ class TranslatorAwareTreeRouteStack extends TreeRouteStack implements Translator
      * getTranslatorTextDomain(): defined by TranslatorAwareInterface.
      *
      * @see    TranslatorAwareInterface::getTranslatorTextDomain()
+     *
      * @return string
      */
     public function getTranslatorTextDomain()

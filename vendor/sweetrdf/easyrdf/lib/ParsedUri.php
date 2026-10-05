@@ -47,13 +47,13 @@ namespace EasyRdf;
 class ParsedUri
 {
     // For all URIs:
-    private $scheme = null;
-    private $fragment = null;
+    private $scheme;
+    private $fragment;
 
     // For hierarchical URIs:
-    private $authority = null;
-    private $path = null;
-    private $query = null;
+    private $authority;
+    private $path;
+    private $query;
 
     public const URI_REGEX = "|^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?|";
 
@@ -69,6 +69,17 @@ class ParsedUri
     {
         if (\is_string($uri)) {
             if (preg_match(self::URI_REGEX, $uri, $matches)) {
+                /**
+                 * Without the following "hack", PHPStan would throw the following errors (PHP 8.4):
+                 *
+                 * 74   Offset 2 on array{0: string, 1: string, 2: string, ...} in isset() always exists and is not nullable.
+                 * 80   Offset 4 on array{0: string, 1: string, 2: string, ...} in isset() always exists and is not nullable.
+                 * 86   Offset 5 on array{0: string, 1: string, 2: string, ...} in isset() always exists and is not nullable.
+                 *
+                 * @var array<mixed>
+                 */
+                $matches = $matches;
+
                 if (!empty($matches[1])) {
                     $this->scheme = isset($matches[2]) ? $matches[2] : '';
                 }
@@ -254,12 +265,12 @@ class ParsedUri
     {
         // If it is a string, then convert it to a parsed object
         if (\is_string($relUri)) {
-            /** @var \EasyRdf\ParsedUri */
+            /** @var ParsedUri */
             $relUri = new self($relUri);
         }
 
         // This code is based on the pseudocode in section 5.2.2 of RFC3986
-        /** @var \EasyRdf\ParsedUri */
+        /** @var ParsedUri */
         $target = new self();
         if ($relUri->scheme) {
             $target->scheme = $relUri->scheme;

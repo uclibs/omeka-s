@@ -1,10 +1,6 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-i18n-resources for the canonical source repository
- * @copyright https://github.com/laminas/laminas-i18n-resources/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-i18n-resources/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\I18n\Translator;
 
@@ -15,6 +11,8 @@ final class Resources
 {
     /**
      * Non-instantiable.
+     *
+     * @psalm-suppress UnusedConstructor
      */
     private function __construct()
     {

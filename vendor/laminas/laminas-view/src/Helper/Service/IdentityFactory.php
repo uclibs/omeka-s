@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Laminas\View\Helper\Service;
 
-use Interop\Container\ContainerInterface;
+use Interop\Container\ContainerInterface; // phpcs:ignore
 use Laminas\Authentication\AuthenticationService;
 use Laminas\Authentication\AuthenticationServiceInterface;
 use Laminas\ServiceManager\FactoryInterface;
@@ -13,6 +13,7 @@ use Laminas\View\Helper\Identity;
 
 /**
  * @psalm-suppress DeprecatedInterface
+ * @final
  */
 class IdentityFactory implements FactoryInterface
 {

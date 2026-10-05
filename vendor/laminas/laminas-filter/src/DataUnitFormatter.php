@@ -11,10 +11,19 @@ use function in_array;
 use function is_numeric;
 use function log;
 use function number_format;
-use function pow;
 use function sprintf;
 use function strtolower;
 
+/**
+ * @psalm-type Options = array{
+ *     mode?: string,
+ *     unit?: string,
+ *     precision?: int,
+ *     prefixes?: list<string>,
+ * }
+ * @extends AbstractFilter<Options>
+ * @final
+ */
 final class DataUnitFormatter extends AbstractFilter
 {
     public const MODE_BINARY  = 'binary';
@@ -23,12 +32,13 @@ final class DataUnitFormatter extends AbstractFilter
     public const BASE_BINARY  = 1024;
     public const BASE_DECIMAL = 1000;
 
+    private const DEFAULT_PRECISION = 2;
     /**
      * A list of all possible filter modes:
      *
-     * @var array
+     * @var list<string>
      */
-    private static $modes = [
+    private static array $modes = [
         self::MODE_BINARY,
         self::MODE_DECIMAL,
     ];
@@ -38,9 +48,9 @@ final class DataUnitFormatter extends AbstractFilter
      *
      * @link https://en.wikipedia.org/wiki/Binary_prefix
      *
-     * @var array
+     * @var array<string, list<string>>
      */
-    private static $standardizedPrefixes = [
+    private static array $standardizedPrefixes = [
         // binary IEC units:
         self::MODE_BINARY => ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi'],
         // decimal SI units:
@@ -50,21 +60,21 @@ final class DataUnitFormatter extends AbstractFilter
     /**
      * Default options:
      *
-     * @var array
+     * @var Options
      */
     protected $options = [
         'mode'      => self::MODE_DECIMAL,
         'unit'      => '',
-        'precision' => 2,
+        'precision' => self::DEFAULT_PRECISION,
         'prefixes'  => [],
     ];
 
     /**
-     * @param array $options
+     * @param Options $options
      */
     public function __construct($options = [])
     {
-        if (! static::isOptions($options)) {
+        if (! self::isOptions($options)) {
             throw new InvalidArgumentException('The unit filter needs options to work.');
         }
 
@@ -77,6 +87,9 @@ final class DataUnitFormatter extends AbstractFilter
 
     /**
      * Define the mode of the filter. Possible values can be fount at self::$modes.
+     *
+     * @deprecated Since 2.37.0 - Option getters and setters will be removed in 3.0.
+     *             Provide options to the constructor instead
      *
      * @param string $mode
      * @throws InvalidArgumentException
@@ -93,15 +106,21 @@ final class DataUnitFormatter extends AbstractFilter
     /**
      * Get current filter mode
      *
+     * @deprecated  Since 2.37.0 - Option getters and setters will be removed in 3.0.
+     *              Provide options to the constructor instead
+     *
      * @return string
      */
     protected function getMode()
     {
-        return $this->options['mode'];
+        return $this->options['mode'] ?? self::MODE_DECIMAL;
     }
 
     /**
      * Find out if the filter is in decimal mode.
+     *
+     * @deprecated  Since 2.37.0 - Option getters and setters will be removed in 3.0.
+     *              Provide options to the constructor instead
      *
      * @return bool
      */
@@ -113,6 +132,9 @@ final class DataUnitFormatter extends AbstractFilter
     /**
      * Find out if the filter is in binary mode.
      *
+     * @deprecated  Since 2.37.0 - Option getters and setters will be removed in 3.0.
+     *              Provide options to the constructor instead
+     *
      * @return bool
      */
     protected function isBinaryMode()
@@ -122,6 +144,9 @@ final class DataUnitFormatter extends AbstractFilter
 
     /**
      * Define the unit of the filter. Possible values can be fount at self::$types.
+     *
+     * @deprecated  Since 2.37.0 - Option getters and setters will be removed in 3.0.
+     *              Provide options to the constructor instead
      *
      * @param string $unit
      */
@@ -133,15 +158,21 @@ final class DataUnitFormatter extends AbstractFilter
     /**
      * Get current filter type
      *
+     * @deprecated  Since 2.37.0 - Option getters and setters will be removed in 3.0.
+     *              Provide options to the constructor instead
+     *
      * @return string
      */
     protected function getUnit()
     {
-        return $this->options['unit'];
+        return $this->options['unit'] ?? '';
     }
 
     /**
      * Set the precision of the filtered result.
+     *
+     * @deprecated  Since 2.37.0 - Option getters and setters will be removed in 3.0.
+     *              Provide options to the constructor instead
      *
      * @param int $precision
      */
@@ -153,17 +184,23 @@ final class DataUnitFormatter extends AbstractFilter
     /**
      * Get the precision of the filtered result.
      *
+     * @deprecated  Since 2.37.0 - Option getters and setters will be removed in 3.0.
+     *              Provide options to the constructor instead
+     *
      * @return int
      */
     protected function getPrecision()
     {
-        return $this->options['precision'];
+        return $this->options['precision'] ?? self::DEFAULT_PRECISION;
     }
 
     /**
      * Set the precision of the result.
      *
-     * @param array $prefixes
+     * @deprecated  Since 2.37.0 - Option getters and setters will be removed in 3.0.
+     *              Provide options to the constructor instead
+     *
+     * @param list<string> $prefixes
      */
     protected function setPrefixes(array $prefixes)
     {
@@ -173,12 +210,15 @@ final class DataUnitFormatter extends AbstractFilter
     /**
      * Get the predefined prefixes or use the build-in standardized lists of prefixes.
      *
-     * @return array
+     * @deprecated  Since 2.37.0 - Option getters and setters will be removed in 3.0.
+     *              Provide options to the constructor instead
+     *
+     * @return list<string>
      */
     protected function getPrefixes()
     {
-        $prefixes = $this->options['prefixes'];
-        if ($prefixes) {
+        $prefixes = $this->options['prefixes'] ?? null;
+        if ($prefixes !== null && $prefixes !== []) {
             return $prefixes;
         }
 
@@ -188,10 +228,12 @@ final class DataUnitFormatter extends AbstractFilter
     /**
      * Find the prefix at a specific location in the prefixes array.
      *
-     * @param mixed $index
+     * @deprecated  Since 2.37.0 - Option getters and setters will be removed in 3.0.
+     *              Provide options to the constructor instead
+     *
      * @return string|null
      */
-    protected function getPrefixAt($index)
+    protected function getPrefixAt(mixed $index)
     {
         $prefixes = $this->getPrefixes();
         return $prefixes[$index] ?? null;
@@ -204,8 +246,9 @@ final class DataUnitFormatter extends AbstractFilter
      *
      * If the value provided is not numeric, the value will remain unfiltered
      *
-     * @param  string $value
+     * @param  mixed $value
      * @return string|mixed
+     * @psalm-return ($value is numeric ? string : mixed)
      */
     public function filter($value)
     {
@@ -230,18 +273,18 @@ final class DataUnitFormatter extends AbstractFilter
         }
 
         // return formatted value:
-        $result    = $amount / pow($base, $power);
+        $result    = $amount / $base ** $power;
         $formatted = number_format($result, $this->getPrecision());
         return $this->formatAmount($formatted, $prefix);
     }
 
     /**
-     * @param mixed $amount
-     * @param null  $prefix
+     * @param float|string $amount
+     * @param string|null  $prefix
      * @return string
      */
     protected function formatAmount($amount, $prefix = null)
     {
-        return sprintf('%s %s%s', $amount, $prefix, $this->getUnit());
+        return sprintf('%s %s%s', (string) $amount, (string) $prefix, $this->getUnit());
     }
 }

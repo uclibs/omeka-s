@@ -16,11 +16,7 @@ use function assert;
 
 class Csrf extends Element implements InputProviderInterface, ElementPrepareAwareInterface
 {
-    /**
-     * Seed attributes
-     *
-     * @var array
-     */
+    /** @var array<string, scalar|null>  */
     protected $attributes = [
         'type' => 'hidden',
     ];
@@ -57,7 +53,6 @@ class Csrf extends Element implements InputProviderInterface, ElementPrepareAwar
     }
 
     /**
-     * @param  array $options
      * @return $this
      */
     public function setCsrfValidatorOptions(array $options)
@@ -73,7 +68,7 @@ class Csrf extends Element implements InputProviderInterface, ElementPrepareAwar
     {
         if (null === $this->csrfValidator) {
             $csrfOptions = $this->getCsrfValidatorOptions();
-            $csrfOptions = array_merge($csrfOptions, ['name' => $this->getName()]);
+            $csrfOptions = array_merge(['name' => $this->getName()], $csrfOptions);
             $this->setCsrfValidator(new CsrfValidator($csrfOptions));
             assert(null !== $this->csrfValidator);
         }
@@ -104,6 +99,8 @@ class Csrf extends Element implements InputProviderInterface, ElementPrepareAwar
      * Override: get attributes
      *
      * Seeds 'value' attribute with validator hash
+     *
+     * @inheritDoc
      */
     public function getAttributes(): array
     {
@@ -118,12 +115,11 @@ class Csrf extends Element implements InputProviderInterface, ElementPrepareAwar
      *
      * Attaches the captcha as a validator.
      *
-     * @return array
+     * @inheritDoc
      */
     public function getInputSpecification(): array
     {
-        return [
-            'name'       => $this->getName(),
+        $spec = [
             'required'   => true,
             'filters'    => [
                 ['name' => StringTrim::class],
@@ -132,6 +128,13 @@ class Csrf extends Element implements InputProviderInterface, ElementPrepareAwar
                 $this->getCsrfValidator(),
             ],
         ];
+
+        $name = $this->getName();
+        if ($name !== null) {
+            $spec['name'] = $name;
+        }
+
+        return $spec;
     }
 
     /**

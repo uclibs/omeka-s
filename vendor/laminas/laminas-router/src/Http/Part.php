@@ -20,23 +20,17 @@ use function sprintf;
 use function strlen;
 
 /**
- * Part route.
+ * @template TRoute of RouteInterface
+ * @template-extends TreeRouteStack<TRoute>
  */
 class Part extends TreeRouteStack implements RouteInterface
 {
     /**
      * RouteInterface to match.
      *
-     * @var RouteInterface
+     * @var TRoute
      */
     protected $route;
-
-    /**
-     * Whether the route may terminate.
-     *
-     * @var bool
-     */
-    protected $mayTerminate;
 
     /**
      * Child routes.
@@ -46,26 +40,21 @@ class Part extends TreeRouteStack implements RouteInterface
     protected $childRoutes;
 
     /**
-     * Priority.
-     *
-     * @internal For internal classes only. Not designed for general use.
-     * @deprecated Since 3.9.0 This property will be removed or made private in version 4.0
-     *
-     * @var int|null
-     */
-    public $priority;
-
-    /**
      * Create a new part route.
      *
-     * @param  mixed              $route
-     * @param  bool               $mayTerminate
-     * @param  array|null         $childRoutes
+     * @param TRoute|iterable|string           $route
+     * @param bool                             $mayTerminate
+     * @param array|null                       $childRoutes
+     * @param RoutePluginManager<TRoute>       $routePlugins
+     * @param ArrayObject<string, TRoute>|null $prototypes
      * @throws Exception\InvalidArgumentException
      */
     public function __construct(
         $route,
-        $mayTerminate,
+        /**
+         * Whether the route may terminate.
+         */
+        protected $mayTerminate,
         RoutePluginManager $routePlugins,
         ?array $childRoutes = null,
         ?ArrayObject $prototypes = null
@@ -80,11 +69,11 @@ class Part extends TreeRouteStack implements RouteInterface
             throw new Exception\InvalidArgumentException('Base route may not be a part route');
         }
 
-        $this->route        = $route;
-        $this->mayTerminate = $mayTerminate;
-        $this->childRoutes  = $childRoutes;
-        $this->prototypes   = $prototypes;
-        $this->routes       = new PriorityList();
+        $this->route       = $route;
+        $this->childRoutes = $childRoutes;
+        $this->prototypes  = $prototypes;
+        /** @var PriorityList<string, TRoute> $this->routes */
+        $this->routes = new PriorityList();
     }
 
     /**
@@ -146,7 +135,6 @@ class Part extends TreeRouteStack implements RouteInterface
      * @see    \Laminas\Router\RouteInterface::match()
      *
      * @param  integer|null $pathOffset
-     * @param  array        $options
      * @return RouteMatch|null
      */
     public function match(Request $request, $pathOffset = null, array $options = [])
@@ -197,8 +185,6 @@ class Part extends TreeRouteStack implements RouteInterface
      *
      * @see    \Laminas\Router\RouteInterface::assemble()
      *
-     * @param  array $params
-     * @param  array $options
      * @return mixed
      * @throws Exception\RuntimeException
      */

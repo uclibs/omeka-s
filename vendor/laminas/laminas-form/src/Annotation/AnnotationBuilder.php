@@ -6,7 +6,6 @@ namespace Laminas\Form\Annotation;
 
 use ArrayObject;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use ReflectionClass;
 use ReflectionException;
 
@@ -17,20 +16,11 @@ use ReflectionException;
 final class AnnotationBuilder extends AbstractBuilder
 {
     /**
-     * Initialize the annotation registry
-     */
-    public function __construct()
-    {
-        // doctrine/annotations 1.x does not require autoloading by default
-        AnnotationRegistry::registerLoader('class_exists');
-    }
-
-    /**
      * Derive a form specification from doctrine annotations for a given entity
      *
      * @param  object|class-string $entity
      * @throws ReflectionException
-     * @return array
+     * @return array{0: ArrayObject, 1: ArrayObject}
      */
     protected function getFormSpecificationInternal($entity): array
     {

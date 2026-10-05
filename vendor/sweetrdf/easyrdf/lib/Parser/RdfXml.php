@@ -61,7 +61,7 @@ class RdfXml extends Parser
     private $sCount;
 
     /** @var object|resource|null */
-    private $xmlParser = null;
+    private $xmlParser;
 
     /**
      * Constructor
@@ -91,10 +91,9 @@ class RdfXml extends Parser
             $parser = xml_parser_create_ns('UTF-8', '');
             xml_parser_set_option($parser, \XML_OPTION_SKIP_WHITE, 0);
             xml_parser_set_option($parser, \XML_OPTION_CASE_FOLDING, 0);
-            xml_set_element_handler($parser, 'startElementHandler', 'endElementHandler');
-            xml_set_character_data_handler($parser, 'cdataHandler');
-            xml_set_start_namespace_decl_handler($parser, 'newNamespaceHandler');
-            xml_set_object($parser, $this);
+            xml_set_element_handler($parser, [$this, 'startElementHandler'], [$this, 'endElementHandler']);
+            xml_set_character_data_handler($parser, [$this, 'cdataHandler']);
+            xml_set_start_namespace_decl_handler($parser, [$this, 'newNamespaceHandler']);
             $this->xmlParser = $parser;
         }
     }
@@ -363,8 +362,8 @@ class RdfXml extends Parser
 
         /* any other attrs (skip rdf and xml, except rdf:_, rdf:value, rdf:Seq) */
         foreach ($a as $k => $v) {
-            if (((false === strpos($k, $this->xml)) && (false === strpos($k, $this->rdf))) ||
-                preg_match('/(\_[0-9]+|value|Seq|Bag|Alt|Statement|Property|List)$/', $k)) {
+            if (((!str_contains($k, $this->xml)) && (!str_contains($k, $this->rdf)))
+                || preg_match('/(\_[0-9]+|value|Seq|Bag|Alt|Statement|Property|List)$/', $k)) {
                 if (strpos($k, ':')) {
                     $this->add($s['value'], $k, $v, $s['type'], 'literal', null, $s['x_lang']);
                 }
@@ -493,9 +492,9 @@ class RdfXml extends Parser
         }
         /* any other attrs (skip rdf and xml) */
         foreach ($a as $k => $v) {
-            if (((false === strpos($k, $this->xml)) &&
-             (false === strpos($k, $this->rdf))) ||
-             preg_match('/(\_[0-9]+|value)$/', $k)) {
+            if (((!str_contains($k, $this->xml))
+             && (!str_contains($k, $this->rdf)))
+             || preg_match('/(\_[0-9]+|value)$/', $k)) {
                 if (strpos($k, ':')) {
                     if (!$o['value']) {
                         $o['value'] = $this->graph->newBNodeId();
@@ -550,7 +549,7 @@ class RdfXml extends Parser
             $name = $parts[1];
             if (!isset($this->nsp[$nsUri])) {
                 foreach ($this->nsp as $tmp1 => $tmp2) {
-                    if (0 === strpos($t, $tmp1)) {
+                    if (str_starts_with($t, $tmp1)) {
                         $nsUri = $tmp1;
                         $name = substr($t, \strlen($tmp1));
                         break;
@@ -731,7 +730,7 @@ class RdfXml extends Parser
                     $name = $parts[1];
                     if (!isset($this->nsp[$nsUri])) {
                         foreach ($this->nsp as $tmp1 => $tmp2) {
-                            if (0 === strpos($t, $tmp1)) {
+                            if (str_starts_with($t, $tmp1)) {
                                 $nsUri = $tmp1;
                                 $name = substr($t, \strlen($tmp1));
                                 break;
@@ -813,8 +812,6 @@ class RdfXml extends Parser
                 throw new Exception('XML error: "'.$message.'"', xml_get_current_line_number($this->xmlParser), xml_get_current_column_number($this->xmlParser));
             }
         }
-
-        xml_parser_free($this->xmlParser);
 
         return $this->tripleCount;
     }

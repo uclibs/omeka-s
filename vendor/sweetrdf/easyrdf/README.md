@@ -4,7 +4,7 @@
 
 ## About this fork 🚀
 
-This is a fork of EasyRdf which I maintain in my spare time. My objective is to keep EasyRdf alive and usable on latest PHP versions. Code is more or less maintained but not developement any further. If you wanna participate, feel free to open a pull request! For more information about this fork, scroll at the end of this document.
+This is a fork of EasyRdf which I maintain in my spare time. My objective is to keep EasyRdf alive and usable on latest PHP versions. Code is more or less maintained but not developed any further. If you wanna participate, feel free to open a pull request! For more information about this fork, scroll at the end of this document.
 
 ## About EasyRdf
 
@@ -29,7 +29,7 @@ an `EasyRdf\Graph` object.
 ## Example
 
 ```php
-$foaf = new \EasyRdf\Graph("http://njh.me/foaf.rdf");
+$foaf = new \EasyRdf\Graph("https://www.aelius.com/njh/foaf.rdf");
 $foaf->load();
 $me = $foaf->primaryTopic();
 echo "My name is: ".$me->get('foaf:name')."\n";
@@ -37,7 +37,7 @@ echo "My name is: ".$me->get('foaf:name')."\n";
 
 ## Requirements
 
-* PHP 7.1 or higher
+* PHP 8.0 or higher
 * PHP Extensions: dom, mbstring, pcre, xmlreader
 * PHP Libs: libxml
 
@@ -48,7 +48,7 @@ echo "My name is: ".$me->get('foaf:name')."\n";
 * Extensive unit tests written using PHPUnit
 * Built-in parsers and serialisers: RDF/JSON, N-Triples, RDF/XML, Turtle
 * Optional parsing support for: [ARC2](https://github.com/semsol/arc2/), [rapper](http://librdf.org/raptor/rapper.html)
-* Optional support for `Zend\Http\Client`
+* Optional support for `Laminas\Http\Client` and `Zend\Http\Client`
 * Type mapper - resources of type `foaf:Person` can be mapped into PHP object of class `Foaf_Person`
 * Support for visualisation of graphs using [GraphViz](https://www.graphviz.org/)
 * Comes with a number of examples
@@ -105,11 +105,11 @@ This fork (v1.\*) aims to be a drop-in replacement for the `easyrdf/easyrdf` pac
 
 #### What can you expect as an EasyRdf developer?
 
-This repository is set up in a way to lower the maintenance overhead in comparison to the original version. Test related tool was partly replaced with more lightweight solutions. Furthermore this repository is held by an organization instead of a user, which allows more flexible maintenance.
+This repository is set up in a way to lower the maintenance overhead in comparison to the original version. Test related tools were partly replaced with more lightweight solutions. Furthermore this repository is held by an organization instead of a user, which allows more flexible maintenance.
 
 #### Whats next? Whats my plan?
 
-As stated above, main objective is to keep EasyRdf's legecay code up to date and compatible with latest PHP versions. I welcome pull requests and try to react as fast as possible. If there are useful pull requests in easyrdf/easyrdf (and I have time to spare), I will picked them up and integrate them here (for instance https://github.com/sweetrdf/easyrdf/pull/9, https://github.com/sweetrdf/easyrdf/pull/14).
+As stated above, main objective is to keep EasyRdf's legacy code up to date and compatible with latest PHP versions. I welcome pull requests and try to react as fast as possible. If there are useful pull requests in easyrdf/easyrdf (and I have time to spare), I will picked them up and integrate them here (for instance https://github.com/sweetrdf/easyrdf/pull/9, https://github.com/sweetrdf/easyrdf/pull/14).
 
 ## Licensing
 

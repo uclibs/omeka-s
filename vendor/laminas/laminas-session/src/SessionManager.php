@@ -30,6 +30,8 @@ use const PHP_SESSION_ACTIVE;
 
 /**
  * Session ManagerInterface implementation utilizing ext/session
+ *
+ * @final
  */
 class SessionManager extends AbstractManager
 {
@@ -38,6 +40,8 @@ class SessionManager extends AbstractManager
      * - send_expire_cookie: whether or not to send a cookie expiring the current session cookie
      * - clear_storage: whether or not to empty the storage object of any stored values
      *
+     * @deprecated This property will be removed in version 3.0
+     *
      * @var array
      */
     protected $defaultDestroyOptions = [
@@ -45,7 +49,11 @@ class SessionManager extends AbstractManager
         'clear_storage'      => false,
     ];
 
-    /** @var array Default session manager options */
+    /**
+     * @deprecated This property will be removed in version 3.0
+     *
+     * @var array Default session manager options
+     */
     protected $defaultOptions = [
         'attach_default_validators' => true,
     ];
@@ -64,8 +72,6 @@ class SessionManager extends AbstractManager
     /**
      * Constructor
      *
-     * @param  array                                 $validators
-     * @param  array                                 $options
      * @throws Exception\RuntimeException
      */
     public function __construct(
@@ -94,13 +100,20 @@ class SessionManager extends AbstractManager
         if (session_status() === PHP_SESSION_ACTIVE) {
             return true;
         }
+
+        /**
+         * @var string|false $sid
+         */
         $sid = defined('SID') ? constant('SID') : false;
+
         if ($sid !== false && $this->getId()) {
             return true;
         }
+
         if (headers_sent()) {
             return true;
         }
+
         return false;
     }
 
@@ -194,7 +207,9 @@ class SessionManager extends AbstractManager
      */
     public function destroy(?array $options = null)
     {
-        if (! $this->sessionExists()) {
+        // session_destroy() requires active session while method
+        // $this->sessionExists() includes other conditions
+        if (session_status() !== PHP_SESSION_ACTIVE) {
             return;
         }
 
@@ -205,7 +220,7 @@ class SessionManager extends AbstractManager
         }
 
         session_destroy();
-        if ($options['send_expire_cookie']) {
+        if (! headers_sent() && $options['send_expire_cookie']) {
             $this->expireSessionCookie();
         }
 
@@ -415,9 +430,7 @@ class SessionManager extends AbstractManager
         $event->setTarget($this);
         $event->setParams($this);
 
-        $falseResult = function ($test) {
-            return false === $test;
-        };
+        $falseResult = static fn($test): bool => false === $test;
 
         $responses = $validator->triggerEventUntil($falseResult, $event);
 
@@ -449,8 +462,8 @@ class SessionManager extends AbstractManager
             $_SERVER['REQUEST_TIME'] - 42000, // TTL for cookie
             $config->getCookiePath(),
             $config->getCookieDomain(),
-            $config->getCookieSecure(),
-            $config->getCookieHttpOnly()
+            (bool) $config->getCookieSecure(),
+            (bool) $config->getCookieHttpOnly()
         );
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Laminas\InputFilter\FileInput;
 
 use Laminas\InputFilter\FileInput;
@@ -24,12 +26,11 @@ use const UPLOAD_ERR_NO_FILE;
  *
  * 3. Instead of adding a NotEmpty validator, it will (by default) automatically add
  *    a Laminas\Validator\File\Upload validator.
+ *
+ * @final
  */
 class PsrFileInputDecorator extends FileInput implements FileInputDecoratorInterface
 {
-    /** @var FileInput */
-    private $subject;
-
     /**
      * Checks if the raw input value is an empty file input eg: no file was uploaded
      *
@@ -45,9 +46,8 @@ class PsrFileInputDecorator extends FileInput implements FileInputDecoratorInter
         return $rawValue->getError() === UPLOAD_ERR_NO_FILE;
     }
 
-    public function __construct(FileInput $subject)
+    public function __construct(private readonly FileInput $subject)
     {
-        $this->subject = $subject;
     }
 
     /**

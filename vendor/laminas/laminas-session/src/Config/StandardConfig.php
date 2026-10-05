@@ -560,7 +560,7 @@ class StandardConfig implements ConfigInterface, SameSiteCookieCapableInterface
     /**
      * Get session.cookie_secure
      *
-     * @return bool
+     * @return bool|string
      */
     public function getCookieSecure()
     {
@@ -589,7 +589,7 @@ class StandardConfig implements ConfigInterface, SameSiteCookieCapableInterface
     /**
      * Get session.cookie_httponly
      *
-     * @return bool
+     * @return bool|string
      */
     public function getCookieHttpOnly()
     {
@@ -835,6 +835,8 @@ class StandardConfig implements ConfigInterface, SameSiteCookieCapableInterface
 
     /**
      * Set session.sid_length
+     *
+     * @deprecated see https://wiki.php.net/rfc/deprecations_php_8_4#sessionsid_length_and_sessionsid_bits_per_character
      *
      * @param  int $sidLength
      * @return StandardConfig

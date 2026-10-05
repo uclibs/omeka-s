@@ -1,18 +1,21 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-permissions-acl for the canonical source repository
- * @copyright https://github.com/laminas/laminas-permissions-acl/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-permissions-acl/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
+
 namespace Laminas\Permissions\Acl\Assertion;
 
 use Laminas\Permissions\Acl\Exception\InvalidArgumentException;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 
+use function gettype;
+use function is_object;
+use function sprintf;
+
+/** @extends AbstractPluginManager<AssertionInterface> */
 class AssertionManager extends AbstractPluginManager
 {
+    /** @var class-string<AssertionInterface> */
     protected $instanceOf = AssertionInterface::class;
 
     /**
@@ -22,15 +25,16 @@ class AssertionManager extends AbstractPluginManager
      *
      * @param mixed $instance
      * @throws InvalidServiceException
+     * @psalm-assert AssertionInterface $instance
      */
     public function validate($instance)
     {
         if (! $instance instanceof $this->instanceOf) {
             throw new InvalidServiceException(sprintf(
                 '%s can only create instances of %s; %s is invalid',
-                get_class($this),
+                self::class,
                 $this->instanceOf,
-                (is_object($instance) ? get_class($instance) : gettype($instance))
+                is_object($instance) ? $instance::class : gettype($instance)
             ));
         }
     }
@@ -40,11 +44,12 @@ class AssertionManager extends AbstractPluginManager
      *
      * Proxies to `validate()`.
      *
-     * @param mixed $instance
-     * @throws InvalidArgumentException
      * @deprecated Please use {@see AssertionManager::validate()} instead.
+     *
+     * @throws InvalidArgumentException
+     * @psalm-assert AssertionInterface $instance
      */
-    public function validatePlugin($instance)
+    public function validatePlugin(mixed $instance)
     {
         try {
             $this->validate($instance);

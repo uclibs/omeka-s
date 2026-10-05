@@ -11,11 +11,7 @@ use Laminas\Validator\ValidatorInterface;
 
 class Checkbox extends Element implements InputProviderInterface
 {
-    /**
-     * Seed attributes
-     *
-     * @var array
-     */
+    /** @var array<string, scalar|null>  */
     protected $attributes = [
         'type' => 'checkbox',
     ];
@@ -26,7 +22,7 @@ class Checkbox extends Element implements InputProviderInterface
     /** @var bool */
     protected $useHiddenElement = true;
 
-    /** @var string */
+    /** @var null|string */
     protected $uncheckedValue = '0';
 
     /** @var string */
@@ -83,7 +79,7 @@ class Checkbox extends Element implements InputProviderInterface
      *
      * @return $this
      */
-    public function setUncheckedValue(string $uncheckedValue)
+    public function setUncheckedValue(?string $uncheckedValue)
     {
         $this->uncheckedValue = $uncheckedValue;
         return $this;
@@ -92,7 +88,7 @@ class Checkbox extends Element implements InputProviderInterface
     /**
      * Get the value to use when checkbox is unchecked
      */
-    public function getUncheckedValue(): string
+    public function getUncheckedValue(): ?string
     {
         return $this->uncheckedValue;
     }
@@ -135,14 +131,18 @@ class Checkbox extends Element implements InputProviderInterface
      *
      * Attaches the captcha as a validator.
      *
-     * @return array
+     * @inheritDoc
      */
     public function getInputSpecification(): array
     {
         $spec = [
-            'name'     => $this->getName(),
             'required' => true,
         ];
+
+        $name = $this->getName();
+        if ($name !== null) {
+            $spec['name'] = $name;
+        }
 
         if ($validator = $this->getValidator()) {
             $spec['validators'] = [

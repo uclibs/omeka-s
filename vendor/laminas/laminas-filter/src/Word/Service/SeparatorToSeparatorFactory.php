@@ -4,20 +4,23 @@ declare(strict_types=1);
 
 namespace Laminas\Filter\Word\Service;
 
-use Interop\Container\ContainerInterface;
 use Laminas\Filter\Word\SeparatorToSeparator;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Psr\Container\ContainerInterface;
 use Traversable;
 
-use function get_class;
-use function gettype;
+use function get_debug_type;
 use function is_array;
-use function is_object;
 use function iterator_to_array;
 use function sprintf;
 
+/**
+ * @deprecated This factory will be removed in 3.0.0 without replacement
+ *
+ * @final
+ */
 class SeparatorToSeparatorFactory implements FactoryInterface
 {
     /**
@@ -25,7 +28,7 @@ class SeparatorToSeparatorFactory implements FactoryInterface
      *
      * @param null|array
      */
-    private $creationOptions = [];
+    private array $creationOptions = [];
 
     public function __construct($creationOptions = null)
     {
@@ -41,7 +44,7 @@ class SeparatorToSeparatorFactory implements FactoryInterface
             throw new InvalidServiceException(sprintf(
                 '%s cannot use non-array, non-traversable creation options; received %s',
                 self::class,
-                is_object($creationOptions) ? get_class($creationOptions) : gettype($creationOptions)
+                get_debug_type($creationOptions)
             ));
         }
 

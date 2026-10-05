@@ -8,7 +8,6 @@ use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
-use function get_class;
 use function gettype;
 use function is_object;
 use function sprintf;
@@ -17,13 +16,15 @@ use function sprintf;
  * Plugin manager implementation for hydrators.
  *
  * Enforces that adapters retrieved are instances of HydratorInterface
+ *
+ * @extends AbstractPluginManager<HydratorInterface>
  */
 class HydratorPluginManager extends AbstractPluginManager implements HydratorPluginManagerInterface
 {
     /**
      * Default aliases
      *
-     * @var string[]
+     * @inheritDoc
      */
     protected $aliases = [
         ArraySerializable::class    => ArraySerializableHydrator::class,
@@ -58,21 +59,21 @@ class HydratorPluginManager extends AbstractPluginManager implements HydratorPlu
         'ReflectionHydrator'        => ReflectionHydrator::class,
 
         // Legacy Zend Framework aliases
-        \Zend\Hydrator\ArraySerializableHydrator::class => ArraySerializableHydrator::class,
-        \Zend\Hydrator\ClassMethodsHydrator::class      => ClassMethodsHydrator::class,
-        \Zend\Hydrator\DelegatingHydrator::class        => DelegatingHydrator::class,
-        \Zend\Hydrator\ObjectPropertyHydrator::class    => ObjectPropertyHydrator::class,
-        \Zend\Hydrator\ReflectionHydrator::class        => ReflectionHydrator::class,
-        \Zend\Hydrator\ArraySerializable::class         => ArraySerializableHydrator::class,
-        \Zend\Hydrator\ClassMethods::class              => ClassMethodsHydrator::class,
-        \Zend\Hydrator\ObjectProperty::class            => ObjectPropertyHydrator::class,
-        \Zend\Hydrator\Reflection::class                => ReflectionHydrator::class,
+        'Zend\Hydrator\ArraySerializableHydrator' => ArraySerializableHydrator::class,
+        'Zend\Hydrator\ClassMethodsHydrator'      => ClassMethodsHydrator::class,
+        'Zend\Hydrator\DelegatingHydrator'        => DelegatingHydrator::class,
+        'Zend\Hydrator\ObjectPropertyHydrator'    => ObjectPropertyHydrator::class,
+        'Zend\Hydrator\ReflectionHydrator'        => ReflectionHydrator::class,
+        'Zend\Hydrator\ArraySerializable'         => ArraySerializableHydrator::class,
+        'Zend\Hydrator\ClassMethods'              => ClassMethodsHydrator::class,
+        'Zend\Hydrator\ObjectProperty'            => ObjectPropertyHydrator::class,
+        'Zend\Hydrator\Reflection'                => ReflectionHydrator::class,
     ];
 
     /**
      * Default factory-based adapters
      *
-     * @var string[]|callable[]
+     * @inheritDoc
      */
     protected $factories = [
         ArraySerializableHydrator::class => InvokableFactory::class,
@@ -99,7 +100,7 @@ class HydratorPluginManager extends AbstractPluginManager implements HydratorPlu
     /**
      * {inheritDoc}
      *
-     * @var null|string
+     * @var class-string<HydratorInterface>|null
      */
     protected $instanceOf = HydratorInterface::class;
 
@@ -110,6 +111,7 @@ class HydratorPluginManager extends AbstractPluginManager implements HydratorPlu
      *
      * @param mixed $instance
      * @throws InvalidServiceException
+     * @psalm-assert HydratorInterface $instance
      */
     public function validate($instance)
     {
@@ -120,7 +122,7 @@ class HydratorPluginManager extends AbstractPluginManager implements HydratorPlu
 
         throw new InvalidServiceException(sprintf(
             'Plugin of type %s is invalid; must implement %s',
-            is_object($instance) ? get_class($instance) : gettype($instance),
+            is_object($instance) ? $instance::class : gettype($instance),
             HydratorInterface::class
         ));
     }

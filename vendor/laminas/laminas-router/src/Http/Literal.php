@@ -21,13 +21,6 @@ use function strpos;
 class Literal implements RouteInterface
 {
     /**
-     * RouteInterface to match.
-     *
-     * @var string
-     */
-    protected $route;
-
-    /**
      * Default values.
      *
      * @var array
@@ -46,11 +39,14 @@ class Literal implements RouteInterface
      * Create a new literal route.
      *
      * @param  string $route
-     * @param  array  $defaults
      */
-    public function __construct($route, array $defaults = [])
-    {
-        $this->route    = $route;
+    public function __construct(
+        /**
+         * RouteInterface to match.
+         */
+        protected $route,
+        array $defaults = []
+    ) {
         $this->defaults = $defaults;
     }
 
@@ -59,7 +55,7 @@ class Literal implements RouteInterface
      *
      * @see    \Laminas\Router\RouteInterface::factory()
      *
-     * @param  array|Traversable $options
+     * @param  iterable $options
      * @return Literal
      * @throws Exception\InvalidArgumentException
      */
@@ -124,8 +120,6 @@ class Literal implements RouteInterface
      *
      * @see    \Laminas\Router\RouteInterface::assemble()
      *
-     * @param  array $params
-     * @param  array $options
      * @return mixed
      */
     public function assemble(array $params = [], array $options = [])

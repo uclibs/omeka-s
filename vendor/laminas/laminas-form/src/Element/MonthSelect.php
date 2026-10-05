@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Laminas\Form\Element;
 
 use DateTime as PhpDateTime;
+use DateTimeInterface;
 use Exception;
 use Laminas\Form\Element;
 use Laminas\Form\ElementPrepareAwareInterface;
@@ -141,7 +142,7 @@ class MonthSelect extends Element implements InputProviderInterface, ElementPrep
     /**
      * Get both the year and month elements
      *
-     * @return array
+     * @return list<Select>
      */
     public function getElements(): array
     {
@@ -151,7 +152,7 @@ class MonthSelect extends Element implements InputProviderInterface, ElementPrep
     /**
      * Set the month attributes
      *
-     * @param  array $monthAttributes
+     * @param array<string, scalar|null> $monthAttributes
      * @return $this
      */
     public function setMonthAttributes(array $monthAttributes)
@@ -163,7 +164,7 @@ class MonthSelect extends Element implements InputProviderInterface, ElementPrep
     /**
      * Get the month attributes
      *
-     * @return array
+     * @return array<string, scalar|null>
      */
     public function getMonthAttributes(): array
     {
@@ -173,7 +174,7 @@ class MonthSelect extends Element implements InputProviderInterface, ElementPrep
     /**
      * Set the year attributes
      *
-     * @param  array $yearAttributes
+     * @param array<string, scalar|null> $yearAttributes
      * @return $this
      */
     public function setYearAttributes(array $yearAttributes)
@@ -185,7 +186,7 @@ class MonthSelect extends Element implements InputProviderInterface, ElementPrep
     /**
      * Get the year attributes
      *
-     * @return array
+     * @return array<string, scalar|null>
      */
     public function getYearAttributes(): array
     {
@@ -270,7 +271,7 @@ class MonthSelect extends Element implements InputProviderInterface, ElementPrep
             $value = new PhpDateTime();
         }
 
-        if ($value instanceof PhpDateTime) {
+        if ($value instanceof DateTimeInterface) {
             $value = [
                 'year'  => $value->format('Y'),
                 'month' => $value->format('m'),
@@ -319,15 +320,11 @@ class MonthSelect extends Element implements InputProviderInterface, ElementPrep
     }
 
     /**
-     * Should return an array specification compatible with
-     * {@link Laminas\InputFilter\Factory::createInput()}.
-     *
-     * @return array
+     * @inheritDoc
      */
     public function getInputSpecification(): array
     {
-        return [
-            'name'       => $this->getName(),
+        $spec = [
             'required'   => false,
             'filters'    => [
                 ['name' => 'MonthSelect'],
@@ -336,6 +333,13 @@ class MonthSelect extends Element implements InputProviderInterface, ElementPrep
                 $this->getValidator(),
             ],
         ];
+
+        $name = $this->getName();
+        if ($name !== null) {
+            $spec['name'] = $name;
+        }
+
+        return $spec;
     }
 
     /**

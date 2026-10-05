@@ -6,9 +6,12 @@ namespace Laminas\Filter;
 
 use Laminas\ServiceManager\ServiceManager;
 
+/**
+ * @deprecated Since version 2.15.0 This filter will be removed in version 3.0.0 of this component without replacement.
+ */
 class StaticFilter
 {
-    /** @var FilterPluginManager */
+    /** @var FilterPluginManager|null */
     protected static $plugins;
 
     /**
@@ -28,11 +31,14 @@ class StaticFilter
      */
     public static function getPluginManager()
     {
-        if (null === static::$plugins) {
-            static::setPluginManager(new FilterPluginManager(new ServiceManager()));
+        $plugins = static::$plugins;
+
+        if (! $plugins instanceof FilterPluginManager) {
+            $plugins = new FilterPluginManager(new ServiceManager());
+            static::setPluginManager($plugins);
         }
 
-        return static::$plugins;
+        return $plugins;
     }
 
     /**
@@ -45,17 +51,19 @@ class StaticFilter
      * creates an instance, and applies the filter() method to the data input. You can also pass
      * an array of constructor arguments, if they are needed for the filter class.
      *
-     * @param  mixed        $value
      * @param  string       $classBaseName
      * @param  array        $args          OPTIONAL
      * @return mixed
      * @throws Exception\ExceptionInterface
      */
-    public static function execute($value, $classBaseName, array $args = [])
+    public static function execute(mixed $value, $classBaseName, array $args = [])
     {
         $plugins = static::getPluginManager();
 
         $filter = $plugins->get($classBaseName, $args);
-        return $filter->filter($value);
+
+        return $filter instanceof FilterInterface
+            ? $filter->filter($value)
+            : $filter($value);
     }
 }

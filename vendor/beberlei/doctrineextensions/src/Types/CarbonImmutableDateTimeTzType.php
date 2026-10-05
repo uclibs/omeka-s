@@ -2,32 +2,19 @@
 
 namespace DoctrineExtensions\Types;
 
-use Carbon\CarbonImmutable;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\DateTimeTzType;
+use Doctrine\DBAL\Types\DateTimeTzImmutableType;
 
-class CarbonImmutableDateTimeTzType extends DateTimeTzType
+class CarbonImmutableDateTimeTzType extends DateTimeTzImmutableType
 {
-    const CARBONDATETIMETZ = 'carbondatetimetz_immutable';
+    use CarbonImmutableTypeImplementation;
 
+    public const CARBONDATETIMETZ = 'carbondatetimetz_immutable';
+
+    /**
+     * {@inheritDoc}
+     */
     public function getName()
     {
-        return static::CARBONDATETIMETZ;
-    }
-
-    public function convertToPHPValue($value, AbstractPlatform $platform)
-    {
-        $result = parent::convertToPHPValue($value, $platform);
-
-        if ($result instanceof \DateTime) {
-            return CarbonImmutable::instance($result);
-        }
-
-        return $result;
-    }
-
-    public function requiresSQLCommentHint(AbstractPlatform $platform)
-    {
-        return true;
+        return self::CARBONDATETIMETZ;
     }
 }

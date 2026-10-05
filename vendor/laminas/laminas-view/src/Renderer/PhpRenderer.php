@@ -8,7 +8,8 @@ use ArrayAccess;
 use Laminas\Filter\FilterChain;
 use Laminas\ServiceManager\ServiceManager;
 use Laminas\View\Exception;
-use Laminas\View\Helper\AbstractHelper;
+use Laminas\View\Helper\HelperInterface;
+use Laminas\View\Helper\ViewModel;
 use Laminas\View\HelperPluginManager;
 use Laminas\View\Model\ModelInterface as Model;
 use Laminas\View\Renderer\RendererInterface as Renderer;
@@ -20,10 +21,11 @@ use Traversable;
 
 use function array_key_exists;
 use function array_pop;
+use function assert;
 use function call_user_func_array;
 use function class_exists;
 use function extract;
-use function get_class;
+use function get_debug_type;
 use function gettype;
 use function is_array;
 use function is_callable;
@@ -43,7 +45,7 @@ use function sprintf;
  * mark them as part of the internal implementation, and thus prevent conflict
  * with variables injected into the renderer.
  *
- * Convenience methods for build in helpers (@see __call):
+ * Convenience methods for built-in helpers (@see __call):
  *
  * @method string asset($asset)
  * @method string|null basePath($file = null)
@@ -71,7 +73,7 @@ use function sprintf;
  * @method mixed|null identity()
  * @method \Laminas\View\Helper\InlineScript inlineScript($mode = \Laminas\View\Helper\HeadScript::FILE, $spec = null, $placement = 'APPEND', array $attrs = array(), $type = 'text/javascript')
  * @method string|void json($data, array $jsonOptions = array())
- * @method \Laminas\View\Helper\Layout layout($template = null)
+ * @method Model|\Laminas\View\Helper\Layout layout($template = null)
  * @method \Laminas\View\Helper\Navigation navigation($container = null)
  * @method string paginationControl(\Laminas\Paginator\Paginator $paginator = null, $scrollingStyle = null, $partial = null, $params = null)
  * @method string|\Laminas\View\Helper\Partial partial($name = null, $values = null)
@@ -86,6 +88,9 @@ use function sprintf;
  * @method \Laminas\View\Helper\Navigation\Links links($container = null)
  * @method \Laminas\View\Helper\Navigation\Menu menu($container = null)
  * @method \Laminas\View\Helper\Navigation\Sitemap sitemap($container = null)
+ * @method string gravatarImage(string $emailAddress, int $imageSize = 80, array $imageAttributes = [], string $defaultImage = 'mm', string $rating = 'g')
+ *
+ * @final
  */
 class PhpRenderer implements Renderer, TreeRendererInterface
 {
@@ -139,7 +144,7 @@ class PhpRenderer implements Renderer, TreeRendererInterface
     private $__filterChain;
 
     /**
-     * @var ArrayAccess|array|null ArrayAccess or associative array representing available variables
+     * @var Variables|null
      */
     private $__vars;
 
@@ -166,6 +171,8 @@ class PhpRenderer implements Renderer, TreeRendererInterface
      *
      * Returns the object instance, as it is its own template engine
      *
+     * @deprecated Since 2.40.0. See {@link RendererInterface} for further information.
+     *
      * @return PhpRenderer
      */
     public function getEngine()
@@ -178,6 +185,9 @@ class PhpRenderer implements Renderer, TreeRendererInterface
      *
      * Triggered by {@link __construct() the constructor} as its final action.
      *
+     * @deprecated Since 2.40.0. This method will be removed in 3.0 without replacement. PhpRender will become final
+     *             therefore this method is redundant.
+     *
      * @return void
      */
     public function init()
@@ -186,6 +196,8 @@ class PhpRenderer implements Renderer, TreeRendererInterface
 
     /**
      * Set script resolver
+     *
+     * @deprecated Since 2.40.0. See {@link RendererInterface} for further information.
      *
      * @return PhpRenderer
      * @throws Exception\InvalidArgumentException
@@ -198,6 +210,10 @@ class PhpRenderer implements Renderer, TreeRendererInterface
 
     /**
      * Retrieve template name or template resolver
+     *
+     * @deprecated Since 2.40.0. In version 3.0 you will be able to retrieve template resolvers from the DI container
+     *             in use and use resolvers directly where necessary, therefore this method will be removed without
+     *             replacement
      *
      * @param  null|string $name
      * @return string|Resolver
@@ -220,7 +236,11 @@ class PhpRenderer implements Renderer, TreeRendererInterface
      *
      * Expects either an array, or an object implementing ArrayAccess.
      *
-     * @param  array|ArrayAccess $variables
+     * @deprecated Since 2.40.0. In version 3.0, the PHP Renderer will no longer store or aggregate any view variables.
+     *             Variables should only be passed to the {@link render} method, either as the second argument, or as
+     *             part of a view model.
+     *
+     * @param  array<string, mixed>|ArrayAccess<string, mixed> $variables
      * @return PhpRenderer
      * @throws Exception\InvalidArgumentException
      */
@@ -229,7 +249,7 @@ class PhpRenderer implements Renderer, TreeRendererInterface
         if (! is_array($variables) && ! $variables instanceof ArrayAccess) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Expected array or ArrayAccess object; received "%s"',
-                is_object($variables) ? get_class($variables) : gettype($variables)
+                get_debug_type($variables),
             ));
         }
 
@@ -249,14 +269,19 @@ class PhpRenderer implements Renderer, TreeRendererInterface
     /**
      * Get a single variable, or all variables
      *
-     * @param  mixed $key
-     * @return mixed
+     * @deprecated Since 2.40.0. In version 3.0, the PHP Renderer will no longer store or aggregate any view variables,
+     *             therefore this method will be redundant.
+     *
+     * @param string|null $key
+     * @return ($key is null ? Variables : mixed)
      */
     public function vars($key = null)
     {
         if (null === $this->__vars) {
             $this->setVars(new Variables());
         }
+
+        assert($this->__vars !== null);
 
         if (null === $key) {
             return $this->__vars;
@@ -267,7 +292,10 @@ class PhpRenderer implements Renderer, TreeRendererInterface
     /**
      * Get a single variable
      *
-     * @param  mixed $key
+     * @deprecated Since 2.40.0. In version 3.0, the PHP Renderer will no longer store or aggregate any view variables,
+     *             therefore this method will be redundant.
+     *
+     * @param string $key
      * @return mixed
      */
     public function get($key)
@@ -282,7 +310,10 @@ class PhpRenderer implements Renderer, TreeRendererInterface
     /**
      * Overloading: proxy to Variables container
      *
-     * @param  string $name
+     * @deprecated Since 2.40.0. In version 3.0, the PHP Renderer will no longer store or aggregate any view variables,
+     *             therefore this method will be redundant.
+     *
+     * @param string $name
      * @return mixed
      */
     public function __get($name)
@@ -294,8 +325,12 @@ class PhpRenderer implements Renderer, TreeRendererInterface
     /**
      * Overloading: proxy to Variables container
      *
-     * @param  string $name
-     * @param  mixed $value
+     * @deprecated Since 2.40.0. In version 3.0, the PHP Renderer will no longer store or aggregate any view variables.
+     *             Variables should only be passed to the {@link render} method, either as the second argument, or as
+     *             part of a view model.
+     *
+     * @param string $name
+     * @param mixed $value
      * @return void
      */
     public function __set($name, $value)
@@ -307,7 +342,10 @@ class PhpRenderer implements Renderer, TreeRendererInterface
     /**
      * Overloading: proxy to Variables container
      *
-     * @param  string $name
+     * @deprecated Since 2.40.0. In version 3.0, the PHP Renderer will no longer store or aggregate any view variables,
+     *             therefore this method will be redundant.
+     *
+     * @param string $name
      * @return bool
      */
     public function __isset($name)
@@ -319,7 +357,10 @@ class PhpRenderer implements Renderer, TreeRendererInterface
     /**
      * Overloading: proxy to Variables container
      *
-     * @param  string $name
+     * @deprecated Since 2.40.0. In version 3.0, the PHP Renderer will no longer store or aggregate any view variables,
+     *             therefore this method will be redundant.
+     *
+     * @param string $name
      * @return void
      */
     public function __unset($name)
@@ -334,7 +375,10 @@ class PhpRenderer implements Renderer, TreeRendererInterface
     /**
      * Set helper plugin manager instance
      *
-     * @param  string|HelperPluginManager $helpers
+     * @deprecated Since 2.40.0. This method will be removed in 3.0 without replacement. Dependency injection via the
+     *             constructor will be used instead of setter injection.
+     *
+     * @param string|HelperPluginManager $helpers
      * @return PhpRenderer
      * @throws Exception\InvalidArgumentException
      */
@@ -352,7 +396,7 @@ class PhpRenderer implements Renderer, TreeRendererInterface
         if (! $helpers instanceof HelperPluginManager) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Helper helpers must extend Laminas\View\HelperPluginManager; got type "%s" instead',
-                is_object($helpers) ? get_class($helpers) : gettype($helpers)
+                is_object($helpers) ? $helpers::class : gettype($helpers)
             ));
         }
         $helpers->setRenderer($this);
@@ -364,22 +408,34 @@ class PhpRenderer implements Renderer, TreeRendererInterface
     /**
      * Get helper plugin manager instance
      *
+     * @deprecated Since 2.40.0. This method will be removed in 3.0 without replacement. If you need the plugin
+     *             manager instance, you should retrieve it from the DI container.
+     *
      * @return HelperPluginManager
      */
     public function getHelperPluginManager()
     {
-        if (null === $this->__helpers) {
-            $this->setHelperPluginManager(new HelperPluginManager(new ServiceManager()));
+        $pluginManager = $this->__helpers;
+
+        if (! $pluginManager instanceof HelperPluginManager) {
+            $pluginManager = new HelperPluginManager(new ServiceManager());
+            $this->setHelperPluginManager($pluginManager);
         }
-        return $this->__helpers;
+
+        return $pluginManager;
     }
 
     /**
      * Get plugin instance
      *
-     * @param  string     $name Name of plugin to return
+     * @deprecated Since 2.40.0. This method will be removed in 3.0 without replacement. If you need to retrieve view
+     *             helpers, use your dependency injection container to retrieve the plugin manager in order to fetch
+     *             helpers.
+     *
+     * @template T
+     * @param  string|class-string<T> $name Name of plugin to return
      * @param  null|array $options Options to pass to plugin constructor (if not already instantiated)
-     * @return AbstractHelper
+     * @return ($name is class-string ? T : HelperInterface|callable)
      */
     public function plugin($name, ?array $options = null)
     {
@@ -395,12 +451,16 @@ class PhpRenderer implements Renderer, TreeRendererInterface
      * * If the helper does not define __invoke, it will be returned
      * * If the helper does define __invoke, it will be called as a functor
      *
+     * @deprecated Since 2.40.0. In version 3.0, all magic will be removed from the PhpRenderer. Removing call here
+     *             will not affect view helper usage inside template files.
+     *
      * @param  string $method
      * @param  array $argv
-     * @return mixed
+     * @return HelperInterface|callable|mixed
      */
     public function __call($method, $argv)
     {
+        /** @psalm-suppress MixedAssignment $plugin */
         $plugin = $this->plugin($method);
 
         if (is_callable($plugin)) {
@@ -413,6 +473,10 @@ class PhpRenderer implements Renderer, TreeRendererInterface
     /**
      * Set filter chain
      *
+     * @deprecated Since 2.40.0. In version 3.0 this method will be replaced with a `setFilter` method that accepts
+     *             a callable instead of a Laminas Filter instance. Laminas Filters will continue to work, but you
+     *             will need to update the sites where you call this method to use `setFilter()` instead.
+     *
      * @return PhpRenderer
      */
     public function setFilterChain(FilterChain $filters)
@@ -423,6 +487,8 @@ class PhpRenderer implements Renderer, TreeRendererInterface
 
     /**
      * Retrieve filter chain for post-filtering script content
+     *
+     * @deprecated Since 2.40.0. This method will be removed in 3.0 without replacement.
      *
      * @return FilterChain
      */
@@ -473,7 +539,7 @@ class PhpRenderer implements Renderer, TreeRendererInterface
             unset($options);
 
             // Give view model awareness via ViewModel helper
-            $helper = $this->plugin('view_model');
+            $helper = $this->plugin(ViewModel::class);
             $helper->setCurrent($model);
 
             $values = $model->getVariables();
@@ -507,7 +573,7 @@ class PhpRenderer implements Renderer, TreeRendererInterface
         $this->__content = '';
         while ($this->__template = array_pop($this->__templates)) {
             $this->__file = $this->resolver($this->__template);
-            if (! $this->__file) {
+            if (! is_string($this->__file)) {
                 throw new Exception\RuntimeException(sprintf(
                     '%s: Unable to render template "%s"; resolver could not resolve to a file',
                     __METHOD__,
@@ -523,7 +589,7 @@ class PhpRenderer implements Renderer, TreeRendererInterface
                 throw $ex;
             }
 
-            if ($includeReturn === false && empty($this->__content)) {
+            if ($includeReturn === false && $this->__content === '') {
                 throw new Exception\UnexpectedValueException(sprintf(
                     '%s: Unable to render template "%s"; file include failed',
                     __METHOD__,
@@ -549,6 +615,9 @@ class PhpRenderer implements Renderer, TreeRendererInterface
      * It is then up to the developer to render the children from within the
      * view script.
      *
+     * @deprecated Since 2.40.0. This method will be removed in 3.0 without replacement.
+     *             Look at {@link TreeRendererInterface} for further information.
+     *
      * @param  bool $renderTrees
      * @return PhpRenderer
      */
@@ -561,6 +630,9 @@ class PhpRenderer implements Renderer, TreeRendererInterface
     /**
      * Can we render trees, or are we configured to do so?
      *
+     * @deprecated  Since 2.40.0. This method will be removed in 3.0 without replacement.
+     *              Look at {@link TreeRendererInterface} for further information.
+     *
      * @return bool
      */
     public function canRenderTrees()
@@ -571,7 +643,11 @@ class PhpRenderer implements Renderer, TreeRendererInterface
     /**
      * Add a template to the stack
      *
-     * @param  string $template
+     * @deprecated Since 2.40.0. In version 3.0, the PHP Renderer will only be capable of rendering a single template at
+     *             a time, and the renderer instance will not be exposed to the view template, therefore this method
+     *             will be removed without replacement.
+     *
+     * @param string $template
      * @return PhpRenderer
      */
     public function addTemplate($template)

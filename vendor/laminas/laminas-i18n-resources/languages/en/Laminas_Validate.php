@@ -1,10 +1,6 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-i18n-resources for the canonical source repository
- * @copyright https://github.com/laminas/laminas-i18n-resources/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-i18n-resources/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 /**
  * EN-Revision: 16.Jun.2015
@@ -265,6 +261,13 @@ return [
     // Laminas\Validator\NotEmpty
     "Value is required and can't be empty" => "Value is required and can't be empty",
     "Invalid type given. String, integer, float, boolean or array expected" => "Invalid type given. String, integer, float, boolean or array expected",
+
+    // Laminas\Validator\NumberComparison
+    "Expected a numeric value" => "Expected a numeric value",
+    "Values must be greater than or equal to %min%. Received \"%value%\"" => "Values must be greater than or equal to %min%. Received \"%value%\"",
+    "Values must be greater than %min%. Received \"%value%\"" => "Values must be greater than %min%. Received \"%value%\"",
+    "Values must be less than or equal to %max%. Received \"%value%\"" => "Values must be less than or equal to %max%. Received \"%value%\"",
+    "Values must be less than %max%. Received \"%value%\"" => "Values must be less than %max%. Received \"%value%\"",
 
     // Laminas\Validator\Regex
     "Invalid type given. String, integer or float expected" => "Invalid type given. String, integer or float expected",

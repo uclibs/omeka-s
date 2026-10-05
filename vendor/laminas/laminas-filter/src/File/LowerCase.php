@@ -7,13 +7,16 @@ namespace Laminas\Filter\File;
 use Laminas\Filter\Exception;
 use Laminas\Filter\StringToLower;
 
+use function assert;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
 use function is_array;
 use function is_scalar;
+use function is_string;
 use function is_writable;
 
+/** @final */
 class LowerCase extends StringToLower
 {
     /**
@@ -21,8 +24,8 @@ class LowerCase extends StringToLower
      *
      * Does a lowercase on the content of the given file
      *
-     * @param  string|array $value Full path of file to change or $_FILES data array
-     * @return string|array The given $value
+     * @param  mixed $value Full path of file to change or $_FILES data array
+     * @return string|mixed The given $value
      * @throws Exception\InvalidArgumentException
      * @throws Exception\RuntimeException
      */
@@ -44,6 +47,8 @@ class LowerCase extends StringToLower
             $value        = $value['tmp_name'];
         }
 
+        assert(is_string($value));
+
         if (! file_exists($value)) {
             throw new Exception\InvalidArgumentException("File '$value' not found");
         }
@@ -53,14 +58,14 @@ class LowerCase extends StringToLower
         }
 
         $content = file_get_contents($value);
-        if (! $content) {
+        if ($content === false) {
             throw new Exception\RuntimeException("Problem while reading file '$value'");
         }
 
         $content = parent::filter($content);
         $result  = file_put_contents($value, $content);
 
-        if (! $result) {
+        if ($result === false) {
             throw new Exception\RuntimeException("Problem while writing file '$value'");
         }
 

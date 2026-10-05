@@ -9,7 +9,6 @@ use IntlDateFormatter;
 use Laminas\Form\Exception;
 use Locale;
 
-use function assert;
 use function extension_loaded;
 use function method_exists;
 use function preg_split;
@@ -75,7 +74,7 @@ abstract class AbstractFormDateSelect extends AbstractHelper
     {
         $pattern    = $this->getPattern();
         $pregResult = preg_split(
-            "/([ -,.\/]*(?:'[a-zA-Z]+')*[ -,.\/]+)/",
+            "/([ \-,.\/]*(?:'[a-zA-Z]+')*[ \-,.\/]+)/",
             $pattern,
             -1,
             PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY
@@ -83,11 +82,12 @@ abstract class AbstractFormDateSelect extends AbstractHelper
 
         $result = [];
         foreach ($pregResult as $value) {
-            if (stripos($value, "'") === false && stripos($value, 'd') !== false) {
+            $noDelimiter = stripos($value, "'") === false;
+            if ($noDelimiter && stripos($value, 'd') !== false) {
                 $result['day'] = $value;
-            } elseif (stripos($value, "'") === false && stripos($value, 'm') !== false) {
+            } elseif ($noDelimiter && stripos($value, 'm') !== false) {
                 $result['month'] = $value;
-            } elseif (stripos($value, "'") === false && stripos($value, 'y') !== false) {
+            } elseif ($noDelimiter && stripos($value, 'y') !== false) {
                 $result['year'] = $value;
             } elseif ($renderDelimiters) {
                 $result[] = str_replace("'", '', $value);
@@ -122,6 +122,10 @@ abstract class AbstractFormDateSelect extends AbstractHelper
             $dateType = IntlDateFormatter::LONG;
         }
 
+        if ($this->dateType !== $dateType) {
+            $this->pattern = null;
+        }
+
         $this->dateType = $dateType;
 
         return $this;
@@ -142,7 +146,12 @@ abstract class AbstractFormDateSelect extends AbstractHelper
      */
     public function setLocale(string $locale)
     {
+        if ($this->locale !== $locale) {
+            $this->pattern = null;
+        }
+
         $this->locale = $locale;
+
         return $this;
     }
 
@@ -166,14 +175,6 @@ abstract class AbstractFormDateSelect extends AbstractHelper
      */
     protected function getMonthsOptions(string $pattern): array
     {
-        $keyFormatter   = new IntlDateFormatter(
-            $this->getLocale(),
-            IntlDateFormatter::NONE,
-            IntlDateFormatter::NONE,
-            null,
-            null,
-            'MM'
-        );
         $valueFormatter = new IntlDateFormatter(
             $this->getLocale(),
             IntlDateFormatter::NONE,
@@ -186,7 +187,7 @@ abstract class AbstractFormDateSelect extends AbstractHelper
 
         $result = [];
         for ($month = 1; $month <= 12; $month++) {
-            $key          = $keyFormatter->format($date->getTimestamp());
+            $key          = $date->format('m');
             $value        = $valueFormatter->format($date->getTimestamp());
             $result[$key] = $value;
 
@@ -201,13 +202,13 @@ abstract class AbstractFormDateSelect extends AbstractHelper
      * NOTE: we don't use a pattern for years, as years written as two digits can lead to hard to
      * read date for users, so we only use four digits years
      *
-     * @return array
+     * @return array<int, string>
      */
     protected function getYearsOptions(int $minYear, int $maxYear): array
     {
         $result = [];
         for ($i = $maxYear; $i >= $minYear; --$i) {
-            $result[$i] = $i;
+            $result[$i] = (string) $i;
         }
 
         return $result;
@@ -222,12 +223,13 @@ abstract class AbstractFormDateSelect extends AbstractHelper
             return $this->selectHelper;
         }
 
-        if (method_exists($this->view, 'plugin')) {
-            $selectHelper = $this->view->plugin('formselect');
-            assert($selectHelper instanceof FormSelect);
-            $this->selectHelper = $selectHelper;
+        if (null !== $this->view && method_exists($this->view, 'plugin')) {
+            $this->selectHelper = $this->view->plugin('formselect');
         }
-        assert(null !== $this->selectHelper);
+
+        if (null === $this->selectHelper) {
+            $this->selectHelper = new FormSelect();
+        }
 
         return $this->selectHelper;
     }

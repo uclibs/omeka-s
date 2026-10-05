@@ -11,14 +11,24 @@ use Laminas\Validator\ValidatorInterface;
 
 use function assert;
 use function is_array;
+use function is_iterable;
+use function trigger_error;
 
+use const E_USER_DEPRECATED;
+
+/**
+ * @psalm-type ValueOptionSpec = array<string, string>|list<array{
+ *     label: non-empty-string,
+ *     value: non-empty-string,
+ *     selected?: bool,
+ *     disabled?: bool,
+ *     attributes?: array<string, scalar|null>,
+ *     label_attributes?: array<string, scalar|null>,
+ * }>
+ */
 class MultiCheckbox extends Checkbox
 {
-    /**
-     * Seed attributes
-     *
-     * @var array
-     */
+    /** @var array<string, scalar|null>  */
     protected $attributes = [
         'type' => 'multi_checkbox',
     ];
@@ -29,14 +39,14 @@ class MultiCheckbox extends Checkbox
     /** @var bool */
     protected $useHiddenElement = false;
 
-    /** @var string */
-    protected $uncheckedValue = '';
+    /** @var null|string */
+    protected $uncheckedValue;
 
-    /** @var array */
+    /** @var ValueOptionSpec */
     protected $valueOptions = [];
 
     /**
-     * @return array
+     * @return ValueOptionSpec
      */
     public function getValueOptions(): array
     {
@@ -44,7 +54,7 @@ class MultiCheckbox extends Checkbox
     }
 
     /**
-     * @param  array $options
+     * @param ValueOptionSpec $options
      * @return $this
      */
     public function setValueOptions(array $options)
@@ -62,6 +72,11 @@ class MultiCheckbox extends Checkbox
     }
 
     /**
+     * Unset a value option
+     *
+     * This method will only unset a value option when the element was created with a simple array of key-value pairs
+     * for value options, for example ['value1' => 'label1', 'value2' => 'label2']
+     *
      * @return $this
      */
     public function unsetValueOption(string $key)
@@ -100,17 +115,16 @@ class MultiCheckbox extends Checkbox
         return $this;
     }
 
-    /**
-     * Set a single element attribute
-     *
-     * @param  mixed  $value
-     * @return $this
-     */
+    /** @inheritDoc */
     public function setAttribute(string $key, $value)
     {
-        // Do not include the options in the list of attributes
-        // TODO: Deprecate this
-        if ($key === 'options') {
+        /** @psalm-suppress DocblockTypeContradiction */
+        if ($key === 'options' && is_iterable($value)) {
+            trigger_error(
+                'Providing multi-checkbox value options via attributes is deprecated and will be removed in '
+                . 'version 4.0 of this library',
+                E_USER_DEPRECATED,
+            );
             $this->setValueOptions($value);
             return $this;
         }

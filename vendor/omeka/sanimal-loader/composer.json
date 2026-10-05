@@ -1,0 +1,51 @@
+{
+    "name": "omeka/sanimal-loader",
+    "description": "Autoloading and plugin loading strategies (fork)",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "laminas",
+        "loader"
+    ],
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "platform": {
+            "php": "8.0"
+        }
+    },
+    "replace": {
+        "laminas/laminas-loader": "2.12.0"
+    },
+    "require": {
+        "php": "^8.0.0"
+    },
+    "require-dev": {
+        "laminas/laminas-coding-standard": "~2.4.0",
+        "phpunit/phpunit": "^9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Laminas\\Loader\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "LaminasTest\\Loader\\": "test/"
+        }
+    },
+    "scripts": {
+        "check": [
+            "@cs-check",
+            "@test"
+        ],
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "test": "phpunit --colors=always",
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
+    },
+    "conflict": {
+        "zendframework/zend-loader": "*"
+    }
+}

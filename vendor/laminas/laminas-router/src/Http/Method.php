@@ -23,13 +23,6 @@ use function strtoupper;
 class Method implements RouteInterface
 {
     /**
-     * Verb to match.
-     *
-     * @var string
-     */
-    protected $verb;
-
-    /**
      * Default values.
      *
      * @var array
@@ -37,14 +30,25 @@ class Method implements RouteInterface
     protected $defaults;
 
     /**
+     * @internal
+     * @deprecated Since 3.9.0 This property will be removed or made private in version 4.0
+     *
+     * @var int|null
+     */
+    public $priority;
+
+    /**
      * Create a new method route.
      *
      * @param  string $verb
-     * @param  array  $defaults
      */
-    public function __construct($verb, array $defaults = [])
-    {
-        $this->verb     = $verb;
+    public function __construct(
+        /**
+         * Verb to match.
+         */
+        protected $verb,
+        array $defaults = []
+    ) {
         $this->defaults = $defaults;
     }
 
@@ -53,7 +57,7 @@ class Method implements RouteInterface
      *
      * @see    \Laminas\Router\RouteInterface::factory()
      *
-     * @param  array|Traversable $options
+     * @param  iterable $options
      * @return Method
      * @throws Exception\InvalidArgumentException
      */
@@ -108,8 +112,6 @@ class Method implements RouteInterface
      *
      * @see    \Laminas\Router\RouteInterface::assemble()
      *
-     * @param  array $params
-     * @param  array $options
      * @return mixed
      */
     public function assemble(array $params = [], array $options = [])

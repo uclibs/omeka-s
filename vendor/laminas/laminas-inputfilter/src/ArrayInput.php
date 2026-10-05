@@ -1,34 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Laminas\InputFilter;
 
-use function gettype;
-use function is_array;
-use function sprintf;
+use Laminas\Validator\IsArray;
 
+use function array_map;
+use function assert;
+use function is_array;
+
+/** @final */
 class ArrayInput extends Input
 {
-    /** @var array */
+    /**
+     * @deprecated since 2.30.1 The default value should be null as in parent `Input`
+     *
+     * @var mixed
+     */
     protected $value = [];
 
     /**
-     * @param  array $value
-     * @throws Exception\InvalidArgumentException
-     * @return Input
-     */
-    public function setValue($value)
-    {
-        if (! is_array($value)) {
-            throw new Exception\InvalidArgumentException(sprintf(
-                'Value must be an array, %s given.',
-                gettype($value)
-            ));
-        }
-        return parent::setValue($value);
-    }
-
-    /**
-     * {@inheritdoc}
+     * @deprecated since 2.30.1 Once the default value is null, this method is no longer required
+     *
+     * @inheritDoc
      */
     public function resetValue()
     {
@@ -37,23 +32,22 @@ class ArrayInput extends Input
         return $this;
     }
 
-    /**
-     * @return array
-     */
+    /** @inheritDoc */
     public function getValue()
     {
-        $filter = $this->getFilterChain();
-        $result = [];
-        foreach ($this->value as $key => $value) {
-            $result[$key] = $filter->filter($value);
+        if (! is_array($this->value)) {
+            return $this->value;
         }
-        return $result;
+
+        $filter = $this->getFilterChain();
+
+        return array_map(
+            static fn (mixed $value): mixed => $filter->filter($value),
+            $this->value,
+        );
     }
 
-    /**
-     * @param  mixed $context Extra "context" to provide the validator
-     * @return bool
-     */
+    /** @inheritDoc */
     public function isValid($context = null)
     {
         $hasValue    = $this->hasValue();
@@ -72,11 +66,23 @@ class ArrayInput extends Input
             return false;
         }
 
+        if (! $hasValue && ! $required) {
+            return true;
+        }
+
         if (! $this->continueIfEmpty() && ! $this->allowEmpty()) {
             $this->injectNotEmptyValidator();
         }
+
+        $values = $this->getValue();
+
+        if (! is_array($values)) {
+            $this->errorMessage = $this->prepareNotArrayFailureMessage();
+
+            return false;
+        }
+
         $validator = $this->getValidatorChain();
-        $values    = $this->getValue();
         $result    = true;
 
         if ($required && empty($values)) {
@@ -107,5 +113,24 @@ class ArrayInput extends Input
         }
 
         return $result;
+    }
+
+    /** @return array<string, string> */
+    private function prepareNotArrayFailureMessage(): array
+    {
+        $chain   = $this->getValidatorChain();
+        $isArray = $chain->plugin(IsArray::class);
+
+        foreach ($chain->getValidators() as $validator) {
+            if ($validator['instance'] instanceof IsArray) {
+                $isArray = $validator['instance'];
+                break;
+            }
+        }
+
+        $result = $isArray->isValid($this->getValue());
+        assert($result === false);
+
+        return $isArray->getMessages();
     }
 }

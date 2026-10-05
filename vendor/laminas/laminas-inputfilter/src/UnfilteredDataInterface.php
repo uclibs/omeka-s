@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Laminas\InputFilter;
 
 /**
@@ -8,12 +10,12 @@ namespace Laminas\InputFilter;
 interface UnfilteredDataInterface
 {
     /**
-     * @return array|object
+     * @return array<array-key, mixed>
      */
     public function getUnfilteredData();
 
     /**
-     * @param array|object $data
+     * @param array<array-key, mixed> $data
      * @return $this
      */
     public function setUnfilteredData($data);

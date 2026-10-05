@@ -12,11 +12,7 @@ use Laminas\Validator\ValidatorInterface;
 
 class Url extends Element implements InputProviderInterface
 {
-    /**
-     * Seed attributes
-     *
-     * @var array
-     */
+    /** @var array<string, scalar|null>  */
     protected $attributes = [
         'type' => 'url',
     ];
@@ -43,12 +39,11 @@ class Url extends Element implements InputProviderInterface
      *
      * Attaches an uri validator.
      *
-     * @return array
+     * @inheritDoc
      */
     public function getInputSpecification(): array
     {
-        return [
-            'name'       => $this->getName(),
+        $spec = [
             'required'   => true,
             'filters'    => [
                 ['name' => StringTrim::class],
@@ -57,5 +52,12 @@ class Url extends Element implements InputProviderInterface
                 $this->getValidator(),
             ],
         ];
+
+        $name = $this->getName();
+        if ($name !== null) {
+            $spec['name'] = $name;
+        }
+
+        return $spec;
     }
 }

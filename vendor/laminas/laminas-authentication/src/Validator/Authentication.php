@@ -1,10 +1,6 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-authentication for the canonical source repository
- * @copyright https://github.com/laminas/laminas-authentication/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-authentication/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\Authentication\Validator;
 
@@ -16,8 +12,12 @@ use Laminas\Stdlib\ArrayUtils;
 use Laminas\Validator\AbstractValidator;
 use Traversable;
 
+use function array_key_exists;
+use function gettype;
 use function is_array;
+use function is_object;
 use function is_string;
+use function sprintf;
 
 /**
  * Authentication Validator
@@ -26,19 +26,21 @@ class Authentication extends AbstractValidator
 {
     /**
      * Error codes
+     *
      * @const string
      */
-    const IDENTITY_NOT_FOUND = 'identityNotFound';
-    const IDENTITY_AMBIGUOUS = 'identityAmbiguous';
-    const CREDENTIAL_INVALID = 'credentialInvalid';
-    const UNCATEGORIZED      = 'uncategorized';
-    const GENERAL            = 'general';
+    public const IDENTITY_NOT_FOUND = 'identityNotFound';
+    public const IDENTITY_AMBIGUOUS = 'identityAmbiguous';
+    public const CREDENTIAL_INVALID = 'credentialInvalid';
+    public const UNCATEGORIZED      = 'uncategorized';
+    public const GENERAL            = 'general';
 
     /**
      * Authentication\Result codes mapping
+     *
      * @const array
      */
-    const CODE_MAP = [
+    public const CODE_MAP = [
         Result::FAILURE_IDENTITY_NOT_FOUND => self::IDENTITY_NOT_FOUND,
         Result::FAILURE_CREDENTIAL_INVALID => self::CREDENTIAL_INVALID,
         Result::FAILURE_IDENTITY_AMBIGUOUS => self::IDENTITY_AMBIGUOUS,
@@ -47,12 +49,14 @@ class Authentication extends AbstractValidator
 
     /**
      * Authentication\Result codes mapping configurable overrides
+     *
      * @var string[]
      */
     protected $codeMap = [];
 
     /**
      * Error Messages
+     *
      * @var array
      */
     protected $messageTemplates = [
@@ -65,24 +69,28 @@ class Authentication extends AbstractValidator
 
     /**
      * Authentication Adapter
+     *
      * @var null|ValidatableAdapterInterface
      */
     protected $adapter;
 
     /**
      * Identity (or field)
+     *
      * @var string
      */
     protected $identity;
 
     /**
      * Credential (or field)
+     *
      * @var string
      */
     protected $credential;
 
     /**
      * Authentication Service
+     *
      * @var null|AuthenticationService
      */
     protected $service;
@@ -90,7 +98,7 @@ class Authentication extends AbstractValidator
     /**
      * Sets validator options
      *
-     * @param array|Traversable $options
+     * @param array<string, mixed>|Traversable<string, mixed> $options
      */
     public function __construct($options = null)
     {
@@ -141,7 +149,6 @@ class Authentication extends AbstractValidator
     /**
      * Set Adapter
      *
-     * @param ValidatableAdapterInterface $adapter
      * @return self Provides a fluent interface
      */
     public function setAdapter(ValidatableAdapterInterface $adapter)
@@ -209,7 +216,6 @@ class Authentication extends AbstractValidator
     /**
      * Set Service
      *
-     * @param AuthenticationService $service
      * @return self Provides a fluent interface
      */
     public function setService(AuthenticationService $service)
@@ -290,10 +296,10 @@ class Authentication extends AbstractValidator
 
     /**
      * @return ValidatableAdapterInterface
-     * @throws Exception\RuntimeException if no adapter present in
-     *     authentication service
-     * @throws Exception\RuntimeException if adapter present in authentication
-     *     service is not a ValidatableAdapterInterface instance
+     * @throws Exception\RuntimeException If no adapter present in
+     *     authentication service.
+     * @throws Exception\RuntimeException If adapter present in authentication
+     *     service is not a ValidatableAdapterInterface instance.
      */
     private function getAdapterFromAuthenticationService()
     {
@@ -310,7 +316,7 @@ class Authentication extends AbstractValidator
             throw new Exception\RuntimeException(sprintf(
                 'Adapter must be an instance of %s; %s given',
                 ValidatableAdapterInterface::class,
-                is_object($adapter) ? get_class($adapter) : gettype($adapter)
+                is_object($adapter) ? $adapter::class : gettype($adapter)
             ));
         }
 

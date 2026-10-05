@@ -9,7 +9,6 @@ use Laminas\Form\Exception;
 use Laminas\Form\LabelAwareInterface;
 
 use function array_merge;
-use function get_class;
 use function gettype;
 use function is_array;
 use function is_object;
@@ -62,14 +61,8 @@ class FormLabel extends AbstractHelper
                 );
             }
 
-            if (null !== ($translator = $this->getTranslator())) {
-                $label = $translator->translate($label, $this->getTranslatorTextDomain());
-            }
-
-            if (! $element instanceof LabelAwareInterface || ! $element->getLabelOption('disable_html_escape')) {
-                $escapeHtmlHelper = $this->getEscapeHtmlHelper();
-                $label            = $escapeHtmlHelper($label);
-            }
+            $label = $this->translateLabel($label);
+            $label = $this->escapeLabel($element, $label);
         }
 
         if ($label && $labelContent) {
@@ -113,7 +106,7 @@ class FormLabel extends AbstractHelper
             throw new Exception\InvalidArgumentException(sprintf(
                 '%s expects an array or Laminas\Form\ElementInterface instance; received "%s"',
                 __METHOD__,
-                is_object($attributesOrElement) ? get_class($attributesOrElement) : gettype($attributesOrElement)
+                is_object($attributesOrElement) ? $attributesOrElement::class : gettype($attributesOrElement)
             ));
         }
 

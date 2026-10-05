@@ -14,9 +14,9 @@ use Traversable;
 
 use function assert;
 use function class_exists;
-use function get_class;
 use function gettype;
 use function is_array;
+use function is_iterable;
 use function is_object;
 use function is_string;
 use function method_exists;
@@ -133,8 +133,6 @@ class Factory
 
     /**
      * Create an element
-     *
-     * @param  array $spec
      */
     public function createElement(array $spec): ElementInterface
     {
@@ -147,8 +145,6 @@ class Factory
 
     /**
      * Create a fieldset
-     *
-     * @param  array $spec
      */
     public function createFieldset(array $spec): FieldsetInterface
     {
@@ -161,8 +157,6 @@ class Factory
 
     /**
      * Create a form
-     *
-     * @param  array $spec
      */
     public function createForm(array $spec): FormInterface
     {
@@ -197,11 +191,11 @@ class Factory
             $element->setName($name);
         }
 
-        if (is_array($options) || $options instanceof Traversable) {
+        if (is_iterable($options)) {
             $element->setOptions($options);
         }
 
-        if (is_array($attributes) || $attributes instanceof Traversable) {
+        if (is_iterable($attributes)) {
             $element->setAttributes($attributes);
         }
 
@@ -307,7 +301,7 @@ class Factory
             throw new Exception\InvalidArgumentException(sprintf(
                 '%s expects an array, or object implementing Traversable or ArrayAccess; received "%s"',
                 $method,
-                is_object($spec) ? get_class($spec) : gettype($spec)
+                is_object($spec) ? $spec::class : gettype($spec)
             ));
         }
 

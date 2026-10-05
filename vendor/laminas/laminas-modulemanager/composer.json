@@ -16,24 +16,34 @@
         "forum": "https://discourse.laminas.dev"
     },
     "config": {
-        "sort-packages": true
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "sort-packages": true,
+        "platform": {
+            "php": "8.1.99"
+        }
     },
     "extra": {
     },
     "require": {
-        "php": "^7.3 || ~8.0.0 || ~8.1.0",
-        "brick/varexporter": "^0.3.2",
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+        "brick/varexporter": "^0.3.2 || ^0.4 || ^0.5 || ^0.6",
         "laminas/laminas-config": "^3.7",
         "laminas/laminas-eventmanager": "^3.4",
         "laminas/laminas-stdlib": "^3.6",
         "webimpress/safe-writer": "^1.0.2 || ^2.1"
     },
     "require-dev": {
-        "laminas/laminas-coding-standard": "^2.3",
-        "laminas/laminas-loader": "^2.8",
-        "laminas/laminas-mvc": "^3.1.1",
-        "laminas/laminas-servicemanager": "^3.7",
-        "phpunit/phpunit": "^9.5.5"
+        "laminas/laminas-coding-standard": "~3.1.0",
+        "laminas/laminas-loader": "^2.11",
+        "laminas/laminas-mvc": "^3.7.0",
+        "laminas/laminas-servicemanager": "^3.23.0",
+        "phpunit/phpunit": "^10.5.38",
+        "psalm/plugin-phpunit": "^0.19.5",
+        "vimeo/psalm": "^6.13.1",
+        "amphp/dns": "^1.24 || ^2.1.2",
+        "amphp/socket": "^1.2.1 || ^2.3.1"
     },
     "suggest": {
         "laminas/laminas-console": "Laminas\\Console component",
@@ -61,9 +71,11 @@
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
         "test": "phpunit --colors=always",
+        "static-analysis": "psalm --shepherd --stats",
         "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
     },
     "conflict": {
-        "zendframework/zend-modulemanager": "*"
+        "zendframework/zend-modulemanager": "*",
+        "amphp/amp":"<2.6.4"
     }
 }

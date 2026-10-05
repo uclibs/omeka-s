@@ -15,11 +15,7 @@ use Laminas\Validator\ValidatorInterface;
 
 class Number extends Element implements InputProviderInterface
 {
-    /**
-     * Seed attributes
-     *
-     * @var array
-     */
+    /** @var array<string, scalar|null>  */
     protected $attributes = [
         'type' => 'number',
     ];
@@ -82,17 +78,23 @@ class Number extends Element implements InputProviderInterface
      *
      * Attaches a number validator, as well as a greater than and less than validators
      *
-     * @return array
+     * @inheritDoc
      */
     public function getInputSpecification(): array
     {
-        return [
-            'name'       => $this->getName(),
+        $spec = [
             'required'   => true,
             'filters'    => [
                 ['name' => StringTrim::class],
             ],
             'validators' => $this->getValidators(),
         ];
+
+        $name = $this->getName();
+        if ($name !== null) {
+            $spec['name'] = $name;
+        }
+
+        return $spec;
     }
 }

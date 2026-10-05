@@ -3,9 +3,11 @@
 namespace DoctrineExtensions\Query\Sqlite;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
-use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
+
+use function count;
 
 /**
  * @author Vas N <phpvas@gmail.com>
@@ -17,30 +19,25 @@ class Greatest extends FunctionNode
 
     private $values = [];
 
-    /**
-     * @param Parser $parser
-     */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
         $this->field = $parser->ArithmeticExpression();
-        $lexer = $parser->getLexer();
+        $lexer       = $parser->getLexer();
 
-        while (count($this->values) < 1 ||
-            $lexer->lookahead['type'] != Lexer::T_CLOSE_PARENTHESIS) {
-            $parser->match(Lexer::T_COMMA);
+        while (
+            count($this->values) < 1 ||
+            $lexer->lookahead->type !== TokenType::T_CLOSE_PARENTHESIS
+        ) {
+            $parser->match(TokenType::T_COMMA);
             $this->values[] = $parser->ArithmeticExpression();
         }
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 
-    /**
-     * @param SqlWalker $sqlWalker
-     * @return string
-     */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         $query = 'MAX(';
 

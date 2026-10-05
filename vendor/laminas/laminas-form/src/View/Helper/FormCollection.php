@@ -7,8 +7,6 @@ namespace Laminas\Form\View\Helper;
 use Laminas\Form\Element\Collection as CollectionElement;
 use Laminas\Form\ElementInterface;
 use Laminas\Form\FieldsetInterface;
-use Laminas\Form\LabelAwareInterface;
-use Laminas\View\Helper\Doctype;
 use Laminas\View\Helper\HelperInterface;
 use RuntimeException;
 
@@ -25,7 +23,9 @@ class FormCollection extends AbstractHelper
      * @var array
      */
     protected $validTagAttributes = [
-        'name' => true,
+        'name'     => true,
+        'disabled' => true,
+        'form'     => true,
     ];
 
     /**
@@ -77,12 +77,6 @@ class FormCollection extends AbstractHelper
      */
     protected $fieldsetHelper;
 
-    /** @var array */
-    private $doctypesAllowedToHaveNameAttribute = [
-        Doctype::HTML5  => true,
-        Doctype::XHTML5 => true,
-    ];
-
     /**
      * Invoke helper as function
      *
@@ -119,6 +113,7 @@ class FormCollection extends AbstractHelper
         $templateMarkup = '';
         $elementHelper  = $this->getElementHelper();
         assert(is_callable($elementHelper));
+
         $fieldsetHelper = $this->getFieldsetHelper();
         assert(is_callable($fieldsetHelper));
 
@@ -134,48 +129,41 @@ class FormCollection extends AbstractHelper
             }
         }
 
-        // Every collection is wrapped by a fieldset if needed
-        if ($this->shouldWrap) {
-            $attributes = $element->getAttributes();
-            if (! isset($this->doctypesAllowedToHaveNameAttribute[$this->getDoctype()])) {
-                unset($attributes['name']);
-            }
-            $attributesString = $attributes !== [] ? ' ' . $this->createAttributesString($attributes) : '';
-
-            $label  = $element->getLabel();
-            $legend = '';
-
-            if (! empty($label)) {
-                if (null !== ($translator = $this->getTranslator())) {
-                    $label = $translator->translate(
-                        $label,
-                        $this->getTranslatorTextDomain()
-                    );
-                }
-
-                if (! $element instanceof LabelAwareInterface || ! $element->getLabelOption('disable_html_escape')) {
-                    $escapeHtmlHelper = $this->getEscapeHtmlHelper();
-                    $label            = $escapeHtmlHelper($label);
-                }
-
-                $legend = sprintf(
-                    $this->labelWrapper,
-                    $label
-                );
-            }
-
-            $markup = sprintf(
-                $this->wrapper,
-                $markup,
-                $legend,
-                $templateMarkup,
-                $attributesString
-            );
-        } else {
-            $markup .= $templateMarkup;
+        if (! $this->shouldWrap) {
+            return $markup . $templateMarkup;
         }
 
-        return $markup;
+        // Every collection is wrapped by a fieldset if needed
+        $attributes = $element->getAttributes();
+        if (! $this->getDoctypeHelper()->isHtml5()) {
+            unset(
+                $attributes['name'],
+                $attributes['disabled'],
+                $attributes['form']
+            );
+        }
+        $attributesString = $attributes !== [] ? ' ' . $this->createAttributesString($attributes) : '';
+
+        $label  = $element->getLabel();
+        $legend = '';
+
+        if (! empty($label)) {
+            $label = $this->translateLabel($label);
+            $label = $this->escapeLabel($element, $label);
+
+            $legend = sprintf(
+                $this->labelWrapper,
+                $label
+            );
+        }
+
+        return sprintf(
+            $this->wrapper,
+            $markup,
+            $legend,
+            $templateMarkup,
+            $attributesString
+        );
     }
 
     /**

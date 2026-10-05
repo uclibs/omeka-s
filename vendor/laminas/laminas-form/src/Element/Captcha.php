@@ -9,11 +9,9 @@ use Laminas\Filter\StringTrim;
 use Laminas\Form\Element;
 use Laminas\Form\Exception;
 use Laminas\InputFilter\InputProviderInterface;
-use Traversable;
 
-use function get_class;
 use function gettype;
-use function is_array;
+use function is_iterable;
 use function is_object;
 use function sprintf;
 
@@ -42,20 +40,20 @@ class Captcha extends Element implements InputProviderInterface
     /**
      * Set captcha
      *
-     * @param  array|Traversable|LaminasCaptcha\AdapterInterface $captcha
+     * @param  iterable<string, mixed>|LaminasCaptcha\AdapterInterface $captcha
      * @throws Exception\InvalidArgumentException
      * @return $this
      */
     public function setCaptcha($captcha)
     {
-        if (is_array($captcha) || $captcha instanceof Traversable) {
+        if (is_iterable($captcha)) {
             $captcha = LaminasCaptcha\Factory::factory($captcha);
         } elseif (! $captcha instanceof LaminasCaptcha\AdapterInterface) {
             throw new Exception\InvalidArgumentException(sprintf(
                 '%s expects either a Laminas\Captcha\AdapterInterface or specification'
                 . ' to pass to Laminas\Captcha\Factory; received "%s"',
                 __METHOD__,
-                is_object($captcha) ? get_class($captcha) : gettype($captcha)
+                is_object($captcha) ? $captcha::class : gettype($captcha)
             ));
         }
         $this->captcha = $captcha;
@@ -76,17 +74,21 @@ class Captcha extends Element implements InputProviderInterface
      *
      * Attaches the captcha as a validator.
      *
-     * @return array
+     * @inheritDoc
      */
     public function getInputSpecification(): array
     {
         $spec = [
-            'name'     => $this->getName(),
             'required' => true,
             'filters'  => [
                 ['name' => StringTrim::class],
             ],
         ];
+
+        $name = $this->getName();
+        if ($name !== null) {
+            $spec['name'] = $name;
+        }
 
         // Test that we have a captcha before adding it to the spec
         $captcha = $this->getCaptcha();

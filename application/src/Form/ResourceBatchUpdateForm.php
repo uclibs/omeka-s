@@ -1,18 +1,21 @@
 <?php
 namespace Omeka\Form;
 
+use Omeka\Form\Element\Asset;
 use Omeka\Form\Element\ItemSetSelect;
 use Omeka\Form\Element\PropertySelect;
 use Omeka\Form\Element\ResourceClassSelect;
 use Omeka\Form\Element\SiteSelect;
 use Omeka\Form\Element\ResourceSelect;
+use Omeka\Permissions\Acl;
 use Laminas\EventManager\Event;
+use Laminas\EventManager\EventManagerAwareInterface;
 use Laminas\EventManager\EventManagerAwareTrait;
 use Laminas\Form\Element;
 use Laminas\Form\Form;
 use Laminas\View\Helper\Url;
 
-class ResourceBatchUpdateForm extends Form
+class ResourceBatchUpdateForm extends Form implements EventManagerAwareInterface
 {
     use EventManagerAwareTrait;
 
@@ -20,6 +23,8 @@ class ResourceBatchUpdateForm extends Form
      * @var Url
      */
     protected $urlHelper;
+
+    protected $acl;
 
     public function init()
     {
@@ -68,7 +73,7 @@ class ResourceBatchUpdateForm extends Form
                 'id' => 'resource-template-select',
                 'class' => 'chosen-select',
                 'data-placeholder' => 'Select a template', // @translate
-                'data-api-base-url' => $urlHelper('api/default', ['resource' => 'resource_templates']),
+                'data-api-base-url' => $urlHelper('api-local/default', ['resource' => 'resource_templates']),
             ],
             'options' => [
                 'label' => 'Set template', // @translate
@@ -98,6 +103,39 @@ class ResourceBatchUpdateForm extends Form
                 'empty_option' => '[No change]', // @translate
             ],
         ]);
+
+        $this->add([
+            'name' => 'thumbnail',
+            'type' => Asset::class,
+            'attributes' => [
+                'id' => 'thumbnail',
+            ],
+            'options' => [
+                'label' => 'Set thumbnail', // @translate
+            ],
+        ]);
+
+        if ($this->getAcl()->userIsAllowed('Omeka\Entity\User', 'change-owner')) {
+            $this->add([
+                'name' => 'owner',
+                'type' => ResourceSelect::class,
+                'attributes' => [
+                    'id' => 'owner-select',
+                    'class' => 'chosen-select',
+                ],
+                'options' => [
+                    'label' => 'Set owner', // @translate
+                    'empty_option' => '[No change]', // @translate
+                    'resource_value_options' => [
+                        'resource' => 'users',
+                        'query' => [],
+                        'option_text_callback' => function ($user) {
+                            return $user->name();
+                        },
+                    ],
+                ],
+            ]);
+        }
 
         switch ($resourceType) {
             case 'item':
@@ -212,6 +250,15 @@ class ResourceBatchUpdateForm extends Form
             ],
         ]);
 
+        // This hidden element manages the elements "convert_data_types" added in the view.
+        $this->add([
+            'name' => 'convert_data_types',
+            'type' => Element\Hidden::class,
+            'attributes' => [
+                'value' => '',
+            ],
+        ]);
+
         $addEvent = new Event('form.add_elements', $this);
         $this->getEventManager()->triggerEvent($addEvent);
 
@@ -230,6 +277,10 @@ class ResourceBatchUpdateForm extends Form
         ]);
         $inputFilter->add([
             'name' => 'resource_class',
+            'required' => false,
+        ]);
+        $inputFilter->add([
+            'name' => 'owner',
             'required' => false,
         ]);
         $inputFilter->add([
@@ -277,6 +328,16 @@ class ResourceBatchUpdateForm extends Form
         return $this->urlHelper;
     }
 
+    public function setAcl(Acl $acl)
+    {
+        $this->acl = $acl;
+    }
+
+    public function getAcl()
+    {
+        return $this->acl;
+    }
+
     /**
      * Preprocess data to get data to replace, to remove and to append.
      *
@@ -315,6 +376,12 @@ class ResourceBatchUpdateForm extends Form
             $preData['remove']['o:resource_class'] = ['o:id' => null];
         } elseif (is_numeric($data['resource_class'])) {
             $preData['remove']['o:resource_class'] = ['o:id' => $data['resource_class']];
+        }
+        if (is_numeric($data['thumbnail'])) {
+            $preData['remove']['o:thumbnail'] = ['o:id' => $data['thumbnail']];
+        }
+        if (is_numeric($data['owner'])) {
+            $preData['remove']['o:owner'] = ['o:id' => $data['owner']];
         }
         if (isset($data['remove_from_item_set'])) {
             $preData['remove']['o:item_set'] = $data['remove_from_item_set'];
@@ -358,6 +425,9 @@ class ResourceBatchUpdateForm extends Form
                 $preData['append'][$value['property_id']][] = $valueObj;
             }
         }
+        if (isset($data['convert_data_types'])) {
+            $preData['replace']['convert_data_types'] = $data['convert_data_types'];
+        }
         if (isset($data['add_to_item_set'])) {
             $preData['append']['o:item_set'] = array_unique($data['add_to_item_set']);
         }
@@ -367,12 +437,12 @@ class ResourceBatchUpdateForm extends Form
 
         // Set remaining elements according to attribute data-collection-action.
         $processeds = [
-            'is_public', 'is_open', 'resource_template', 'resource_class',
+            'is_public', 'is_open', 'resource_template', 'resource_class', 'owner',
             'remove_from_item_set', 'add_to_item_set',
             'remove_from_sites', 'add_to_sites',
             'clear_property_values', 'set_value_visibility',
             'clear_language', 'language',
-            'csrf', 'id', 'o:id', 'value',
+            'csrf', 'id', 'o:id', 'value', 'convert_data_types',
         ];
 
         foreach ($data as $key => $value) {

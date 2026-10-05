@@ -24,7 +24,7 @@ class AclFactory implements FactoryInterface
      * @param ContainerInterface $serviceLocator
      * @return Acl
      */
-    public function __invoke(ContainerInterface $serviceLocator, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $serviceLocator, $requestedName, ?array $options = null)
     {
         $acl = new Acl;
 
@@ -195,9 +195,9 @@ class AclFactory implements FactoryInterface
         );
 
         $editorAssertion = $this->aggregate([
-                new OwnsEntityAssertion,
-                new HasSitePermissionAssertion('editor'),
-            ], AssertionAggregate::MODE_AT_LEAST_ONE);
+            new OwnsEntityAssertion,
+            new HasSitePermissionAssertion('editor'),
+        ], AssertionAggregate::MODE_AT_LEAST_ONE);
         $acl->allow(
             null,
             'Omeka\Entity\Site',
@@ -259,6 +259,7 @@ class AclFactory implements FactoryInterface
             null,
             [
                 'Omeka\Controller\Api',
+                'Omeka\Controller\ApiLocal',
                 'Omeka\Controller\Index',
                 'Omeka\Controller\Login',
                 'Omeka\Controller\Maintenance',
@@ -270,6 +271,7 @@ class AclFactory implements FactoryInterface
         $acl->allow(
             null,
             [
+                'Omeka\Api\Adapter\ResourceAdapter',
                 'Omeka\Api\Adapter\ItemSetAdapter',
                 'Omeka\Api\Adapter\ItemAdapter',
                 'Omeka\Api\Adapter\MediaAdapter',
@@ -289,7 +291,6 @@ class AclFactory implements FactoryInterface
         $acl->allow(
             null,
             [
-                'Omeka\Api\Adapter\ResourceAdapter',
                 'Omeka\Entity\ItemSet',
                 'Omeka\Entity\Item',
                 'Omeka\Entity\Media',
@@ -437,7 +438,7 @@ class AclFactory implements FactoryInterface
         );
         $acl->allow(
             'author',
-           'Omeka\Controller\Admin\ResourceTemplate',
+            'Omeka\Controller\Admin\ResourceTemplate',
             ['add-new-property-row', 'import']
         );
         $acl->allow(
@@ -620,6 +621,7 @@ class AclFactory implements FactoryInterface
             [
                 'Omeka\Controller\Admin\Item',
                 'Omeka\Controller\Admin\ItemSet',
+                'Omeka\Controller\Admin\Media',
             ],
             ['sidebar-select', 'search']
         );
@@ -797,6 +799,7 @@ class AclFactory implements FactoryInterface
             [
                 'Omeka\Controller\Admin\Item',
                 'Omeka\Controller\Admin\ItemSet',
+                'Omeka\Controller\Admin\Media',
             ],
             ['sidebar-select', 'search']
         );

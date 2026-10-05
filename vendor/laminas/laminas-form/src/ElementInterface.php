@@ -31,10 +31,9 @@ interface ElementInterface
     /**
      * Set a single option for an element
      *
-     * @param  mixed $value
      * @return $this
      */
-    public function setOption(string $key, $value);
+    public function setOption(string $key, mixed $value);
 
     /**
      * get the defined options
@@ -53,15 +52,15 @@ interface ElementInterface
     /**
      * Set a single element attribute
      *
-     * @param  mixed $value
+     * @param scalar|null $value
      * @return $this
      */
-    public function setAttribute(string $key, $value);
+    public function setAttribute(string $key, mixed $value);
 
     /**
      * Retrieve a single element attribute
      *
-     * @return mixed
+     * @return scalar|null
      */
     public function getAttribute(string $key);
 
@@ -75,22 +74,24 @@ interface ElementInterface
      *
      * Implementation will decide if this will overwrite or merge.
      *
+     * @param iterable<string, scalar|null> $arrayOrTraversable
      * @return $this
      */
     public function setAttributes(iterable $arrayOrTraversable);
 
     /**
      * Retrieve all attributes at once
+     *
+     * @return array<string, scalar|null>
      */
     public function getAttributes(): array;
 
     /**
      * Set the value of the element
      *
-     * @param  mixed $value
      * @return $this
      */
-    public function setValue($value);
+    public function setValue(mixed $value);
 
     /**
      * Retrieve the element value

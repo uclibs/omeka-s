@@ -20,17 +20,11 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute]
 final class Attributes
 {
-    /** @var array */
-    protected $attributes;
-
     /**
      * Receive and process the contents of an annotation
-     *
-     * @param array $attributes
      */
-    public function __construct(array $attributes)
+    public function __construct(private array $attributes)
     {
-        $this->attributes = $attributes;
     }
 
     /**

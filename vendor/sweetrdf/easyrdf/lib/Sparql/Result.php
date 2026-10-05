@@ -50,10 +50,10 @@ use EasyRdf\XMLParser;
 class Result extends \ArrayIterator
 {
     /** The SPARQL Results type (either 'boolean' or 'bindings') */
-    private $type = null;
+    private $type;
 
     /** The value of a boolean result */
-    private $boolean = null;
+    private $boolean;
 
     /** Keep track of the XML parser state */
     private $fields = [];
@@ -73,7 +73,7 @@ class Result extends \ArrayIterator
      * @param string $data     The SPARQL result body
      * @param string $mimeType The MIME type of the result
      *
-     * @throws \EasyRdf\Exception
+     * @throws Exception
      */
     public function __construct($data, $mimeType)
     {

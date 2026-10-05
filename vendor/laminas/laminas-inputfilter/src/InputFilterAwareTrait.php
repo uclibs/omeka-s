@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Laminas\InputFilter;
 
 trait InputFilterAwareTrait
 {
-    /** @var InputFilterInterface */
+    /** @var InputFilterInterface|null */
     protected $inputFilter;
 
     /**

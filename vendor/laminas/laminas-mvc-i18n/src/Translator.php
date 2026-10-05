@@ -1,25 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Laminas\Mvc\I18n;
 
 use Laminas\I18n\Translator\TranslatorInterface as I18nTranslatorInterface;
 use Laminas\Validator\Translator\TranslatorInterface as ValidatorTranslatorInterface;
 
+use function call_user_func_array;
+use function method_exists;
+use function sprintf;
+
 class Translator implements
     I18nTranslatorInterface,
     ValidatorTranslatorInterface
 {
-    /**
-     * @var I18nTranslatorInterface
-     */
-    protected $translator;
-
-    /**
-     * @param I18nTranslatorInterface $translator
-     */
-    public function __construct(I18nTranslatorInterface $translator)
+    public function __construct(protected I18nTranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     /**
@@ -29,6 +26,7 @@ class Translator implements
      * with pre-2.3.0 code.
      *
      * @deprecated
+     *
      * @param string $method
      * @param array $args
      * @return mixed
@@ -70,7 +68,7 @@ class Translator implements
      *
      * @param string $singular
      * @param string $plural
-     * @param string $number
+     * @param int $number
      * @param string $textDomain
      * @param string $locale
      * @return string

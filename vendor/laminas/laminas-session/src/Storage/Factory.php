@@ -14,11 +14,9 @@ use Traversable;
 use function class_exists;
 use function class_implements;
 use function class_parents;
-use function get_class;
-use function gettype;
+use function get_debug_type;
 use function in_array;
 use function is_array;
-use function is_object;
 use function is_string;
 use function sprintf;
 
@@ -38,7 +36,7 @@ abstract class Factory
             throw new Exception\InvalidArgumentException(sprintf(
                 '%s expects the $type argument to be a string class name; received "%s"',
                 __METHOD__,
-                is_object($type) ? get_class($type) : gettype($type)
+                get_debug_type($type)
             ));
         }
         if (! class_exists($type)) {
@@ -60,7 +58,7 @@ abstract class Factory
             throw new Exception\InvalidArgumentException(sprintf(
                 '%s expects the $options argument to be an array or Traversable; received "%s"',
                 __METHOD__,
-                is_object($options) ? get_class($options) : gettype($options)
+                get_debug_type($options)
             ));
         }
 
@@ -99,7 +97,7 @@ abstract class Factory
                 throw new Exception\InvalidArgumentException(sprintf(
                     '%s expects the "input" option to be an array; received "%s"',
                     $type,
-                    is_object($options['input']) ? get_class($options['input']) : gettype($options['input'])
+                    get_debug_type($options['input'])
                 ));
             }
             $input = $options['input'];
@@ -114,9 +112,7 @@ abstract class Factory
                 throw new Exception\InvalidArgumentException(sprintf(
                     '%s expects the "iterator_class" option to be a valid class; received "%s"',
                     $type,
-                    is_object($options['iterator_class'])
-                        ? get_class($options['iterator_class'])
-                        : gettype($options['iterator_class'])
+                    get_debug_type($options['iterator_class'])
                 ));
             }
             $iteratorClass = $options['iterator_class'];
@@ -129,7 +125,6 @@ abstract class Factory
      * Create a storage object from a class extending AbstractSessionArrayStorage
      *
      * @param  string                             $type
-     * @param  array                              $options
      * @return AbstractSessionArrayStorage
      * @throws Exception\InvalidArgumentException If the input option is invalid.
      */
@@ -145,7 +140,7 @@ abstract class Factory
                 throw new Exception\InvalidArgumentException(sprintf(
                     '%s expects the "input" option to be null, an array, or to implement ArrayAccess; received "%s"',
                     $type,
-                    is_object($input) ? get_class($input) : gettype($input)
+                    get_debug_type($input)
                 ));
             }
         }

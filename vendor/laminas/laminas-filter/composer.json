@@ -22,7 +22,7 @@
             "composer/package-versions-deprecated": true
         },
         "platform": {
-            "php": "7.4.99"
+            "php": "8.1.99"
         }
     },
     "extra": {
@@ -32,20 +32,21 @@
         }
     },
     "require": {
-        "php": "^7.4 || ~8.0.0 || ~8.1.0",
-        "laminas/laminas-stdlib": "^3.6.1"
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+        "ext-mbstring": "*",
+        "laminas/laminas-servicemanager": "^3.21.0",
+        "laminas/laminas-stdlib": "^3.19.0"
     },
     "require-dev": {
-        "laminas/laminas-coding-standard": "^2.3.0",
-        "laminas/laminas-crypt": "^3.5.1",
-        "laminas/laminas-servicemanager": "^3.7.0",
-        "laminas/laminas-uri": "^2.9.1",
-        "pear/archive_tar": "^1.4.14",
-        "phpspec/prophecy-phpunit": "^2.0.1",
-        "phpunit/phpunit": "^9.5.10",
-        "psalm/plugin-phpunit": "^0.15.2",
-        "psr/http-factory": "^1.0.1",
-        "vimeo/psalm": "^4.13.1"
+        "laminas/laminas-coding-standard": "~3.0",
+        "laminas/laminas-crypt": "^3.12",
+        "laminas/laminas-i18n": "^2.28.1",
+        "laminas/laminas-uri": "^2.12",
+        "pear/archive_tar": "^1.5.0",
+        "phpunit/phpunit": "^10.5.36",
+        "psalm/plugin-phpunit": "^0.19.0",
+        "psr/http-factory": "^1.1.0",
+        "vimeo/psalm": "^5.26.1"
     },
     "conflict": {
         "laminas/laminas-validator": "<2.10.1",
@@ -54,7 +55,6 @@
     "suggest": {
         "laminas/laminas-crypt": "Laminas\\Crypt component, for encryption filters",
         "laminas/laminas-i18n": "Laminas\\I18n component for filters depending on i18n functionality",
-        "laminas/laminas-servicemanager": "Laminas\\ServiceManager component, for using the filter chain functionality",
         "laminas/laminas-uri": "Laminas\\Uri component, for the UriNormalize filter",
         "psr/http-factory-implementation": "psr/http-factory-implementation, for creating file upload instances when consuming PSR-7 in file upload filters"
     },

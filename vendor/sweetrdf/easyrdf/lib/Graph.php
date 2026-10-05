@@ -53,8 +53,8 @@ use EasyRdf\Http\Client;
 class Graph
 {
     /** The URI of the graph */
-    private $uri = null;
-    private $parsedUri = null;
+    private $uri;
+    private $parsedUri;
 
     /** Array of resources contained in the graph */
     private $resources = [];
@@ -185,9 +185,9 @@ class Graph
 
         // Parsers don't typically add a rdf:type to rdf:List, so we have to
         // do a bit of 'inference' here using properties.
-        if ('http://www.w3.org/1999/02/22-rdf-syntax-ns#nil' == $uri ||
-            isset($this->index[$uri]['http://www.w3.org/1999/02/22-rdf-syntax-ns#first']) ||
-            isset($this->index[$uri]['http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'])
+        if ('http://www.w3.org/1999/02/22-rdf-syntax-ns#nil' == $uri
+            || isset($this->index[$uri]['http://www.w3.org/1999/02/22-rdf-syntax-ns#first'])
+            || isset($this->index[$uri]['http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'])
         ) {
             return 'EasyRdf\Collection';
         }
@@ -308,7 +308,7 @@ class Graph
         $client->setMethod('GET');
 
         if ($format && 'guess' !== $format) {
-            if (false !== strpos($format, '/')) {
+            if (str_contains($format, '/')) {
                 if ($client instanceof Client) {
                     $client->setHeaders('Accept', $format);
                 } else {
@@ -323,11 +323,19 @@ class Graph
                 }
             }
         } else {
+            $acceptHeader = Format::formatAcceptHeader([
+                'application/ld+json' => 1.0,
+                'application/rdf+xml' => 0.9,
+                'text/turtle' => 0.8,
+                'application/n-quads' => 0.7,
+                'application/n-triples' => 0.7,
+            ]);
+
             // Send a list of all the formats we can parse
             if ($client instanceof Client) {
-                $client->setHeaders('Accept', Format::getHttpAcceptHeader());
+                $client->setHeaders('Accept', $acceptHeader);
             } else {
-                $client->setHeaders(['Accept' => Format::getHttpAcceptHeader()]);
+                $client->setHeaders(['Accept' => $acceptHeader]);
             }
         }
 
@@ -443,8 +451,8 @@ class Graph
             if (isset($index[$subject][$property])) {
                 if (isset($value)) {
                     foreach ($this->index[$subject][$property] as $v) {
-                        if ($v['type'] == $value['type'] &&
-                            $v['value'] == $value['value']) {
+                        if ($v['type'] == $value['type']
+                            && $v['value'] == $value['value']) {
                             $matched[] = $this->resource($subject);
                             break;
                         }
@@ -699,7 +707,7 @@ class Graph
      * @param string|array $property The name of the property (e.g. foaf:name)
      * @param string       $lang     The language to filter by (e.g. en)
      *
-     * @return \EasyRdf\Literal Literal value associated with the property
+     * @return Literal Literal value associated with the property
      */
     public function getLiteral($resource, $property, $lang = null)
     {
@@ -1265,7 +1273,7 @@ class Graph
      *
      * @param string $resource
      *
-     * @return array Array of full URIs
+     * @return array<string> Array of full URIs
      */
     public function propertyUris($resource)
     {
@@ -1479,8 +1487,6 @@ class Graph
      * may be arbitrary.
      * This method will return null if the resource has no type.
      *
-     * @param mixed $resource
-     *
      * @return \EasyRdf\Resource|null A type associated with the resource
      */
     public function typeAsResource($resource = null)
@@ -1608,28 +1614,29 @@ class Graph
      *
      * @param string|null $resource
      * @param string|null $lang
+     * @param array<non-empty-string> $labelProperties List of shortened label properties (e.g. rdfs:label)
      *
-     * @return \EasyRdf\Literal|null an instance of Literal which contains the label or null
+     * @return Literal|null an instance of Literal which contains the label or null
      */
-    public function label($resource = null, $lang = null)
+    public function label($resource = null, $lang = null, array $labelProperties = [])
     {
         $this->checkResourceParam($resource, true);
 
         if ($resource) {
-            return $this->get(
-                $resource,
-                'skos:prefLabel|rdfs:label|foaf:name|rss:title|dc:title|dc11:title',
-                'literal',
-                $lang
-            );
+            // use custom label properties if given
+            if (0 < count($labelProperties)) {
+                $props = implode('|', $labelProperties);
+            } else {
+                $props = 'skos:prefLabel|rdfs:label|foaf:name|rss:title|dc:title|dc11:title';
+            }
+
+            return $this->get($resource, $props, 'literal', $lang);
         } else {
             return null;
         }
     }
 
     /** Get the primary topic of the graph
-     *
-     * @param mixed $resource
      *
      * @return \EasyRdf\Resource|null the primary topic of the document
      */

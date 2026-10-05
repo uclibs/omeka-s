@@ -7,6 +7,7 @@ namespace Laminas\Form\View\Helper;
 use Laminas\Escaper\Exception\RuntimeException as EscaperException;
 use Laminas\Form\ElementInterface;
 use Laminas\Form\Exception\InvalidArgumentException;
+use Laminas\Form\LabelAwareInterface;
 use Laminas\I18n\View\Helper\AbstractTranslatorHelper as BaseAbstractHelper;
 use Laminas\View\Helper\Doctype;
 use Laminas\View\Helper\EscapeHtml;
@@ -20,9 +21,8 @@ use function mb_strpos;
 use function method_exists;
 use function preg_match;
 use function sprintf;
-use function strlen;
+use function str_starts_with;
 use function strtolower;
-use function substr;
 
 /**
  * Base functionality for all form view helpers
@@ -51,14 +51,15 @@ abstract class AbstractHelper extends BaseAbstractHelper
      * @var array
      */
     protected $booleanAttributes = [
-        'autofocus' => ['on' => 'autofocus', 'off' => ''],
-        'checked'   => ['on' => 'checked',   'off' => ''],
-        'disabled'  => ['on' => 'disabled',  'off' => ''],
-        'itemscope' => ['on' => 'itemscope', 'off' => ''],
-        'multiple'  => ['on' => 'multiple',  'off' => ''],
-        'readonly'  => ['on' => 'readonly',  'off' => ''],
-        'required'  => ['on' => 'required',  'off' => ''],
-        'selected'  => ['on' => 'selected',  'off' => ''],
+        'autofocus'  => ['on' => 'autofocus', 'off' => ''], // https://html.spec.whatwg.org/#attr-fe-autofocus
+        'checked'    => ['on' => 'checked',   'off' => ''], // https://html.spec.whatwg.org/#attr-input-checked
+        'disabled'   => ['on' => 'disabled',  'off' => ''], // https://html.spec.whatwg.org/#attr-fe-disabled
+        'itemscope'  => ['on' => 'itemscope', 'off' => ''], // https://html.spec.whatwg.org/#attr-itemscope
+        'multiple'   => ['on' => 'multiple',  'off' => ''], // https://html.spec.whatwg.org/#attr-input-multiple
+        'readonly'   => ['on' => 'readonly',  'off' => ''], // https://html.spec.whatwg.org/#attr-input-readonly
+        'required'   => ['on' => 'required',  'off' => ''], // https://html.spec.whatwg.org/#attr-input-required
+        'selected'   => ['on' => 'selected',  'off' => ''], // https://html.spec.whatwg.org/#attr-option-selected
+        'novalidate' => ['on' => 'novalidate', 'off' => ''], // https://html.spec.whatwg.org/#attr-fs-novalidate
     ];
 
     /**
@@ -92,80 +93,91 @@ abstract class AbstractHelper extends BaseAbstractHelper
      * @var array
      */
     protected $validGlobalAttributes = [
-        'accesskey'          => true,
-        'class'              => true,
-        'contenteditable'    => true,
-        'contextmenu'        => true,
-        'dir'                => true,
-        'draggable'          => true,
-        'dropzone'           => true,
-        'hidden'             => true,
-        'id'                 => true,
-        'itemprop'           => true,
-        'itemscope'          => true,
-        'itemtype'           => true,
-        'lang'               => true,
-        'onabort'            => true,
-        'onblur'             => true,
-        'oncanplay'          => true,
-        'oncanplaythrough'   => true,
-        'onchange'           => true,
-        'onclick'            => true,
-        'oncontextmenu'      => true,
-        'ondblclick'         => true,
-        'ondrag'             => true,
-        'ondragend'          => true,
-        'ondragenter'        => true,
-        'ondragleave'        => true,
-        'ondragover'         => true,
-        'ondragstart'        => true,
-        'ondrop'             => true,
-        'ondurationchange'   => true,
-        'onemptied'          => true,
-        'onended'            => true,
-        'onerror'            => true,
-        'onfocus'            => true,
-        'oninput'            => true,
-        'oninvalid'          => true,
-        'onkeydown'          => true,
-        'onkeypress'         => true,
-        'onkeyup'            => true,
-        'onload'             => true,
-        'onloadeddata'       => true,
-        'onloadedmetadata'   => true,
-        'onloadstart'        => true,
-        'onmousedown'        => true,
-        'onmousemove'        => true,
-        'onmouseout'         => true,
-        'onmouseover'        => true,
-        'onmouseup'          => true,
-        'onmousewheel'       => true,
-        'onpause'            => true,
-        'onplay'             => true,
-        'onplaying'          => true,
-        'onprogress'         => true,
-        'onratechange'       => true,
-        'onreadystatechange' => true,
-        'onreset'            => true,
-        'onscroll'           => true,
-        'onseeked'           => true,
-        'onseeking'          => true,
-        'onselect'           => true,
-        'onshow'             => true,
-        'onstalled'          => true,
-        'onsubmit'           => true,
-        'onsuspend'          => true,
-        'ontimeupdate'       => true,
-        'onvolumechange'     => true,
-        'onwaiting'          => true,
-        'role'               => true,
-        'spellcheck'         => true,
-        'style'              => true,
-        'tabindex'           => true,
-        'title'              => true,
-        'xml:base'           => true,
-        'xml:lang'           => true,
-        'xml:space'          => true,
+        'accesskey'       => true, // https://html.spec.whatwg.org/#the-accesskey-attribute
+        'autocapitalize'  => true, // https://html.spec.whatwg.org/#attr-autocapitalize
+        'class'           => true, // https://html.spec.whatwg.org/#classes
+        'contenteditable' => true, // https://html.spec.whatwg.org/#contenteditable
+        'contextmenu'     => true, // Obsolete: https://html.spec.whatwg.org/#attr-contextmenu
+        'dir'             => true, // https://html.spec.whatwg.org/#the-dir-attribute
+        'draggable'       => true, // https://html.spec.whatwg.org/#the-draggable-attribute
+        'dropzone'        => true, // Obsolete: https://html.spec.whatwg.org/#attr-dropzone
+        'enterkeyhint'    => true, // https://html.spec.whatwg.org/#input-modalities:-the-enterkeyhint-attribute
+        'hidden'          => true, // https://html.spec.whatwg.org/#the-hidden-attribute
+        'id'              => true, // https://html.spec.whatwg.org/#the-id-attribute
+        'inputmode'       => true, // https://html.spec.whatwg.org/#attr-inputmode
+        'is'              => true, // https://html.spec.whatwg.org/#attr-is
+        //'itemid'             => true, // https://html.spec.whatwg.org/#attr-itemid
+        'itemprop'  => true, // https://html.spec.whatwg.org/#names:-the-itemprop-attribute
+        'itemref'   => true, // https://html.spec.whatwg.org/#attr-itemref
+        'itemscope' => true, // https://html.spec.whatwg.org/#attr-itemscope
+        'itemtype'  => true, // https://html.spec.whatwg.org/#attr-itemtype
+        'lang'      => true, // https://html.spec.whatwg.org/#the-lang-and-xml:lang-attributes
+        //'nonce'              => true, // https://html.spec.whatwg.org/#attr-nonce
+        'onabort'            => true, // https://html.spec.whatwg.org/#handler-onabort
+        'onblur'             => true, // https://html.spec.whatwg.org/#handler-onblur
+        'oncanplay'          => true, // https://html.spec.whatwg.org/#handler-oncanplay
+        'oncanplaythrough'   => true, // https://html.spec.whatwg.org/#handler-oncanplaythrough
+        'onchange'           => true, // https://html.spec.whatwg.org/#handler-onchange
+        'onclick'            => true, // https://html.spec.whatwg.org/#handler-onclick
+        'oncontextmenu'      => true, // https://html.spec.whatwg.org/#handler-oncontextmenu
+        'ondblclick'         => true, // https://html.spec.whatwg.org/#handler-ondblclick
+        'ondrag'             => true, // https://html.spec.whatwg.org/#handler-ondrag
+        'ondragend'          => true, // https://html.spec.whatwg.org/#handler-ondragend
+        'ondragenter'        => true, // https://html.spec.whatwg.org/#handler-ondragenter
+        'ondragleave'        => true, // https://html.spec.whatwg.org/#handler-ondragleave
+        'ondragover'         => true, // https://html.spec.whatwg.org/#handler-ondragover
+        'ondragstart'        => true, // https://html.spec.whatwg.org/#handler-ondragstart
+        'ondrop'             => true, // https://html.spec.whatwg.org/#handler-ondrop
+        'ondurationchange'   => true, // https://html.spec.whatwg.org/#handler-ondurationchange
+        'onemptied'          => true, // https://html.spec.whatwg.org/#handler-onemptied
+        'onended'            => true, // https://html.spec.whatwg.org/#handler-onended
+        'onerror'            => true, // https://html.spec.whatwg.org/#handler-onerror
+        'onfocus'            => true, // https://html.spec.whatwg.org/#handler-onfocus
+        'onfocusin'          => true, // https://developer.mozilla.org/fr/docs/Web/API/Element/focusin_event
+        'onfocusout'         => true, // https://developer.mozilla.org/fr/docs/Web/API/Element/focusout_event
+        'oninput'            => true, // https://html.spec.whatwg.org/#handler-oninput
+        'oninvalid'          => true, // https://html.spec.whatwg.org/#handler-oninvalid
+        'onkeydown'          => true, // https://html.spec.whatwg.org/#handler-onkeydown
+        'onkeypress'         => true, // https://html.spec.whatwg.org/#handler-onkeypress
+        'onkeyup'            => true, // https://html.spec.whatwg.org/#handler-onkeyup
+        'onload'             => true, // https://html.spec.whatwg.org/#handler-onload
+        'onloadeddata'       => true, // https://html.spec.whatwg.org/#handler-onloadeddata
+        'onloadedmetadata'   => true, // https://html.spec.whatwg.org/#handler-onloadedmetadata
+        'onloadstart'        => true, // https://html.spec.whatwg.org/#handler-onloadstart
+        'onmousedown'        => true, // https://html.spec.whatwg.org/#handler-onmousedown
+        'onmousemove'        => true, // https://html.spec.whatwg.org/#handler-onmousemove
+        'onmouseout'         => true, // https://html.spec.whatwg.org/#handler-onmouseout
+        'onmouseover'        => true, // https://html.spec.whatwg.org/#handler-onmouseover
+        'onmouseup'          => true, // https://html.spec.whatwg.org/#handler-onmouseup
+        'onmousewheel'       => true, // https://html.spec.whatwg.org/#handler-onmousewheel
+        'onpause'            => true, // https://html.spec.whatwg.org/#handler-onpause
+        'onplay'             => true, // https://html.spec.whatwg.org/#handler-onplay
+        'onplaying'          => true, // https://html.spec.whatwg.org/#handler-onplaying
+        'onprogress'         => true, // https://html.spec.whatwg.org/#handler-onprogress
+        'onratechange'       => true, // https://html.spec.whatwg.org/#handler-onratechange
+        'onreadystatechange' => true, // https://html.spec.whatwg.org/#handler-onreadystatechange
+        'onreset'            => true, // https://html.spec.whatwg.org/#handler-onreset
+        'onscroll'           => true, // https://html.spec.whatwg.org/#handler-onscroll
+        'onseeked'           => true, // https://html.spec.whatwg.org/#handler-onseeked
+        'onseeking'          => true, // https://html.spec.whatwg.org/#handler-onseeking
+        'onselect'           => true, // https://html.spec.whatwg.org/#handler-onselect
+        'onshow'             => true, // https://html.spec.whatwg.org/#handler-onshow
+        'onstalled'          => true, // https://html.spec.whatwg.org/#handler-onstalled
+        'onsubmit'           => true, // https://html.spec.whatwg.org/#handler-onsubmit
+        'onsuspend'          => true, // https://html.spec.whatwg.org/#handler-onsuspend
+        'ontimeupdate'       => true, // https://html.spec.whatwg.org/#handler-ontimeupdate
+        'onvolumechange'     => true, // https://html.spec.whatwg.org/#handler-onvolumechange
+        'onwaiting'          => true, // https://html.spec.whatwg.org/#handler-onwaiting
+        'role'               => true, // https://html.spec.whatwg.org/#attr-aria-role
+        'slot'               => true, // https://html.spec.whatwg.org/#attr-slot
+        'spellcheck'         => true, // https://html.spec.whatwg.org/#attr-spellcheck
+        'style'              => true, // https://html.spec.whatwg.org/#attr-style
+        'tabindex'           => true, // https://html.spec.whatwg.org/#attr-tabindex
+        'title'              => true, // https://html.spec.whatwg.org/#attr-title
+        //'translate'          => true, // https://html.spec.whatwg.org/#attr-translate
+        'xml:base'  => true, // https://www.w3.org/TR/xmlbase/#syntax
+        'xml:lang'  => true, // https://html.spec.whatwg.org/#the-lang-and-xml:lang-attributes
+        'xml:space' => true, // https://www.w3.org/TR/xml/#sec-white-space
     ];
 
     /**
@@ -174,8 +186,8 @@ abstract class AbstractHelper extends BaseAbstractHelper
      * @var array
      */
     protected $validTagAttributePrefixes = [
-        'data-',
-        'aria-',
+        'data-', // https://html.spec.whatwg.org/#attr-data-*
+        'aria-', // https://html.spec.whatwg.org/#attr-aria-*
         'x-',
     ];
 
@@ -264,7 +276,7 @@ abstract class AbstractHelper extends BaseAbstractHelper
             try {
                 $escapedAttribute = $escapeAttr($value);
                 $strings[]        = sprintf('%s="%s"', $escape($key), $escapedAttribute);
-            } catch (EscaperException $x) {
+            } catch (EscaperException) {
                 // If an escaper exception happens, escape only the key, and use a blank value.
                 $strings[] = sprintf('%s=""', $escape($key));
             }
@@ -282,7 +294,7 @@ abstract class AbstractHelper extends BaseAbstractHelper
     public function getId(ElementInterface $element): ?string
     {
         $id = $element->getAttribute('id');
-        if (null !== $id) {
+        if (is_string($id) && $id !== '') {
             return $id;
         }
 
@@ -409,10 +421,8 @@ abstract class AbstractHelper extends BaseAbstractHelper
      * Prepare a boolean attribute value
      *
      * Prepares the expected representation for the boolean attribute specified.
-     *
-     * @param  mixed $value
      */
-    protected function prepareBooleanAttributeValue(string $attribute, $value): string
+    protected function prepareBooleanAttributeValue(string $attribute, mixed $value): string
     {
         if (! is_bool($value) && in_array($value, $this->booleanAttributes[$attribute], true)) {
             return $value;
@@ -543,11 +553,41 @@ abstract class AbstractHelper extends BaseAbstractHelper
     protected function hasAllowedPrefix(string $attribute): bool
     {
         foreach ($this->validTagAttributePrefixes as $prefix) {
-            if (substr($attribute, 0, strlen($prefix)) === $prefix) {
+            if (str_starts_with($attribute, $prefix)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Translate the label
+     *
+     * @internal
+     *
+     * @todo Reduce argument to only string in the next major
+     * @param string $label
+     */
+    protected function translateLabel(int|string|float|bool $label): string
+    {
+        $label = (string) $label;
+
+        return $this->getTranslator()?->translate($label, $this->getTranslatorTextDomain()) ?? $label;
+    }
+
+    /**
+     * escape the label
+     *
+     * @internal
+     */
+    protected function escapeLabel(ElementInterface $element, string $label): string
+    {
+        if ($element instanceof LabelAwareInterface && $element->getLabelOption('disable_html_escape')) {
+            return $label;
+        }
+
+        $escapeHtmlHelper = $this->getEscapeHtmlHelper();
+        return $escapeHtmlHelper($label);
     }
 }

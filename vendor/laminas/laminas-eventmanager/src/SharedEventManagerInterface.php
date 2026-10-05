@@ -28,6 +28,7 @@ interface SharedEventManagerInterface
      *      all registered identifiers.
      * @param  null|string $eventName Event from which to detach; null indicates
      *      all registered events.
+     * @return void
      * @throws Exception\InvalidArgumentException For invalid identifier arguments.
      * @throws Exception\InvalidArgumentException For invalid event arguments.
      */
@@ -36,7 +37,6 @@ interface SharedEventManagerInterface
     /**
      * Retrieve all listeners for given identifiers
      *
-     * @param  array $identifiers
      * @param  string $eventName
      * @return array
      */

@@ -3,16 +3,16 @@
 namespace DoctrineExtensions\Query\Sqlite;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
-use Doctrine\ORM\Query\Lexer;
+use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
 
-/**
- * @author Tarjei Huse <tarjei.huse@gmail.com>
- */
+/** @author Tarjei Huse <tarjei.huse@gmail.com> */
 abstract class AbstractStrfTime extends FunctionNode
 {
     public $date;
 
-    public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         return "STRFTIME('"
                 . $this->getFormat()
@@ -21,15 +21,15 @@ abstract class AbstractStrfTime extends FunctionNode
             . ')';
     }
 
-    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    public function parse(Parser $parser): void
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
         $this->date = $parser->ArithmeticPrimary();
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 
-    abstract protected function getFormat();
+    abstract protected function getFormat(): string;
 }

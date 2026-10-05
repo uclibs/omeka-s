@@ -11,6 +11,9 @@ use Laminas\Stdlib\RequestInterface as Request;
 
 /**
  * Translator aware tree route stack.
+ *
+ * @template TRoute of RouteInterface
+ * @template-extends TreeRouteStack<TRoute>
  */
 class TranslatorAwareTreeRouteStack extends TreeRouteStack implements TranslatorAwareInterface
 {
@@ -41,7 +44,6 @@ class TranslatorAwareTreeRouteStack extends TreeRouteStack implements Translator
      * @see    \Laminas\Router\RouteInterface::match()
      *
      * @param  integer|null $pathOffset
-     * @param  array        $options
      * @return RouteMatch|null
      */
     public function match(Request $request, $pathOffset = null, array $options = [])
@@ -62,8 +64,6 @@ class TranslatorAwareTreeRouteStack extends TreeRouteStack implements Translator
      *
      * @see    \Laminas\Router\RouteInterface::assemble()
      *
-     * @param  array $params
-     * @param  array $options
      * @return mixed
      * @throws Exception\InvalidArgumentException
      * @throws Exception\RuntimeException

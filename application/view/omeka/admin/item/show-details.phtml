@@ -17,6 +17,18 @@ $escape = $this->plugin('escapeHtml');
         <h4><?php echo $escape($translate('Visibility')); ?></h4>
         <div class="value"><?php echo ($resource->isPublic()) ? $translate('Public') : $translate('Private'); ?></div>
     </div>
+    <?php if ($resourceClass = $resource->resourceClass()): ?>
+    <div class="meta-group">
+        <h4><?php echo $translate('Class'); ?></h4>
+        <div class="value"><?php echo $escape($resourceClass->label()); ?></div>
+    </div>
+    <?php endif; ?>
+    <?php if ($resourceTemplate = $resource->resourceTemplate()): ?>
+    <div class="meta-group">
+        <h4><?php echo $translate('Resource template'); ?></h4>
+        <div class="value"><?php echo $resourceTemplate->link($resourceTemplate->label()); ?></div>
+    </div>
+    <?php endif; ?>
     <?php $itemsets = $resource->itemSets(); ?>
     <?php if (count($itemsets) > 0): ?>
     <div class="meta-group">
@@ -28,10 +40,18 @@ $escape = $this->plugin('escapeHtml');
     <?php endif; ?>
     <?php $sites = $resource->sites(); ?>
     <?php if ($sites): ?>
-    <div class="meta-group">
+    <div class="meta-group resource-sites">
         <h4><?php echo $translate('Sites'); ?></h4>
         <?php foreach ($sites as $site): ?>
-        <div class="value sites"><?php echo $site->link($site->title()); ?></div>
+        <div class="value">
+            <?php
+            $siteTitle = $site->title();
+            $externalLinkText = sprintf($translate('View this item in "%s"'), $siteTitle);
+            echo $site->link($siteTitle);
+            echo $this->hyperlink('', $this->url('site/resource-id', ['site-slug' => $site->slug(), 'controller' => 'item', 'id' => $resource->id()]),
+                ['class' => 'o-icon-external', 'target' => '_blank', 'aria-label' => $externalLinkText, 'title' => $externalLinkText]);
+            ?>
+        </div>
         <?php endforeach; ?>
     </div>
     <?php endif; ?>
@@ -45,5 +65,5 @@ $escape = $this->plugin('escapeHtml');
         <?php endforeach; ?>
     </div>
     <?php endif; ?>
-    <?php $this->trigger('view.details', array('entity' => $resource)); ?>
+    <?php $this->trigger('view.details', ['entity' => $resource]); ?>
 </div>

@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Laminas\Form;
 
-use Interop\Container\ContainerInterface;
 use Laminas\Form\Exception;
+use Laminas\Hydrator\HydratorInterface;
+use Laminas\Hydrator\HydratorPluginManager;
+use Laminas\InputFilter\InputFilterPluginManager;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\Stdlib\InitializableInterface;
+use Psr\Container\ContainerInterface;
 
 use function array_push;
 use function array_search;
 use function array_unshift;
 use function class_exists;
-use function get_class;
 use function gettype;
 use function is_object;
 use function sprintf;
@@ -23,6 +25,9 @@ use function sprintf;
  * laminas-servicemanager v3-compatible plugin manager implementation for form elements.
  *
  * Enforces that elements retrieved are instances of ElementInterface.
+ *
+ * @final
+ * @extends AbstractPluginManager<ElementInterface>
  */
 class FormElementManager extends AbstractPluginManager
 {
@@ -207,7 +212,7 @@ class FormElementManager extends AbstractPluginManager
      *
      * @param mixed $instance Instance to inspect and optionally inject.
      */
-    public function injectFactory(ContainerInterface $container, $instance): void
+    public function injectFactory(ContainerInterface $container, mixed $instance): void
     {
         if (! $instance instanceof Fieldset) {
             return;
@@ -216,8 +221,8 @@ class FormElementManager extends AbstractPluginManager
         $factory = $instance->getFormFactory();
         $factory->setFormElementManager($this);
 
-        if ($container->has('InputFilterManager')) {
-            $inputFilters = $container->get('InputFilterManager');
+        if ($container->has(InputFilterPluginManager::class)) {
+            $inputFilters = $container->get(InputFilterPluginManager::class);
             $factory->getInputFilterFactory()->setInputFilterManager($inputFilters);
         }
     }
@@ -227,7 +232,7 @@ class FormElementManager extends AbstractPluginManager
      *
      * @param mixed $instance Instance to inspect and optionally initialize.
      */
-    public function callElementInit(ContainerInterface $container, $instance): void
+    public function callElementInit(ContainerInterface $container, mixed $instance): void
     {
         if ($instance instanceof InitializableInterface) {
             $instance->init();
@@ -267,6 +272,7 @@ class FormElementManager extends AbstractPluginManager
      *
      * @param  mixed $instance
      * @throws InvalidServiceException
+     * @psalm-assert ElementInterface $instance
      */
     public function validate($instance): void
     {
@@ -275,7 +281,7 @@ class FormElementManager extends AbstractPluginManager
                 '%s can only create instances of %s; %s is invalid',
                 static::class,
                 $this->instanceOf,
-                is_object($instance) ? get_class($instance) : gettype($instance)
+                is_object($instance) ? $instance::class : gettype($instance)
             ));
         }
     }
@@ -286,7 +292,7 @@ class FormElementManager extends AbstractPluginManager
      * Always pushes `injectFactory` to top of initializer stack, and
      * `callElementInit` to the bottom.
      *
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function configure(array $config)
     {
@@ -315,10 +321,12 @@ class FormElementManager extends AbstractPluginManager
      * createFromInvokable() will use these and pass them to the instance
      * constructor if not null and a non-empty array.
      *
-     * @param  string $name
-     * @return mixed
+     * @template T of ElementInterface
+     * @param class-string<T>|string $name Service name of plugin to retrieve.
+     * @param null|array<mixed> $options Options to use when creating the instance.
+     * @return ($name is class-string<ElementInterface> ? T : ElementInterface)
      */
-    public function get($name, ?array $options = null)
+    public function get($name, ?array $options = null): mixed
     {
         if (! $this->has($name)) {
             if (! $this->autoAddInvokableClass || ! class_exists($name)) {
@@ -339,15 +347,17 @@ class FormElementManager extends AbstractPluginManager
     /**
      * Try to pull hydrator from the creation context, or instantiates it from its name
      *
+     * @param string|class-string<HydratorInterface> $hydratorName
      * @return mixed
+     * @psalm-return ($hydratorName is class-string<HydratorInterface> ? HydratorInterface : mixed)
      * @throws Exception\DomainException
      */
     public function getHydratorFromName(string $hydratorName)
     {
         $services = $this->creationContext;
 
-        if ($services && $services->has('HydratorManager')) {
-            $hydrators = $services->get('HydratorManager');
+        if ($services && $services->has(HydratorPluginManager::class)) {
+            $hydrators = $services->get(HydratorPluginManager::class);
             if ($hydrators->has($hydratorName)) {
                 return $hydrators->get($hydratorName);
             }

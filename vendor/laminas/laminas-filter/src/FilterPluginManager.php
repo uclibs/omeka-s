@@ -13,10 +13,8 @@ use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
-use function get_class;
-use function gettype;
+use function get_debug_type;
 use function is_callable;
-use function is_object;
 use function sprintf;
 
 /**
@@ -25,16 +23,19 @@ use function sprintf;
  * Enforces that filters retrieved are either callbacks or instances of
  * FilterInterface. Additionally, it registers a number of default filters
  * available, as well as aliases for them.
+ *
+ * @final
+ * @extends AbstractPluginManager<FilterInterface|callable(mixed): mixed>
  */
 class FilterPluginManager extends AbstractPluginManager
 {
     protected $aliases = [
         // @codingStandardsIgnoreStart
         // For the future
-        'int'  => ToInt::class,
-        'Int'  => ToInt::class,
-        'null' => ToNull::class,
-        'Null' => ToNull::class,
+        'int'    => ToInt::class,
+        'Int'    => ToInt::class,
+        'null'   => ToNull::class,
+        'Null'   => ToNull::class,
 
         // I18n filters
         'alnum'        => Alnum::class,
@@ -206,61 +207,61 @@ class FilterPluginManager extends AbstractPluginManager
         'WordUnderscoreToSeparator'  => Word\UnderscoreToSeparator::class,
 
         // Legacy Zend Framework aliases
-        \Zend\I18n\Filter\Alnum::class                  => Alnum::class,
-        \Zend\I18n\Filter\Alpha::class                  => Alpha::class,
-        \Zend\I18n\Filter\NumberFormat::class           => NumberFormat::class,
-        \Zend\I18n\Filter\NumberParse::class            => NumberParse::class,
-        \Zend\Filter\BaseName::class                    => BaseName::class,
-        \Zend\Filter\Blacklist::class                   => DenyList::class,
-        \Zend\Filter\Boolean::class                     => Boolean::class,
-        \Zend\Filter\Callback::class                    => Callback::class,
-        \Zend\Filter\Compress::class                    => Compress::class,
-        \Zend\Filter\DataUnitFormatter::class           => DataUnitFormatter::class,
-        \Zend\Filter\DateSelect::class                  => DateSelect::class,
-        \Zend\Filter\DateTimeFormatter::class           => DateTimeFormatter::class,
-        \Zend\Filter\DateTimeSelect::class              => DateTimeSelect::class,
-        \Zend\Filter\Decompress::class                  => Decompress::class,
-        \Zend\Filter\Decrypt::class                     => Decrypt::class,
-        \Zend\Filter\Digits::class                      => Digits::class,
-        \Zend\Filter\Dir::class                         => Dir::class,
-        \Zend\Filter\Encrypt::class                     => Encrypt::class,
-        \Zend\Filter\File\Decrypt::class                => File\Decrypt::class,
-        \Zend\Filter\File\Encrypt::class                => File\Encrypt::class,
-        \Zend\Filter\File\LowerCase::class              => File\LowerCase::class,
-        \Zend\Filter\File\Rename::class                 => File\Rename::class,
-        \Zend\Filter\File\RenameUpload::class           => File\RenameUpload::class,
-        \Zend\Filter\File\UpperCase::class              => File\UpperCase::class,
-        \Zend\Filter\HtmlEntities::class                => HtmlEntities::class,
-        \Zend\Filter\Inflector::class                   => Inflector::class,
-        \Zend\Filter\ToInt::class                       => ToInt::class,
-        \Zend\Filter\ToFloat::class                     => ToFloat::class,
-        \Zend\Filter\MonthSelect::class                 => MonthSelect::class,
-        \Zend\Filter\ToNull::class                      => ToNull::class,
-        \Zend\Filter\UpperCaseWords::class              => UpperCaseWords::class,
-        \Zend\Filter\PregReplace::class                 => PregReplace::class,
-        \Zend\Filter\RealPath::class                    => RealPath::class,
-        \Zend\Filter\StringPrefix::class                => StringPrefix::class,
-        \Zend\Filter\StringSuffix::class                => StringSuffix::class,
-        \Zend\Filter\StringToLower::class               => StringToLower::class,
-        \Zend\Filter\StringToUpper::class               => StringToUpper::class,
-        \Zend\Filter\StringTrim::class                  => StringTrim::class,
-        \Zend\Filter\StripNewlines::class               => StripNewlines::class,
-        \Zend\Filter\StripTags::class                   => StripTags::class,
-        \Zend\Filter\UriNormalize::class                => UriNormalize::class,
-        \Zend\Filter\Whitelist::class                   => AllowList::class,
-        \Zend\Filter\Word\CamelCaseToDash::class        => Word\CamelCaseToDash::class,
-        \Zend\Filter\Word\CamelCaseToSeparator::class   => Word\CamelCaseToSeparator::class,
-        \Zend\Filter\Word\CamelCaseToUnderscore::class  => Word\CamelCaseToUnderscore::class,
-        \Zend\Filter\Word\DashToCamelCase::class        => Word\DashToCamelCase::class,
-        \Zend\Filter\Word\DashToSeparator::class        => Word\DashToSeparator::class,
-        \Zend\Filter\Word\DashToUnderscore::class       => Word\DashToUnderscore::class,
-        \Zend\Filter\Word\SeparatorToCamelCase::class   => Word\SeparatorToCamelCase::class,
-        \Zend\Filter\Word\SeparatorToDash::class        => Word\SeparatorToDash::class,
-        \Zend\Filter\Word\SeparatorToSeparator::class   => Word\SeparatorToSeparator::class,
-        \Zend\Filter\Word\UnderscoreToCamelCase::class  => Word\UnderscoreToCamelCase::class,
-        \Zend\Filter\Word\UnderscoreToStudlyCase::class => Word\UnderscoreToStudlyCase::class,
-        \Zend\Filter\Word\UnderscoreToDash::class       => Word\UnderscoreToDash::class,
-        \Zend\Filter\Word\UnderscoreToSeparator::class  => Word\UnderscoreToSeparator::class,
+        'Zend\I18n\Filter\Alnum'                  => Alnum::class,
+        'Zend\I18n\Filter\Alpha'                  => Alpha::class,
+        'Zend\I18n\Filter\NumberFormat'           => NumberFormat::class,
+        'Zend\I18n\Filter\NumberParse'            => NumberParse::class,
+        'Zend\Filter\BaseName'                    => BaseName::class,
+        'Zend\Filter\Blacklist'                   => DenyList::class,
+        'Zend\Filter\Boolean'                     => Boolean::class,
+        'Zend\Filter\Callback'                    => Callback::class,
+        'Zend\Filter\Compress'                    => Compress::class,
+        'Zend\Filter\DataUnitFormatter'           => DataUnitFormatter::class,
+        'Zend\Filter\DateSelect'                  => DateSelect::class,
+        'Zend\Filter\DateTimeFormatter'           => DateTimeFormatter::class,
+        'Zend\Filter\DateTimeSelect'              => DateTimeSelect::class,
+        'Zend\Filter\Decompress'                  => Decompress::class,
+        'Zend\Filter\Decrypt'                     => Decrypt::class,
+        'Zend\Filter\Digits'                      => Digits::class,
+        'Zend\Filter\Dir'                         => Dir::class,
+        'Zend\Filter\Encrypt'                     => Encrypt::class,
+        'Zend\Filter\File\Decrypt'                => File\Decrypt::class,
+        'Zend\Filter\File\Encrypt'                => File\Encrypt::class,
+        'Zend\Filter\File\LowerCase'              => File\LowerCase::class,
+        'Zend\Filter\File\Rename'                 => File\Rename::class,
+        'Zend\Filter\File\RenameUpload'           => File\RenameUpload::class,
+        'Zend\Filter\File\UpperCase'              => File\UpperCase::class,
+        'Zend\Filter\HtmlEntities'                => HtmlEntities::class,
+        'Zend\Filter\Inflector'                   => Inflector::class,
+        'Zend\Filter\ToInt'                       => ToInt::class,
+        'Zend\Filter\ToFloat'                     => ToFloat::class,
+        'Zend\Filter\MonthSelect'                 => MonthSelect::class,
+        'Zend\Filter\ToNull'                      => ToNull::class,
+        'Zend\Filter\UpperCaseWords'              => UpperCaseWords::class,
+        'Zend\Filter\PregReplace'                 => PregReplace::class,
+        'Zend\Filter\RealPath'                    => RealPath::class,
+        'Zend\Filter\StringPrefix'                => StringPrefix::class,
+        'Zend\Filter\StringSuffix'                => StringSuffix::class,
+        'Zend\Filter\StringToLower'               => StringToLower::class,
+        'Zend\Filter\StringToUpper'               => StringToUpper::class,
+        'Zend\Filter\StringTrim'                  => StringTrim::class,
+        'Zend\Filter\StripNewlines'               => StripNewlines::class,
+        'Zend\Filter\StripTags'                   => StripTags::class,
+        'Zend\Filter\UriNormalize'                => UriNormalize::class,
+        'Zend\Filter\Whitelist'                   => AllowList::class,
+        'Zend\Filter\Word\CamelCaseToDash'        => Word\CamelCaseToDash::class,
+        'Zend\Filter\Word\CamelCaseToSeparator'   => Word\CamelCaseToSeparator::class,
+        'Zend\Filter\Word\CamelCaseToUnderscore'  => Word\CamelCaseToUnderscore::class,
+        'Zend\Filter\Word\DashToCamelCase'        => Word\DashToCamelCase::class,
+        'Zend\Filter\Word\DashToSeparator'        => Word\DashToSeparator::class,
+        'Zend\Filter\Word\DashToUnderscore'       => Word\DashToUnderscore::class,
+        'Zend\Filter\Word\SeparatorToCamelCase'   => Word\SeparatorToCamelCase::class,
+        'Zend\Filter\Word\SeparatorToDash'        => Word\SeparatorToDash::class,
+        'Zend\Filter\Word\SeparatorToSeparator'   => Word\SeparatorToSeparator::class,
+        'Zend\Filter\Word\UnderscoreToCamelCase'  => Word\UnderscoreToCamelCase::class,
+        'Zend\Filter\Word\UnderscoreToStudlyCase' => Word\UnderscoreToStudlyCase::class,
+        'Zend\Filter\Word\UnderscoreToDash'       => Word\UnderscoreToDash::class,
+        'Zend\Filter\Word\UnderscoreToSeparator'  => Word\UnderscoreToSeparator::class,
 
         // v2 normalized FQCNs
         'zendfiltertoint'                      => ToInt::class,
@@ -356,10 +357,12 @@ class FilterPluginManager extends AbstractPluginManager
         File\Rename::class                 => InvokableFactory::class,
         File\RenameUpload::class           => InvokableFactory::class,
         File\UpperCase::class              => InvokableFactory::class,
+        ForceUriScheme::class              => InvokableFactory::class,
         HtmlEntities::class                => InvokableFactory::class,
         Inflector::class                   => InvokableFactory::class,
         ToInt::class                       => InvokableFactory::class,
         ToFloat::class                     => InvokableFactory::class,
+        ToString::class                    => InvokableFactory::class,
         MonthSelect::class                 => InvokableFactory::class,
         ToNull::class                      => InvokableFactory::class,
         UpperCaseWords::class              => InvokableFactory::class,
@@ -466,22 +469,24 @@ class FilterPluginManager extends AbstractPluginManager
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-assert FilterInterface|callable(mixed): mixed $instance
      */
-    public function validate($plugin)
+    public function validate(mixed $instance)
     {
-        if ($plugin instanceof $this->instanceOf) {
+        if ($instance instanceof $this->instanceOf) {
             // we're okay
             return;
         }
 
-        if (is_callable($plugin)) {
+        if (is_callable($instance)) {
             // also okay
             return;
         }
 
         throw new InvalidServiceException(sprintf(
             'Plugin of type %s is invalid; must implement %s\FilterInterface or be callable',
-            is_object($plugin) ? get_class($plugin) : gettype($plugin),
+            get_debug_type($instance),
             __NAMESPACE__
         ));
     }
@@ -492,16 +497,40 @@ class FilterPluginManager extends AbstractPluginManager
      * Checks that the filter loaded is either a valid callback or an instance
      * of FilterInterface.
      *
-     * @param  mixed $plugin
      * @return void
      * @throws RuntimeException If invalid.
      */
-    public function validatePlugin($plugin)
+    public function validatePlugin(mixed $plugin)
     {
         try {
             $this->validate($plugin);
         } catch (InvalidServiceException $e) {
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * @inheritDoc
+     * @template InstanceType of FilterInterface
+     * @param class-string<InstanceType>|string $name Service name of plugin to retrieve.
+     * @param null|array<mixed> $options Options to use when creating the instance.
+     * @return InstanceType|callable(mixed): mixed
+     * @psalm-return ($name is class-string ? InstanceType : callable(mixed): mixed)
+     */
+    public function get($name, ?array $options = null)
+    {
+        /** @psalm-suppress MixedReturnStatement */
+        return parent::get($name, $options);
+    }
+
+    /**
+     * @param string $name
+     * @param FilterInterface|callable(mixed): mixed $service
+     * @return void
+     * @psalm-suppress MoreSpecificImplementedParamType
+     */
+    public function setService($name, $service)
+    {
+        parent::setService($name, $service);
     }
 }

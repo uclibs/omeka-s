@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Laminas\Navigation\Service;
 
-use Interop\Container\ContainerInterface;
 use Laminas\Config;
 use Laminas\Http\Request;
 use Laminas\Navigation\Exception;
@@ -15,13 +14,12 @@ use Laminas\Router\RouteStackInterface as Router;
 use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\ArrayUtils;
+use Psr\Container\ContainerInterface;
 use Traversable;
 
 use function file_exists;
-use function get_class;
-use function gettype;
+use function get_debug_type;
 use function is_array;
-use function is_object;
 use function is_string;
 use function sprintf;
 
@@ -133,7 +131,6 @@ abstract class AbstractNavigationFactory implements FactoryInterface
     }
 
     /**
-     * @param array $pages
      * @param RouteMatch $routeMatch
      * @param Router $router
      * @param null|Request $request
@@ -174,11 +171,10 @@ abstract class AbstractNavigationFactory implements FactoryInterface
     /**
      * Validate that a route match argument provided to injectComponents is valid.
      *
-     * @param null|RouteMatch $routeMatch
-     * @return void
+     * @psalm-assert RouteMatch|null $routeMatch
      * @throws Exception\InvalidArgumentException
      */
-    private function validateRouteMatch($routeMatch)
+    private function validateRouteMatch(mixed $routeMatch): void
     {
         if (null === $routeMatch) {
             return;
@@ -189,7 +185,7 @@ abstract class AbstractNavigationFactory implements FactoryInterface
                 '%s expected by %s::injectComponents; received %s',
                 RouteMatch::class,
                 self::class,
-                is_object($routeMatch) ? get_class($routeMatch) : gettype($routeMatch)
+                get_debug_type($routeMatch)
             ));
         }
     }
@@ -197,11 +193,10 @@ abstract class AbstractNavigationFactory implements FactoryInterface
     /**
      * Validate that a router argument provided to injectComponents is valid.
      *
-     * @param null|Router $router
-     * @return void
+     * @psalm-assert Router|null $router
      * @throws Exception\InvalidArgumentException
      */
-    private function validateRouter($router)
+    private function validateRouter(mixed $router): void
     {
         if (null === $router) {
             return;
@@ -212,7 +207,7 @@ abstract class AbstractNavigationFactory implements FactoryInterface
                 '%s expected by %s::injectComponents; received %s',
                 RouteMatch::class,
                 self::class,
-                is_object($router) ? get_class($router) : gettype($router)
+                get_debug_type($router),
             ));
         }
     }

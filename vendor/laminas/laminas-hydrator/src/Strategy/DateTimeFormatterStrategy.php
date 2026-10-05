@@ -8,7 +8,6 @@ use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
 
-use function get_class;
 use function gettype;
 use function is_object;
 use function is_string;
@@ -18,47 +17,30 @@ use function sprintf;
 final class DateTimeFormatterStrategy implements StrategyInterface
 {
     /**
-     * Format to use during hydration.
-     *
-     * @var string
-     */
-    private $format;
-
-    /** @var DateTimeZone|null */
-    private $timezone;
-
-    /**
      * Format to use during extraction.
      *
      * Removes any special anchor characters used to ensure that creation of a
      * `DateTime` instance uses the formatted time string (which is useful
      * during hydration).  These include `!` at the beginning of the string and
      * `|` at the end.
-     *
-     * @var string
      */
-    private $extractionFormat;
-
-    /**
-     * Whether or not to allow hydration of values that do not follow the format exactly.
-     *
-     * @var bool
-     */
-    private $dateTimeFallback;
+    private string $extractionFormat;
 
     /**
      * @param bool $dateTimeFallback try to parse with DateTime when createFromFormat fails
      * @throws Exception\InvalidArgumentException For invalid $format values.
      */
     public function __construct(
-        string $format = DateTime::RFC3339,
-        ?DateTimeZone $timezone = null,
-        bool $dateTimeFallback = false
+        /**
+         * Format to use during hydration.
+         */
+        private string $format = DateTime::RFC3339,
+        private ?DateTimeZone $timezone = null,
+        /**
+         * Whether or not to allow hydration of values that do not follow the format exactly.
+         */
+        private bool $dateTimeFallback = false
     ) {
-        $this->format           = $format;
-        $this->timezone         = $timezone;
-        $this->dateTimeFallback = $dateTimeFallback;
-
         $extractionFormat = preg_replace('/(?<![\\\\])[+|!\*]/', '', $this->format);
         if (null === $extractionFormat) {
             throw new Exception\InvalidArgumentException(sprintf(
@@ -108,7 +90,7 @@ final class DateTimeFormatterStrategy implements StrategyInterface
         if (! is_string($value)) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Unable to hydrate. Expected null, string, or DateTimeInterface; %s was given.',
-                is_object($value) ? get_class($value) : gettype($value)
+                is_object($value) ? $value::class : gettype($value)
             ));
         }
 

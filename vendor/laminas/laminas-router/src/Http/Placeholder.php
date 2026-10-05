@@ -17,11 +17,16 @@ use function sprintf;
  */
 class Placeholder implements RouteInterface
 {
-    private array $defaults;
+    /**
+     * @internal
+     * @deprecated Since 3.9.0 This property will be removed or made private in version 4.0
+     *
+     * @var int|null
+     */
+    public $priority;
 
-    public function __construct(array $defaults)
+    public function __construct(private readonly array $defaults)
     {
-        $this->defaults = $defaults;
     }
 
     /**
@@ -29,7 +34,7 @@ class Placeholder implements RouteInterface
      *
      * @see    \Laminas\Router\RouteInterface::factory()
      *
-     * @param  array|Traversable $options
+     * @param  iterable $options
      * @return Placeholder
      * @throws Exception\InvalidArgumentException
      */
@@ -75,8 +80,6 @@ class Placeholder implements RouteInterface
      *
      * @see    \Laminas\Router\RouteInterface::assemble()
      *
-     * @param  array $params
-     * @param  array $options
      * @return mixed
      */
     public function assemble(array $params = [], array $options = [])

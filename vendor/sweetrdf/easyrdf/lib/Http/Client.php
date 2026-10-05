@@ -67,7 +67,7 @@ class Client
      *
      * @var string
      */
-    private $uri = null;
+    private $uri;
 
     /**
      * Associative array of request headers
@@ -95,7 +95,7 @@ class Client
      *
      * @var string|null
      */
-    private $rawPostData = null;
+    private $rawPostData;
 
     /**
      * Redirection counter
@@ -384,7 +384,7 @@ class Client
      *
      * @return Response
      *
-     * @throws \EasyRdf\Exception
+     * @throws Exception
      */
     public function request($method = null)
     {
@@ -426,7 +426,7 @@ class Client
                 } else {
                     $uri['query'] = '';
                 }
-                $uri['query'] .= http_build_query($this->paramsGet, null, '&');
+                $uri['query'] .= http_build_query($this->paramsGet, '', '&');
             }
 
             $headers = $this->prepareHeaders($uri['host'], $port);
@@ -489,8 +489,8 @@ class Client
             $response = Response::fromString($content);
 
             // If we got redirected, look for the Location header
-            if ($response->isRedirect() &&
-                   ($location = $response->getHeader('location'))
+            if ($response->isRedirect()
+                   && ($location = $response->getHeader('location'))
             ) {
                 // Avoid problems with buggy servers that add whitespace at the
                 // end of some headers (See ZF-11283)
