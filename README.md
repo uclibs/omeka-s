@@ -84,6 +84,8 @@ history and deciding explicitly what role it should have.
 
 ## Normal workflow for a new change
 
+**Before every Omeka S core upgrade, create a dated SQL dump of the database, even when normal server backups are available. Keep the dump until the upgraded installation has been verified.
+
 The normal path is:
 
     production (known good)
